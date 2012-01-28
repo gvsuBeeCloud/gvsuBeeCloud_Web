@@ -1,0 +1,9 @@
+INDEX VERSION 1.126
+/Users/bkaiser/Documents/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/3023683586.index
+/BeeCloudProject_Web/src
+/Users/bkaiser/Documents/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/1302422960.index
+/beecloudproject/src
+/Users/bkaiser/Documents/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/2142061704.index
+/beecloudproject/src
+/Users/bkaiser/Documents/workspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/1023545680.index
+/beecloudproject/src

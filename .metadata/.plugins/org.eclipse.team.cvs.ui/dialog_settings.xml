@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="NewLocationWizard">
+		<list key="ConfigurationWizardMainPage.STORE_PATH_ID">
+			<item value="gvsuBeeCloud_Web.git"/>
+			<item value="gvsuBeeCloud/gvsuBeeCloud_Web.git"/>
+			<item value="git@github.com:gvsuBeeCloud/gvsuBeeCloud_Web.git"/>
+		</list>
+		<list key="ConfigurationWizardMainPage.STORE_HOSTNAME_ID">
+			<item value="github.com"/>
+			<item value="git@github.com"/>
+		</list>
+		<list key="ConfigurationWizardMainPage.STORE_USERNAME_ID">
+			<item value="nemerkab"/>
+		</list>
+	</section>
+</section>

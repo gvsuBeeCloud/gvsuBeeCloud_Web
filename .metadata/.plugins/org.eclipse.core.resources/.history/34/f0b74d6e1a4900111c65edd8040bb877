@@ -1,0 +1,122 @@
+<html>
+<head>
+    <script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
+    <link rel="stylesheet" href="../css/style.css" type="text/css"></link>
+    
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+
+	//alert("Script working");
+	//setup historical data listeners
+	//hide max to start
+	$("#div_historicalData_maxAndMins").hide();
+
+	$("#btn_historicalData_PreviousRecords").click(function(){
+		
+		//hide other divs
+		$("#div_historicalData_maxAndMins").hide();
+		
+		//show previous records div
+		$("#div_historicalData_previousRecords").show();
+		
+	});
+	
+	$("#btn_historicalData_MaxMin").click(function(){
+		//hide other divs
+		$("#div_historicalData_previousRecords").hide();
+
+		
+		//show max and mins
+		$("#div_historicalData_maxAndMins").show();
+	});
+	
+	
+	//show and hide historical data div
+
+});</script>
+</head>
+<body>
+
+<div id='wrapper_historicalData'>
+<div id="tab_historicalData">
+<ul>
+			<li  name='prev' id='btn_historicalData_PreviousRecords'>Records</li>
+			<li  name='max' id='btn_historicalData_MaxMin'>MaxMin </li>
+	</ul>		
+
+</div>
+
+</div>
+
+	<%!
+		
+		
+		public void buildHistoricalData(String hiveID){
+		
+			//build tabs
+			
+		}
+	
+		public void buildPreviousDataTab(){
+			
+		}
+	
+	%>
+	<div id='div_historicalData_previousRecords'>
+	
+	
+	
+	<%
+	
+	//get all the previous records
+	//TODO: run query
+	for(int i=0;i<5;i++){
+		
+	
+	String tmpDate="1.24.2012"; 
+	String tmpTemp="50";
+	String tmpWeight="200";
+	%>
+	<div class='div_previousHiveRecord'>
+	
+		<div class='div_previousHiveRecord_title'>
+			<% out.println(tmpDate); %>
+		</div> 
+		<div class='div_previousHiveRecord_contents'>
+			Weight: <%= tmpWeight %>
+			<br/>
+			Temp: <%= tmpTemp %>
+		</div>
+		
+		<div class='div_previousHiveRecord_footer'>
+			
+		</div>
+	
+	</div>
+	
+	</div>
+	<%
+	}	
+	
+	//build previous records tab
+	
+	
+	//get parameter
+		//	String hiveID=request.getParameter("hiveID");
+			
+			//for debug, echo param
+			//out.println("HIVE ID: "+hiveID);
+	%>
+	<div id='div_historicalData_maxAndMins'>
+	
+	high and lows
+	</div>
+	
+
+</body>
+
+</html>

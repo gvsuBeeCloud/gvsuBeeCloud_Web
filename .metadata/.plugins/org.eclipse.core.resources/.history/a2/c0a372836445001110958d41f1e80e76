@@ -1,0 +1,117 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.google.appengine.api.users.User" %>
+<%@ page import="com.google.appengine.api.users.UserService" %>
+<%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
+<%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
+<%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
+<%@ page import="com.google.appengine.api.datastore.Query" %>
+<%@ page import="com.google.appengine.api.datastore.Entity" %>
+<%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
+<%@ page import="com.google.appengine.api.datastore.Key" %>
+<%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
+
+<html>
+<head>
+<link rel="stylesheet" href="css/style.css" type="text/css"></link>
+
+<script type="text/javascript"
+	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCQnswJmYxTHOZdj3MbKtUE-bR_Fg6mx5c&sensor=true">
+    </script>
+    <script type="text/javascript" src="js/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="js/functions.js"></script>
+
+<script type="text/javascript">
+      function initialize() {
+    	  
+    	  /**
+        var myOptions = {
+          center: new google.maps.LatLng(38.1569, -98.6133),
+          zoom: 4,
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        };
+        var map = new google.maps.Map(document.getElementById("div_map_container"),
+            myOptions);
+        
+    //    var image= new google.maps.MarkerImage('images/beeico.png');
+       var image = new google.maps.MarkerImage('images/beeico.png',
+       		new google.maps.Size(20, 32),
+        	      // The origin for this image is 0,0.
+        	      new google.maps.Point(0,0),
+        	      // The anchor for this image is the base of the flagpole at 0,32.
+        	     new google.maps.Point(0, 32));
+        var myLatLng = new google.maps.LatLng(42.9634,-85.6681);
+     //  var shape = {
+     //   	      coord: [1, 1, 1, 20, 20, 1, 20 , 20],
+     //   	      type: 'poly'
+     //   	  };
+        var marker = new google.maps.Marker({
+        	position: myLatLng,
+            map: map,
+            icon: image
+            
+     //       shape: shape
+        });
+     // Creating an InfoWindow object
+        var infowindow = new google.maps.InfoWindow({
+          content: "<div class='div_infoWindow'>Hello world</div>" 
+        });
+        
+        
+        
+        google.maps.event.addListener(marker, 'mouseover', function() {
+        	  infowindow.open(map, marker);
+        	});
+      }
+      
+      **/
+     
+    </script>
+
+</head>
+<body onload="loadMarkersFromHiddenDivs()">
+	<div id='div_banner'><!--  img src="images/gvLogoTemp.png" /-->BeeCloud Project
+	<%
+		//try querying
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	// Run an ancestor query to ensure we see the most up-to-date
+    	// view of the Greetings belonging to the selected Guestbook.
+    	Query query = new Query("hiveRecord",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    	List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
+				
+	    if(records.isEmpty()){
+	    	%>
+	    	<p> Records are empty </p>
+	    	<%
+	    }else{
+	    	for(Entity record: records){
+	    		
+	    		//add hidden values
+	    		%> <div class='shouldBeHidden hiveRecord'>
+	    				<div class='hiveRecord_hiveID'><%out.print(record.getProperty("hiveID")); %></div>
+	    				<div class='hiveRecord_loc_lat'><%out.print(record.getProperty("location_lat")); %></div>
+	    				<div class='hiveRecord_loc_long'><%out.print(record.getProperty("location_long")); %></div>
+	    		
+	    		
+	    		</div>  
+	    		
+	    		<%
+	    		
+	    		
+	    	}
+	    	
+	    }
+	
+	%>
+	
+	</div>
+	<div id="div_map_container"></div>
+
+
+<div id='div_hiveControls_wrapper'><div id='div_hiveControls'></div><div id='div_hiveControls_grabber'></div></div>
+<div id='div_historicalData'>Historical Data</div>
+<div id='div_footer'></div>
+</body>
+</html>

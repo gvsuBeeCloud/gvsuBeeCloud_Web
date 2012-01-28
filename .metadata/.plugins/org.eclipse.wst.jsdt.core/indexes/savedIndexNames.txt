@@ -1,0 +1,7 @@
+INDEX VERSION 1.122+/Users/bkaiser/Documents/workspace/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+3606667667.index
+3622715202.index
+4258327000.index
+4192547139.index
+1023545680.index
+1354019451.index
