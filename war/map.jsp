@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+	<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
@@ -33,7 +33,8 @@
     	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
     	// Run an ancestor query to ensure we see the most up-to-date
     	// view of the Greetings belonging to the selected Guestbook.
-    	Query query = new Query("hiveRecord",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    	Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+				
     	List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
 				
 	    if(records.isEmpty()){
@@ -49,7 +50,8 @@
 	    				<div class='hiveRecord_loc_lat'><%=record.getProperty("location_lat") %></div>
 	    				<div class='hiveRecord_loc_long'><%=record.getProperty("location_long") %></div>
 	    				<div class='hiveRecord_weight'><%=record.getProperty("weight") %></div>
-	    				<div class='hiveRecord_temperature'><%=record.getProperty("temperature") %></div>
+	    				<div class='hiveRecord_temperature'><%=record.getProperty("temperature_interior") %></div>
+	    				
 	    				
 	    				
 	    				

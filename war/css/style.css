@@ -2,7 +2,14 @@ body{
 	margin:0;
 	width:100%;
 	height:100%;
-	
+background: #4c4c4c; /* Old browsers */
+background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #2b2b2b 76%, #2c2c2c 89%, #1c1c1c 100%, #111111 100%, #666666 100%, #474747 100%, #131313 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(76%,#2b2b2b), color-stop(89%,#2c2c2c), color-stop(100%,#1c1c1c), color-stop(100%,#111111), color-stop(100%,#666666), color-stop(100%,#474747), color-stop(100%,#131313)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #4c4c4c 0%,#595959 12%,#2b2b2b 76%,#2c2c2c 89%,#1c1c1c 100%,#111111 100%,#666666 100%,#474747 100%,#131313 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #4c4c4c 0%,#595959 12%,#2b2b2b 76%,#2c2c2c 89%,#1c1c1c 100%,#111111 100%,#666666 100%,#474747 100%,#131313 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #4c4c4c 0%,#595959 12%,#2b2b2b 76%,#2c2c2c 89%,#1c1c1c 100%,#111111 100%,#666666 100%,#474747 100%,#131313 100%); /* IE10+ */
+background: linear-gradient(top, #4c4c4c 0%,#595959 12%,#2b2b2b 76%,#2c2c2c 89%,#1c1c1c 100%,#111111 100%,#666666 100%,#474747 100%,#131313 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 ); /* IE6-9 */
 }
 #div_banner{
 	min-height:50px;
@@ -12,6 +19,15 @@ body{
 	text-align:left;
 	font-family:geneva;
 	font-variant:small-caps;
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	opacity:.7;
+	
+
+
+
 }
 
 #div_footer{
@@ -19,14 +35,14 @@ body{
 	height:5%;
 }
 #div_map_container{
-	height:95%;
-	width:100%;
+	height:100%;
 	background-color:#dddddd;
 	margin:auto;
 }
 #div_hiveControls_grabber{
 	height:50px;
 	background-color:#333333;
+	opacity:.4;
 }
 #div_hiveControls_wrapper{
 	position:fixed;
@@ -39,6 +55,7 @@ body{
 #div_hiveControls{
 	height:500px;
 	background-color:#888888;
+	opacity:.7;
 }
 
 
@@ -63,7 +80,6 @@ body{
 		position:absolute;
 	bottom:0px;
 	width:100%;
-		background-color:#dddddd;
 	
 }
 #grabber_historicalData{
@@ -71,18 +87,24 @@ body{
 	width:100%;
 
 	background-color:#222222;
+	opacity:.4;
 }
 #div_historicalData{
 	width:100%;
-	height:300px;
-	background-color:red;
+	height:500px;
+	background: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.24) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.65)), color-stop(100%,rgba(0,0,0,0.24))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.24) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.24) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.24) 100%); /* IE10+ */
+background: linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.24) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#3d000000',GradientType=0 ); /* IE6-9 */
 	
 }
 
 #wrapper_historicalData{
 	width:100%;
 	height:0%;
-	background-color:#888888;
 }
 
 #tab_historicalData{
@@ -97,41 +119,95 @@ body{
 	
 	width:100%;
 	height:100%;
-	background-color:#dddddd;
 
 	
 }
 #div_historicalData_maxAndMins{
 	width:100%;
 	height:100%;
-	background-color:#dddddd;
 
 }
+
+#nav_historicalData_maxAndMins_record_contents{
+	width:100%;
+	border-bottom:1px inset #AAAAAA;
+    background-color:#888888;
+	
+}
+.rad_large{
+	width:80px;
+	height:20px;
+	display:inline-block;
+	border-right:1px inset #AAAAAA;
+	margin-left:0px; 	
+	margin-right:0px;
+	margin-bottom:0px;
+	margin-top:0px;
+	padding:2px;
+	cursor:pointer;
+	
+	
+}
+#div_historicalData_maxAndMins_record_wrapper{
+	width:80%;
+	height:90%;
+	margin: auto;
+}
+#div_historicalData_maxAndMins_record_title{
+	height:15%;
+	width:100%;
+	background-color:#666666;
+	
+}
+#div_historicalData_maxAndMins_record_contents{
+	height:85%;
+	width:100%;
+	background-color:#ffffff;
+	
+}
+#table_historicalData_maxAndMins
+{
+	width: 100%;
+	text-align:center;
+}
+#table_historicalData_maxAndMins th
+{
+	width: 20%;
+	border-right: 1px inset #000000;
+	border-bottom: 1px inset #000000;
+}
+
+#table_historicalData_maxAndMins tr{
+	height:20%;
+	border-bottom:1px double #000000;
+}
+
 
 #div_historicalData_Charts{
 	width:100%;
 	height:100%;
-	background-color:#dddddd;	
 }
 #container_weight{
 	width:20%;
-	height:200px;
+	height:90%;
 	display:inline-block;
+	border-style:thick;
+	border:2px inset #BBBBBB;
 
 }
 
 #container_interiorTemperature{
 	width:20%;
-	height:200px;
+	height:90%;
 	display:inline-block;
-	margin-right:5px;
+	margin-right:15px;
 	
 }
 #container_exteriorTemperature{
 	width:20%;
-	height:200px;
+	height:90%;
 	display:inline-block;
-	margin-right:5px;
+	margin-right:15px;
 }
 /* button definitions */
 /* Dark Button CSS */

@@ -16,7 +16,7 @@
     
     
     <div id='div_main_container'>
-    <form action='/uploadHive' method="post">
+    <form action='/uploadHive' method="get">
     	<label class='lbl_upload'>Hive ID:</label><input name='hiveID' class='in_upload' type='text' />
     	<label class='lbl_upload'>Latitude:</label><input name='location_lat' class='in_upload' type='text' />
     	<label class='lbl_upload'>Longitude:</label><input name='location_long' class='in_upload' type='text' />

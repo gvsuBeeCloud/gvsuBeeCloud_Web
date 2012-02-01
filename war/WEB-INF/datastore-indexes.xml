@@ -10,6 +10,10 @@
     <datastore-index kind="hiveRecord" ancestor="true" source="manual">
         <property name="hiveID" direction="desc"/>
     </datastore-index>
+    
+    <datastore-index kind="Hive" ancestor="true" source="manual">
+        <property name="hiveID" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
   

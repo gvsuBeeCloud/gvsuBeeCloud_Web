@@ -57,7 +57,7 @@
 	 //build map 
 	 var myOptions = {
 	          center: new google.maps.LatLng(38.1569, -98.6133),
-	          zoom: 4,
+	          zoom: 5,
 	          mapTypeId: google.maps.MapTypeId.TERRAIN
 	        };
 	        var map = new google.maps.Map(document.getElementById("div_map_container"),
@@ -114,8 +114,8 @@
 		
         var infowindow = new google.maps.InfoWindow({
 	          content: "<div class='div_infoWindow'><div style='z-index:99' class='clickable_hiveID'>"+hiveID+"</div><br />" +
-	          		"T:" + weight + "<br />"+
-	          		"W:" + temperature + "<br />"+
+	          		"T:" + temperature + "<br />"+
+	          		"W:" + weight + "<br />"+
 	          		"</div>" 
 	        });
         

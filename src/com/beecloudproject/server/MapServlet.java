@@ -19,7 +19,6 @@ public class MapServlet extends HttpServlet {
 	throws IOException {
 		
 		storeIt();
-		Employee emp = new Employee("BOB", "LOBLAW", new Date(100000));
 		resp.sendRedirect("/test.jsp");
 	
 	}

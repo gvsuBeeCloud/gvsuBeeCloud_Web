@@ -20,6 +20,11 @@
     <servlet-name>UploadHive</servlet-name>
     <servlet-class>com.beecloudproject.server.UploadHive</servlet-class>
   </servlet>
+      <servlet>
+    <servlet-name>CreateHive</servlet-name>
+    <servlet-class>com.beecloudproject.server.CreateHive</servlet-class>
+  </servlet>
+  
   
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
@@ -34,6 +39,11 @@
      <servlet-mapping>
     <servlet-name>UploadHive</servlet-name>
     <url-pattern>/uploadHive</url-pattern>
+  </servlet-mapping> 
+  
+       <servlet-mapping>
+    <servlet-name>CreateHive</servlet-name>
+    <url-pattern>/createHive</url-pattern>
   </servlet-mapping> 
   
   <!-- Default page to serve -->

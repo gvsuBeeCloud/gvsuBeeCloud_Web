@@ -14,7 +14,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='com.beecloudproject.client.Beecloudproject'/>
+  <entry-point class='com.beecloudproject.client.Dummy'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
