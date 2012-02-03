@@ -1,30 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-	<servlet>
-		<servlet-name>BeeCloudProject_Web</servlet-name>
-		<servlet-class>com.beecloud.web.BeeCloudProject_WebServlet</servlet-class>
-	</servlet>
-	
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee">
+
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>greetServlet</servlet-name>
+    <servlet-class>com.beecloudproject.server.GreetingServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>MapServlet</servlet-name>
+    <servlet-class>com.beecloudproject.server.MapServlet</servlet-class>
+  </servlet>
+  
     <servlet>
-		<servlet-name>mapServlet</servlet-name>
-		<servlet-class>com.beecloud.web.mapServlet</servlet-class>
-	</servlet>
-	
-	
-	<servlet-mapping>
-		<servlet-name>BeeCloudProject_Web</servlet-name>
-		<url-pattern>/beecloudproject_web</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>mapServlet</servlet-name>
-		<url-pattern>/mapServlet</url-pattern>
-	</servlet-mapping>
-	<welcome-file-list>
-		<welcome-file>map.jsp</welcome-file>
-	</welcome-file-list>
+    <servlet-name>UploadHive</servlet-name>
+    <servlet-class>com.beecloudproject.server.UploadHive</servlet-class>
+  </servlet>
+      <servlet>
+    <servlet-name>CreateHive</servlet-name>
+    <servlet-class>com.beecloudproject.server.CreateHive</servlet-class>
+  </servlet>
+  
+  
+  <servlet-mapping>
+    <servlet-name>greetServlet</servlet-name>
+    <url-pattern>/beecloudproject/greet</url-pattern>
+  </servlet-mapping>
+  
+    <servlet-mapping>
+    <servlet-name>MapServlet</servlet-name>
+    <url-pattern>/MapServlet</url-pattern>
+  </servlet-mapping>
+  
+     <servlet-mapping>
+    <servlet-name>UploadHive</servlet-name>
+    <url-pattern>/uploadHive</url-pattern>
+  </servlet-mapping> 
+  
+       <servlet-mapping>
+    <servlet-name>CreateHive</servlet-name>
+    <url-pattern>/createHive</url-pattern>
+  </servlet-mapping> 
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Beecloudproject.html</welcome-file>
+  </welcome-file-list>
+
 </web-app>
