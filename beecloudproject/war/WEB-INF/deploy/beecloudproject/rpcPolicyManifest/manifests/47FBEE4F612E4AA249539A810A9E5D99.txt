@@ -1,2 +1,0 @@
-serviceClass: com.beecloudproject.client.GreetingService
-path: 4867261D0834B3A520A20BAF6F548B57.gwt.rpc
