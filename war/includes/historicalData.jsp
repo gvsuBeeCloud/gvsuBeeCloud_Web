@@ -15,8 +15,15 @@
 <html>
 <head>
 <script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
+<script type="text/javascript"
+	src="../js/jquery-ui-1.8.17.custom.min.js"></script>
 <link rel="stylesheet" href="../css/style.css" type="text/css"></link>
+<link rel="stylesheet"
+	href="../css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
+
 <script type="text/javascript" src="../js/highcharts.js"></script>
+<script src="../js/modules/exporting.js" type="text/javascript"></script>
+
 
 
 
@@ -59,34 +66,20 @@
 
 		});
 
+		Highcharts.setOptions({
+			global : {
+				useUTC : false
+			}
+		});
 
-
-
-	Highcharts.setOptions({
-		global : {
-			useUTC : false
-		}
-	});
-
-	var chartNames = new Array();
-	chartNames[0]="Interior Temperature";
-	chartNames[1]="Exterior Temperature";
-	chartNames[2]="Weight";
-	
-	var chartContainers= new Array();
-	chartContainers[0] = "container_interiorTemperature";
-	chartContainers[1] = "container_exteriorTemperature";
-	chartContainers[2] = "container_weight";
-	
-
-	for(var i=0;i<3;i++){
 		//make charts
-		chart_interiorTemperature = new Highcharts.Chart({
+		chart_combo = new Highcharts.Chart({
 			chart : {
-				backgroundColor : "#dddddd",
-				renderTo : chartContainers[i],
+
+				renderTo : 'container_interiorTemperature',
 				defaultSeriesType : 'spline',
-				marginRight : 10,
+				marginRight : 100,
+				marginTop : 100,
 				events : {
 					load : function() {
 
@@ -97,28 +90,150 @@
 							y = Math.random();
 							series.addPoint([ x, y ], true, true);
 						}, 5000);
+
+						// set up the updating of the chart each second
+						var series2 = this.series[1];
+
+						setInterval(function() {
+							var x = (new Date()).getTime(), // current time
+							y = Math.random();
+							series2.addPoint([ x, y ], true, true);
+						}, 5000);
+
+						// set up the updating of the chart each second
+						var series3 = this.series[2];
+
+						setInterval(function() {
+							var x = (new Date()).getTime(), // current time
+							y = Math.random() * 200;
+							series3.addPoint([ x, y ], true, true);
+						}, 5000);
+
 					}
 				}
 			},
 			title : {
-				text : chartNames[i]
+				text : "Hive Metrics"
 			},
+
+			// exporting module
+			exporting : {
+				buttons : {
+					exportButton : {
+						hoverSymbolFill : "#768F3E",
+						//	onclick: ,
+					    menuItems: null,
+						symbol : "exportIcon",
+						symbolFill : "#A8BF77",
+						x : 10,
+						align : "right",
+						backgroundColor: "#000000",
+						borderColor : "#B0B0B0",
+						borderRadius : 3,
+						borderWidth : 1,
+						enabled : true,
+						height : 20,
+						hoverBorderColor : "#909090",
+						hoverSymbolStroke : "#4572A5",
+						symbolSize : 12,
+						symbolStroke : "#A0A0A0",
+						symbolStrokeWidth : 1,
+						symbolX : 11.5,
+						symbolY : 10.5,
+						verticalAlign : "top",
+						width : 24,
+						y : 10
+					},
+					printButton : {
+						hoverSymbolFill : "#779ABF",
+						//	onclick: ,
+						symbol : "printIcon",
+						symbolFill : "#B5C9DF",
+						x : -36,
+						align : "right",
+						//	backgroundColor: ,
+						borderColor : "#B0B0B0",
+						borderRadius : 3,
+						borderWidth : 1,
+						enabled : true,
+						height : 20,
+						hoverBorderColor : "#909090",
+						hoverSymbolStroke : "#4572A5",
+						symbolSize : 12,
+						symbolStroke : "#A0A0A0",
+						symbolStrokeWidth : 1,
+						symbolX : 11.5,
+						symbolY : 10.5,
+						verticalAlign : "top",
+						width : 24,
+						y : 10
+					}
+				},
+				enabled : true,
+				enableImages : false,
+				filename : "chart",
+				type : "image/png",
+				url : "http://export.highcharts.com",
+				width : 800
+			},
+			navigation: {
+			//	menuStyle: ,
+			//  menuItemStyle: ,
+			//	menuItemHoverStyle: ,
+				buttonOptions: {
+				align: "right",
+			//	backgroundColor: ,
+				borderColor: "#B0B0B0",
+				borderRadius: 3,
+				borderWidth: 1,
+				enabled: true,
+				height: 20,
+				hoverBorderColor: "#909090",
+				hoverSymbolFill: "#81A7CF",
+				hoverSymbolStroke: "#4572A5",
+				symbolFill: "#E0E0E0",
+				symbolSize: 12,
+				symbolStroke: "#A0A0A0",
+				symbolStrokeWidth: 1,
+				symbolX: 11.5,
+				symbolY: 10.5,
+				verticalAlign: "top",
+				width: 24,
+				y: 10
+				}
+				},
+
 			xAxis : {
 				type : 'datetime',
 				tickPixelInterval : 150
 			},
-			yAxis : {
+			yAxis : [ {
 				title : {
-					text : 'Value'
+					text : 'Temperature'
 				},
+				opposite : false,
+
 				plotLines : [ {
 					value : 0,
 					width : 1,
 					color : '#808080'
 				} ]
-			},
+			}, { //secondary y axis 
+				title : {
+					text : 'Weight'
+				},
+				opposite : true,
+				plotLines : [ {
+					value : 0,
+					width : 1,
+					color : '#333aaa'
+				} ]
+
+			}
+
+			],
 			tooltip : {
-				formatter : function() {
+				/*formatter : function() {
 					return '<b>'
 							+ this.series.name
 							+ '</b><br/>'
@@ -126,6 +241,17 @@
 									'%Y-%m-%d %H:%M:%S', this.x)
 							+ '<br/>'
 							+ Highcharts.numberFormat(this.y, 2);
+				}
+				}*/
+
+				formatter : function() {
+					var unit = {
+						'Weight' : 'lbs',
+						'Exterior Temperature' : '°C',
+						'Interior Temperature' : '°C'
+					}[this.series.name];
+
+					return '' + this.x + ': ' + this.y + ' ' + unit;
 				}
 			},
 			legend : {
@@ -135,7 +261,7 @@
 				enabled : false
 			},
 			series : [ {
-				name : 'Random data',
+				name : 'Interior Temperature',
 				data : (function() {
 					// generate an array of random data
 					var data = [], time = (new Date()).getTime(), i;
@@ -148,54 +274,158 @@
 					}
 					return data;
 				})()
-			} ]
+			}, {
+
+				name : 'Exterior Temperature',
+				data : (function() {
+					// generate an array of random data
+					var data = [], time = (new Date()).getTime(), i;
+
+					for (i = -19; i <= 0; i++) {
+						data.push({
+							x : time + i * 1000,
+							y : Math.random()
+						});
+					}
+					return data;
+				})()
+			}, {
+				type : 'spline',
+				name : 'Weight',
+				yAxis : 1,
+				data : (function() {
+					// generate an array of random data
+					var data = [], time = (new Date()).getTime(), i;
+
+					for (i = -19; i <= 0; i++) {
+						data.push({
+							x : time + i * 1000,
+							y : Math.random() * 200
+						});
+					}
+					return data;
+				})()
+			}
+
+			],
+			center : [ 100, 80 ],
+			size : 100
 		});
+
+		/*
+		 combo_chart = new Highcharts.Chart({
+		 chart : {
+		 renderTo : 'container_weight'
+		 },
+		 title : {
+		 text : 'Combination chart'
+		 },
+		 xAxis : {
+		 categories : [ 'Apples', 'Oranges', 'Pears', 'Bananas',
+		 'Plums' ]
+		 },
+		 tooltip : {
+		 formatter : function() {
+		 var s;
+		 if (this.point.name) { // the pie chart
+		 s = '' + this.point.name + ': ' + this.y
+		 + ' fruits';
+		 } else {
+		 s = '' + this.x + ': ' + this.y;
+		 }
+		 return s;
+		 }
+		 },
+		 labels : {
+		 items : [ {
+		 html : 'Total fruit consumption',
+		 style : {
+		 left : '40px',
+		 top : '8px',
+		 color : 'black'
+		 }
+		 } ]
+		 },
+		 series : [ {
+		 type : 'column',
+		 name : 'Jane',
+		 data : [ 3, 2, 1, 3, 4 ]
+		 }, {
+		 type : 'column',
+		 name : 'John',
+		 data : [ 2, 3, 5, 7, 6 ]
+		 }, {
+		 type : 'column',
+		 name : 'Joe',
+		 data : [ 4, 3, 3, 9, 0 ]
+		 }, {
+		 type : 'spline',
+		 name : 'Average',
+		 data : [ 3, 2.67, 3, 6.33, 3.33 ]
+		 }, {
+		 type : 'pie',
+		 name : 'Total consumption',
+		 data : [ {
+		 name : 'Jane',
+		 y : 13,
+		 color : highchartsOptions.colors[0]
+		 // Jane's color
+		 }, {
+		 name : 'John',
+		 y : 23,
+		 color : highchartsOptions.colors[1]
+		 // John's color
+		 }, {
+		 name : 'Joe',
+		 y : 19,
+		 color : highchartsOptions.colors[2]
+		 // Joe's color
+		 } ],
+		 center : [ 100, 80 ],
+		 size : 100,
+		 showInLegend : false,
+		 dataLabels : {
+		 enabled : false
+		 }
+		 } ]
+		 });
 		
-		}
+		 */
 
 	});
-
-		
-		
-	
-	
 </script>
 
 <script type="text/javascript">
 	//max and min table functionality
-	
-	$(document).ready(function(){
-		
+
+	$(document).ready(function() {
+
 		//when page loads, show six month by default
 		//hide all others
 		$('.td_maxMin_twelve').hide();
-		
+
 		//if six month selected
-		$('#rad_maxMin_6').click(function(){
-			
+		$('#rad_maxMin_6').click(function() {
+
 			$('.td_maxMin_twelve').hide();
 			$('.td_maxMin_six').show();
-			
-			
+
 		});
-		
+
 		//if twelve month selected
-		
-		$('#rad_maxMin_12').click(function(){
-			
+
+		$('#rad_maxMin_12').click(function() {
+
 			$('.td_maxMin_six').hide();
 			$('.td_maxMin_twelve').show();
 
-			
-			
 		});
-		
+
+		$("#datePicker_start").datepicker();
+		$("#datePicker_end").datepicker();
+
 		//if ....
-		
-		
-		
-		
-		
+
 	});
 </script>
 </head>
@@ -278,13 +508,22 @@
 
 				<div id='div_historicalData_maxAndMins_record_contents'>
 					<div id='nav_historicalData_maxAndMins_record_contents'>
-					<div class='rad_large' id='rad_maxMin_6' name='rad_maxMin' value='6' > 6 Month</div>
-				    <div class='rad_large' id='rad_maxMin_12'  name='rad_maxMin' value='12' > 12 Month </div>
-				    <div class='rad_large' id='rad_maxMin_allTime' name='rad_maxMin' value='99' > All Time</div>
-					
-					
+						<div class='rad_large' id='rad_maxMin_allTime' name='rad_maxMin'
+							value='99'>All Time</div>
+
+						<div class='rad_large'>
+							Start <input type='text' id="datePicker_start">
+
+						</div>
+						<div class='rad_large'>
+
+							End <input type='text' id="datePicker_end">
+
+						</div>
+
+
 					</div>
-				
+
 
 					<%
 						//define any variables we need					
@@ -311,12 +550,15 @@
 					<table id='table_historicalData_maxAndMins'>
 						<tr>
 							<th>Hive ID</th>
-							<th class='td_maxMin_six'>Exterior Max Temperature(6)</th>
-							<th class='td_maxMin_six'>Exterior Min Temperature(6)</th>
-							<th class='td_maxMin_twelve'>Exterior Max Temperature(12)</th>
-							<th class='td_maxMin_twelve'>Exterior Min Temperature(12)</th>
+							<th class='td_maxMin_six'>Exterior Max Temperature</th>
+							<th class='td_maxMin_six'>Exterior Min Temperature</th>
+							<th class='td_maxMin_six'>Exterior Avg Temperature</th>
+							<th class='td_maxMin_twelve'>Exterior Max Weight</th>
+							<th class='td_maxMin_twelve'>Exterior Min Weight</th>
+							<th class='td_maxMin_twelve'>Exterior Avg Weight</th>
+							
 						</tr>
-						
+
 						<tr>
 							<td><%=record.getProperty("hiveID")%></td>
 
@@ -325,65 +567,23 @@
 
 							<td class='td_maxMin_six'><%=record
 							.getProperty("temperature_exterior_min_six")%></td>
+							
+							<td class='td_maxMin_six'><%=record
+							.getProperty("temperature_exterior_min_six")%></td>
 
 							<td class='td_maxMin_twelve'><%=record
 							.getProperty("temperature_exterior_max_twelve")%></td>
 
 							<td class='td_maxMin_twelve'><%=record
 							.getProperty("temperature_exterior_min_twelve")%></td>
-
-						</tr>
-						
-						<tr>
-							<th>Hive ID</th>
-							<th class='td_maxMin_six'>Interior Max Temperature(6)</th>
-							<th class='td_maxMin_six'>Interior Min Temperature(6)</th>
-							<th class='td_maxMin_twelve'>Interior Max Temperature(12)</th>
-							<th class='td_maxMin_twelve'>Interior Min Temperature(12)</th>
-						</tr>
-						
-						<tr>
-							<td><%=record.getProperty("hiveID")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("temperature_interior_max_six")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("temperature_interior_min_six")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("temperature_interior_max_twelve")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("temperature_interior_min_twelve")%></td>
-
-						</tr>
-						 <tr>
-							<th>Hive ID</th>
-							<th class='td_maxMin_six'>Max Weight(6)</th>
-							<th class='td_maxMin_six'>Min Weight(6)</th>
-							<th class='td_maxMin_twelve'>Max Weight(12)</th>
-							<th class='td_maxMin_twelve'>Min Weight(12)</th>
-						</tr>
-						
-						
-							<td><%=record.getProperty("hiveID")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("weight_max_six")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("weight_min_six")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("weight_max_twelve")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("weight_min_twelve")%></td>
-						
 							
-						</tr>
+							<td class='td_maxMin_twelve'><%=record
+							.getProperty("temperature_exterior_min_twelve")%></td>
 
+						</tr>
+						
+
+				
 
 					</table>
 
@@ -404,9 +604,7 @@
 	<div id='div_historicalData_Charts'>
 		<div id='container_interiorTemperature'></div>
 
-		<div id='container_exteriorTemperature'></div>
 
-		<div id='container_weight'></div>
 
 	</div>
 

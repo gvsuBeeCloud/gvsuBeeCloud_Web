@@ -26,6 +26,8 @@
 </head>
 <body onload="loadMarkersFromHiddenDivs()">
 	<div id='div_banner'><!--  img src="images/gvLogoTemp.png" /-->BeeCloud Project
+	
+	
 	<div class='shouldBeHidden' id='div_param_hiveID'> </div>
 	<%
 		//try querying
@@ -72,7 +74,14 @@
 	<div id="div_map_container"></div>
 
 
-<div id='div_hiveControls_wrapper'><div id='div_hiveControls'></div><div id='div_hiveControls_grabber'></div></div>
+<div id='div_hiveControls_wrapper'><div id='div_hiveControls'></div><div id='div_hiveControls_grabber'>
+
+
+
+</div>
+
+
+</div>
 <div id="container_historicalData"><div id="grabber_historicalData"></div><div id='div_historicalData'>Historical Data
 
 

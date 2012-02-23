@@ -13,9 +13,7 @@
 
 
 </head>
-	<div>
-	Test
-	</div>
+
 	<div id='div_topLeft' class='div_menu'>
 	Map
 	<div class='div_leftCircle'>
@@ -35,13 +33,12 @@
 		</div>
 	</div>
 	<div id='div_circle' class="div_circle_inactive">
-		Content
 	</div>
 	<div id='div_bottomLeft' class='div_menu'>
 		About BeeCloud
 	<div class='div_leftCircle'></div>
 	<div class='div_contents'>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus placerat, urna ut vulputate condimentum, sapien justo posuere sapien, 
+			The BeeCloud project is a collaborative effort founded by the Grand Valley State University as an extension of the HoneyBeeNet.
 		</div>
 	</div>
 	
