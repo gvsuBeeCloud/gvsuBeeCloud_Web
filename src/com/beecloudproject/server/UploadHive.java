@@ -1,5 +1,19 @@
 package com.beecloudproject.server;
 
+/*
+ * TODO:
+ * Validate Data:  
+ *  + Check for "Bad Data" - Doesn't match CDM
+ *  + Missing Data is okay.  Will upload as <missing field>
+ *  + buildHashMapFromParams
+ * Store Data:
+ *  + Needs to update Hives (not Hive Records)
+ * 	+ storeEntity
+ * Error Checking:
+ * 	+ Failure needs to fail nicely
+ *  + All Methods
+ */
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
