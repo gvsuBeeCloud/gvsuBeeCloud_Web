@@ -20,9 +20,7 @@ public class CreateHive extends HttpServlet {
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws IOException {
-		
-		resp.getWriter().println("Weight: "+req.getParameter("weight"));
-		
+
 		
 		//build hashmap
 		HashMap paramHash=buildHashMapFromParams(req);

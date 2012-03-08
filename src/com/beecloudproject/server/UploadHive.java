@@ -46,13 +46,13 @@ import com.google.appengine.api.datastore.Key;
 
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
-	private static final String[] fieldNamesInHiveTable = { "temperature_interior",
-			"temperature_exterior", "weight" };
+	private static final String[] fieldNamesInHiveTable = { "year", "month", "day", "weight", "intTemp",
+			"extTemp", "battery" };
 	// array of endings for hive table
-	private static final String[] hiveTableSuffix_max = { "_max_six", "_max_twelve" };
-	private static final String[] hiveTableSuffix_min = { "_min_six", "_min_twelve" };
+	//private static final String[] hiveTableSuffix_max = { "_max_six", "_max_twelve" };
+	//private static final String[] hiveTableSuffix_min = { "_min_six", "_min_twelve" };
 	// hashmap of max and min
-	HashMap maxAndMin = new HashMap();
+	//HashMap maxAndMin = new HashMap();
 	// hashmap of current values
 	HashMap currentValues = new HashMap();;
 	// hashMap of hive table record
@@ -65,28 +65,26 @@ public class UploadHive extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		resp.getWriter().println("Weight: " + req.getParameter("weight"));
-
 		// build hashmap
 		HashMap paramHash = buildHashMapFromParams(req);
 		// build entity
 		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
 
 		// store the entity
-		//storeEntity(entity_toStore);
+		storeEntity(entity_toStore);
 
-		// query Hive
-		queryDataStoreForExistingRecord(hiveID);
+		//query Hive
+		// queryDataStoreForExistingRecord(hiveID);
 		// build max and min stuff
-		addToHiveTable(paramHash);
+		//addToHiveTable(paramHash);
 
 		// build Hive entity
-		Entity entity_Hive = buildEntityFromHashMap("Hive", hiveTableRecord);
+		//Entity entity_Hive = buildEntityFromHashMap("hiveRecord", hiveTableRecord);
 
 		// store Hive entity
-			storeEntity(entity_Hive);
+		//	storeEntity(entity_Hive);
 
-		resp.getWriter().println("Hive Table Record");
+		/*resp.getWriter().println("Hive Table Record");
 		for (Object o : hiveTableRecord.keySet()) {
 			resp.getWriter().println("key "+(String) o+ " Val: "+(String)hiveTableRecord.get(o));
 		}
@@ -99,10 +97,10 @@ public class UploadHive extends HttpServlet {
 			resp.getWriter().println("KEY: "+(String)o + " Val: "+(String) currentValues.get(o));
 		}
 
-		resp.getWriter().println("End Current Values");
+		resp.getWriter().println("End Current Values");*/
 		
 		
-		//resp.sendRedirect("/map.jsp");
+		resp.sendRedirect("/map.jsp");
 
 
 
@@ -216,7 +214,8 @@ public class UploadHive extends HttpServlet {
 	 * 
 	 * @param hiveID
 	 */
-	public boolean queryDataStoreForExistingRecord(String hiveID) {
+	public boolean queryDataStoreForExistingRecord(String hiveID) 
+	{
 		boolean aRecordReturned;
 		// query
 		// try querying
@@ -239,7 +238,8 @@ public class UploadHive extends HttpServlet {
 			//set hiveID
 			//set blah...
 			
-		}else{//get the keys that are in the table!
+		}
+		else{//get the keys that are in the table!
 			aRecordReturned=true;
 			existingRecordKey=record.getKey();
 			// break down record
@@ -254,7 +254,9 @@ public class UploadHive extends HttpServlet {
 		return aRecordReturned;
 
 	}
+
 	/**
+	 
 	 * Determine if the field is in the hive table based on an associative array
 	 * 
 	 * @param fieldName
@@ -285,7 +287,7 @@ public class UploadHive extends HttpServlet {
 	 * @param whatToTestFor -- 0 for max, 1 for min
 	 * @return
 	 */
-	public String[] isMaxOrMin(String fieldName, String value, int whatToTestFor){
+/*	public String[] isMaxOrMin(String fieldName, String value, int whatToTestFor){
 		// make string array to return
 		String[] fieldsThatShouldBeUpdated = new String[hiveTableRecord.size()];
 		// keep track of position in array
@@ -362,7 +364,7 @@ public class UploadHive extends HttpServlet {
 		return fieldsThatShouldBeUpdated;
 		
 		
-	}
+	}*/
 
 
 	/**
@@ -381,7 +383,7 @@ public class UploadHive extends HttpServlet {
 	 * 
 	 * @param paramHash
 	 */
-	public void addToHiveTable(HashMap paramHash) {
+/*	public void addToHiveTable(HashMap paramHash) {
 
 		// iterate over each property
 		Map<String, Object> propertyNames = paramHash;
@@ -413,10 +415,10 @@ public class UploadHive extends HttpServlet {
 				if (!hiveTableRecord.isEmpty()) {
 
 					// get field names of what it is higher than
-					String[] maxFieldsToUpdate = isMaxOrMin(entryName, entryValue_toUseForMax,0);
+				//	String[] maxFieldsToUpdate = isMaxOrMin(entryName, entryValue_toUseForMax,0);
 
 					// get field names of what it is less than
-					String[] minFieldsToUpdate = isMaxOrMin(entryName,entryValue_toUseForMin,1);
+				//	String[] minFieldsToUpdate = isMaxOrMin(entryName,entryValue_toUseForMin,1);
 
 					// replace values in the original hashmap
 					for (String field : maxFieldsToUpdate) {
@@ -431,7 +433,7 @@ public class UploadHive extends HttpServlet {
 						// update record hashmap
 						hiveTableRecord.put(field, entryValue_toUseForMin);
 						}
-					}
+					} 
 
 				} else { // hive table record is empty so just update with the
 							// current values
@@ -444,6 +446,6 @@ public class UploadHive extends HttpServlet {
 
 		}
 
-	}
+	} */
 
 }
