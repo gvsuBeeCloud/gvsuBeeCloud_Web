@@ -1,20 +1,7 @@
 package com.beecloudproject.server;
 
-/*
- * TODO:
- * Validate Data:  
- *  + Check for "Bad Data" - Doesn't match CDM
- *  + Missing Data is okay.  Will upload as <missing field>
- *  + buildHashMapFromParams
- * Store Data:
- *  + Needs to update Hives (not Hive Records)
- * 	+ storeEntity
- * Error Checking:
- * 	+ Failure needs to fail nicely
- *  + All Methods
- */
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,16 +31,13 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 
+import com.techventus.server.voice.Voice;
+import com.techventus.server.voice.datatypes.records.SMSThread;
+
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
-	private static final String[] fieldNamesInHiveTable = { "year", "month", "day", "weight", "intTemp",
+	private static final String[] fieldNamesInHiveTable = { "timeStamp", "weight", "intTemp",
 			"extTemp", "battery" };
-	// array of endings for hive table
-	//private static final String[] hiveTableSuffix_max = { "_max_six", "_max_twelve" };
-	//private static final String[] hiveTableSuffix_min = { "_min_six", "_min_twelve" };
-	// hashmap of max and min
-	//HashMap maxAndMin = new HashMap();
-	// hashmap of current values
 	HashMap currentValues = new HashMap();;
 	// hashMap of hive table record
 	HashMap hiveTableRecord = new HashMap();
@@ -62,9 +46,23 @@ public class UploadHive extends HttpServlet {
 	//existing record key
 	Key existingRecordKey;
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException 
+	{
+		SMStoText SMSCollection = new SMStoText();
+		ArrayList<String> records = new ArrayList<String>();
+		try
+		{
+			Voice voice = new Voice("gvsuBeeCloud@gmail.com", "cis4672012");
+			SMSCollection.setVoice(voice);
+			SMSCollection.createHiveRecord(SMSCollection.getVoice(), SMSCollection.getUnreadRecords());
+			records = SMSCollection.getRecords();
+		}
+  		catch (NullPointerException npe) 
+  		{
+			resp.getWriter().print("Caught something..."+npe.getMessage());
+		}
+				
+		/*
 		// build hashmap
 		HashMap paramHash = buildHashMapFromParams(req);
 		// build entity
@@ -72,38 +70,16 @@ public class UploadHive extends HttpServlet {
 
 		// store the entity
 		storeEntity(entity_toStore);
-
-		//query Hive
-		// queryDataStoreForExistingRecord(hiveID);
-		// build max and min stuff
-		//addToHiveTable(paramHash);
-
-		// build Hive entity
-		//Entity entity_Hive = buildEntityFromHashMap("hiveRecord", hiveTableRecord);
-
-		// store Hive entity
-		//	storeEntity(entity_Hive);
-
-		/*resp.getWriter().println("Hive Table Record");
-		for (Object o : hiveTableRecord.keySet()) {
-			resp.getWriter().println("key "+(String) o+ " Val: "+(String)hiveTableRecord.get(o));
+		*/
+		
+		resp.getWriter().println(records.size());
+		
+		for(int i=0; i<records.size();i++)
+		{
+			resp.getWriter().println("Record " + i +":  " + records.get(i));
 		}
-
-		resp.getWriter().println("End Hive Table Record");
-
-		resp.getWriter().println("Current Values");
-		for (Object o : currentValues.keySet()) {
 		
-			resp.getWriter().println("KEY: "+(String)o + " Val: "+(String) currentValues.get(o));
-		}
-
-		resp.getWriter().println("End Current Values");*/
-		
-		
-		resp.sendRedirect("/map.jsp");
-
-
-
+		//resp.sendRedirect("/map.jsp");
 	}
 
 	/**
@@ -281,93 +257,6 @@ public class UploadHive extends HttpServlet {
 
 
 	/**
-	 * Determine if a given value is a max or minimum for a field based on current data.
-	 * @param fieldName -- the field to investigate
-	 * @param value -- the new value for comparison
-	 * @param whatToTestFor -- 0 for max, 1 for min
-	 * @return
-	 */
-/*	public String[] isMaxOrMin(String fieldName, String value, int whatToTestFor){
-		// make string array to return
-		String[] fieldsThatShouldBeUpdated = new String[hiveTableRecord.size()];
-		// keep track of position in array
-		int position = 0;
-		// determine suffix array to use
-		String [] hiveTableSuffix={};
-		
-		
-		//determine comparison
-		switch(whatToTestFor){
-			case 0: //test max
-				hiveTableSuffix=hiveTableSuffix_max;
-				
-				break;
-			case 1: //test min
-				hiveTableSuffix=hiveTableSuffix_min;
-				break;
-		}
-		
-		// check each hive table value
-				for (String baseHiveTableFieldName : fieldNamesInHiveTable) {
-
-					// make sure we are looking at the right field
-					if (baseHiveTableFieldName.equals(fieldName)) {
-
-						// build each field variation
-						for (String hiveTableFieldNameSuffix : hiveTableSuffix) {
-							String fullHiveTableFieldName = baseHiveTableFieldName
-									+ hiveTableFieldNameSuffix;
-
-							// convert to doubles
-							double newValue = Double.parseDouble(value);
-							// break down existing value
-							double existingValue;
-							try{
-									
-									existingValue=Double
-									.parseDouble((String) hiveTableRecord
-											.get(fullHiveTableFieldName));
-							}catch(Exception e){
-								existingValue=99999;
-								e.printStackTrace();
-							}
-							
-							switch(whatToTestFor){
-							case 0: //max
-								// check if the new value is lower than the old value
-								if(newValue > existingValue){
-									// add to string array
-									fieldsThatShouldBeUpdated[position] = fullHiveTableFieldName;
-									position++;
-
-								}
-								break;
-							case 1: //min
-								// check if the new value is lower than the old value
-								if(newValue < existingValue){
-									// add to string array
-									fieldsThatShouldBeUpdated[position] = fullHiveTableFieldName;
-									position++;
-
-								}
-								break;
-							}
-
-		
-
-						}
-
-					}// else do nothing because we are not looking at that field
-
-				}
-		
-		return fieldsThatShouldBeUpdated;
-		
-		
-	}*/
-
-
-	/**
 	 * Add a given value to the current values hash map.
 	 * @param fieldname  -- the field to set
 	 * @param entryValue -- the value to set the field to
@@ -378,74 +267,5 @@ public class UploadHive extends HttpServlet {
 		currentValues.put(fieldname, entryValue);
 
 	}
-
-	/**
-	 * 
-	 * @param paramHash
-	 */
-/*	public void addToHiveTable(HashMap paramHash) {
-
-		// iterate over each property
-		Map<String, Object> propertyNames = paramHash;
-
-		// for each property, determine if it is in the hive table
-		for (Map.Entry<String, Object> entry : propertyNames.entrySet()) {
-
-			// get name of entry
-			String entryName = entry.getKey();
-			// if so, check if new high or low
-			if (isInHiveTable(entryName)) {
-
-				
-				String entryValue = (String) entry.getValue();
-				String entryValue_toUseForMax=entryValue;
-				String entryValue_toUseForMin=entryValue;
-				
-				//check if entry value is null
-				if(entryValue == null){
-					//set to impossible
-					entryValue_toUseForMax = "-99999";
-					entryValue_toUseForMin ="99999";
-				}
-				// update current Hive field values
-				addToCurrentValues(entryName, (String)""+ entry.getValue());
-
-				// if the hive table record is empty, dont do a comparison
-				// so only check if max or min if not empty
-				if (!hiveTableRecord.isEmpty()) {
-
-					// get field names of what it is higher than
-				//	String[] maxFieldsToUpdate = isMaxOrMin(entryName, entryValue_toUseForMax,0);
-
-					// get field names of what it is less than
-				//	String[] minFieldsToUpdate = isMaxOrMin(entryName,entryValue_toUseForMin,1);
-
-					// replace values in the original hashmap
-					for (String field : maxFieldsToUpdate) {
-						if(field != null){
-						// update record hashmap
-						hiveTableRecord.put(field, entryValue_toUseForMax);
-						}
-
-					}
-					for (String field : minFieldsToUpdate) {
-						if(field!=null){
-						// update record hashmap
-						hiveTableRecord.put(field, entryValue_toUseForMin);
-						}
-					} 
-
-				} else { // hive table record is empty so just update with the
-							// current values
-							// update all of the values to the current values
-					hiveTableRecord = currentValues;
-
-				}
-
-			}
-
-		}
-
-	} */
 
 }
