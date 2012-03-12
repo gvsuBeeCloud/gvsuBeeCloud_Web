@@ -1,7 +1,12 @@
 package com.beecloudproject.server;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -37,7 +42,7 @@ import com.techventus.server.voice.datatypes.records.SMSThread;
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
 	private static final String[] fieldNamesInHiveTable = { "timeStamp", "weight", "intTemp",
-			"extTemp", "battery" };
+			"extTemp", "battery","timeStamp" };
 	HashMap currentValues = new HashMap();;
 	// hashMap of hive table record
 	HashMap hiveTableRecord = new HashMap();
@@ -64,47 +69,77 @@ public class UploadHive extends HttpServlet {
 				
 		/*
 		// build hashmap
-		HashMap paramHash = buildHashMapFromParams(req);
+		HashMap paramHash = buildHashMapFromParams(req,resp);
 		// build entity
 		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
 
 		// store the entity
 		storeEntity(entity_toStore);
-		*/
 		
-		resp.getWriter().println(records.size());
-		
-		for(int i=0; i<records.size();i++)
-		{
-			resp.getWriter().println("Record " + i +":  " + records.get(i));
-		}
-		
-		//resp.sendRedirect("/map.jsp");
 	}
 
 	/**
 	 * Build a hashmap from the parameters sent in the http request
 	 * @param req -- the sent httprequest
 	 * @return  -- the constructed hashmap
+	 * @throws IOException 
 	 */
-	public HashMap buildHashMapFromParams(HttpServletRequest req) {
+	public HashMap buildHashMapFromParams(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// declare hive fields
 		HashMap paramMap = new HashMap();
+		boolean TimeStart=false;
+		boolean TimeEnd=false;
+		boolean TimeGood=true;
+		String timeStamp="";
 
 		Enumeration parameterNames = req.getParameterNames();
 		// for each parameter name
 		while (parameterNames.hasMoreElements()) {
-
+			boolean id=false;
 			// get the name
 			String parameterName = (String) parameterNames.nextElement();
 			// if hiveID parameter, set it
 			if (parameterName.equals("hiveID")) {
+				id=true;
 				hiveID = req.getParameter(parameterName);
+			}
+			if (parameterName.equals("year") || parameterName.equals("month") || parameterName.equals("day") 
+					|| parameterName.equals("timeH")) {
+				TimeStart=true;
+			}
+			if (parameterName.equals("timeM")) {
+				TimeEnd=true;
 			}
 			// look for its value
 			String parameterValue = req.getParameter(parameterName);
+//			resp.getWriter().println(parameterName + ":" + parameterValue+ "||");
 			// add to hashmap
-			paramMap.put(parameterName, parameterValue);
+
+			if(id)
+				paramMap.put(parameterName, parameterValue);
+			
+			else {
+				if(!isValidWithCDM(parameterName,parameterValue,resp)) {
+					if(TimeStart)
+						TimeGood=false;
+					resp.getWriter().println("!!!" + parameterName+":"+parameterValue+" is not valid!!!");
+				}
+				if(TimeStart)
+				{
+					timeStamp += parameterValue;
+					if(TimeEnd)
+						TimeStart=false;
+				}
+				if(TimeEnd && TimeGood)
+				{
+					paramMap.put("timeStamp", timeStamp);
+					TimeEnd=false;
+				}
+				else {
+					paramMap.put(parameterName, parameterValue);
+				}
+			}
+			
 		}
 
 		return paramMap;
@@ -267,5 +302,84 @@ public class UploadHive extends HttpServlet {
 		currentValues.put(fieldname, entryValue);
 
 	}
+
+	/**
+	 * test to see if parameter is valid with cdm
+	 * @param paramName  -- name of parameter to test against cdm
+	 * @param paramValue --  value to test against cdm
+	 * @throws IOException 
+	 */
+	public static boolean isValidWithCDM(String paramName, String paramValue,  HttpServletResponse resp) throws IOException {
+//		resp.getWriter().printf("starting '%s':%s\n", paramName,paramValue);
+		boolean valid = false;
+		try
+		{
+			FileInputStream fstream = new FileInputStream("includes/CDM.txt");
+			DataInputStream in = new DataInputStream(fstream);
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+	        String readIn;
+	        while ((readIn = br.readLine()) != null) 
+	        {
+	        	String[] subs;
+	        	subs=readIn.split("\t");
+	        	if(subs[0].compareTo(paramName)==0)
+	        	{
+//	        		resp.getWriter().printf("Comparing '%s' with value %s\n",paramName,paramValue);
+	        		valid = true;
+	        		
+		        	if(subs[1].compareTo("String")==0) {
+		        		String tempS=paramValue;
+		        		if(tempS.compareTo("xxxxx")==0) {
+		        			valid=false;
+		        			break;
+		        		}
+		        		break;		        			
+			        }
+		        	else if(subs[1].compareTo("Double")==0) {
+		        		Double tempD=new Double(paramValue);
+		        		DecimalFormat df = new DecimalFormat("#.###");
+		                String tempDformat = df.format(tempD);
+		                tempD = new Double(tempDformat);
+		                //getting high and low value
+	                	int Low = Integer.valueOf(subs[2]);
+	                	int High = Integer.valueOf(subs[3]);
+	                	if(tempD<Low || tempD>High) {
+//	                		resp.getWriter().printf("out of bounds: %f\n", tempD);
+	                		valid=false;
+	                	}
+	                	break;
+		        	}
+		        	else if(subs[1].compareTo("int")==0) {
+		        		int tempI=Integer.valueOf(paramValue);
+		        		//getting high and low value
+		        		int Low = Integer.valueOf(subs[2]);
+	                	int High = Integer.valueOf(subs[3]);
+	                	if(tempI<Low || tempI>High) {
+//	                		resp.getWriter().printf("out of bounds: %d\n", tempI);
+	                		valid=false;
+	                	}
+	                	break;
+		        	}
+		        	else {
+		        		valid=false;
+		        		break;
+		        	}
+	        	
+	        	}
+	        	
+	        }
+	        br.close();
+	        in.close();
+	        fstream.close();
+		}
+		catch (Exception e)
+        {			
+			resp.getWriter().printf("****Exception Thrown...****");
+			valid=false;
+        }
+		return valid;
+	}
+
 
 }
