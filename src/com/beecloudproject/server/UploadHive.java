@@ -42,7 +42,7 @@ import com.techventus.server.voice.datatypes.records.SMSThread;
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
 	private static final String[] fieldNamesInHiveTable = { "timeStamp", "weight", "intTemp",
-			"extTemp", "battery","timeStamp" };
+			"extTemp", "battery", "hiveID" };
 	HashMap currentValues = new HashMap();;
 	// hashMap of hive table record
 	HashMap hiveTableRecord = new HashMap();
@@ -53,7 +53,7 @@ public class UploadHive extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException 
 	{
-		SMStoText SMSCollection = new SMStoText();
+	/*	SMStoText SMSCollection = new SMStoText();
 		ArrayList<String> records = new ArrayList<String>();
 		try
 		{
@@ -65,16 +65,20 @@ public class UploadHive extends HttpServlet {
   		catch (NullPointerException npe) 
   		{
 			resp.getWriter().print("Caught something..."+npe.getMessage());
-		}
+  		}*/
+		
+		String testString = "hiveID=6166488272&year=2012&month=03&day=19&time=10:20&weight=200&intTemp=92&extTemp=23&battery=30";
 				
-		/*
-		// build hashmap
-		HashMap paramHash = buildHashMapFromParams(req,resp);
-		// build entity
-		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
 
-		// store the entity
-		storeEntity(entity_toStore);
+		// build hashmap
+//		HashMap paramHash = buildHashMapFromParams(req,resp);
+//		// build entity
+//		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
+//
+//		// store the entity
+//		storeEntity(entity_toStore);
+//		
+//		resp.sendRedirect("/map.jsp");
 		
 	}
 
@@ -87,15 +91,22 @@ public class UploadHive extends HttpServlet {
 	public HashMap buildHashMapFromParams(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// declare hive fields
 		HashMap paramMap = new HashMap();
-		boolean TimeStart=false;
-		boolean TimeEnd=false;
+		boolean BuildTimeStamp=false;
+		boolean TimeBuilt=false;
 		boolean TimeGood=true;
 		String timeStamp="";
+		String Year="";
+		String Month="";
+		String Day="";
+		String Hours="";
+		String Minutes="";
+		int TimeCount=0;
 
 		Enumeration parameterNames = req.getParameterNames();
 		// for each parameter name
 		while (parameterNames.hasMoreElements()) {
 			boolean id=false;
+			boolean paramTime=false;
 			// get the name
 			String parameterName = (String) parameterNames.nextElement();
 			// if hiveID parameter, set it
@@ -103,40 +114,56 @@ public class UploadHive extends HttpServlet {
 				id=true;
 				hiveID = req.getParameter(parameterName);
 			}
-			if (parameterName.equals("year") || parameterName.equals("month") || parameterName.equals("day") 
-					|| parameterName.equals("timeH")) {
-				TimeStart=true;
-			}
-			if (parameterName.equals("timeM")) {
-				TimeEnd=true;
-			}
+
 			// look for its value
 			String parameterValue = req.getParameter(parameterName);
-//			resp.getWriter().println(parameterName + ":" + parameterValue+ "||");
 			// add to hashmap
 
-			if(id)
-				paramMap.put(parameterName, parameterValue);
 			
-			else {
-				if(!isValidWithCDM(parameterName,parameterValue,resp)) {
-					if(TimeStart)
-						TimeGood=false;
-					resp.getWriter().println("!!!" + parameterName+":"+parameterValue+" is not valid!!!");
-				}
-				if(TimeStart)
-				{
-					timeStamp += parameterValue;
-					if(TimeEnd)
-						TimeStart=false;
-				}
-				if(TimeEnd && TimeGood)
-				{
-					paramMap.put("timeStamp", timeStamp);
-					TimeEnd=false;
+			if((parameterName.equals("year")) || (parameterName.equals("month")) || (parameterName.equals("day")) ||
+					(parameterName.equals("timeH")) || (parameterName.equals("timeM"))) {
+				paramTime=true;
+				if(isValidWithCDM(parameterName,parameterValue,resp) && TimeGood) {
+					TimeCount++;
+					if(parameterName.equals("year"))
+						Year=parameterValue;
+					if(parameterName.equals("month"))
+						Month=parameterValue;
+					if(parameterName.equals("day"))
+						Day=parameterValue;
+					if(parameterName.equals("timeH"))
+						Hours=parameterValue;
+					if(parameterName.equals("timeM"))
+						Minutes=parameterValue;
+					
 				}
 				else {
-					paramMap.put(parameterName, parameterValue);
+					TimeGood=false;
+//					resp.getWriter().println("time not good: "+parameterName+ " "+parameterValue);
+				}
+				if(TimeCount==5 && TimeGood) {
+					timeStamp+=Month;
+					timeStamp+=Day;
+					timeStamp+=Year;
+					timeStamp+=Hours;
+					timeStamp+=Minutes;
+					TimeBuilt=true;
+				}
+			}
+			if(id) {
+				paramMap.put(parameterName, parameterValue);
+			}
+			else {
+				if(!paramTime) {
+					if(!isValidWithCDM(parameterName,parameterValue,resp)) {
+						resp.getWriter().println("!!!" + parameterName+":"+parameterValue+" is not valid!!!");
+					}
+					else
+						paramMap.put(parameterName, parameterValue);
+				}
+				if(TimeBuilt && TimeGood){
+//					resp.getWriter().println("timeStamp = "+timeStamp);
+					paramMap.put("timeStamp", timeStamp);
 				}
 			}
 			
