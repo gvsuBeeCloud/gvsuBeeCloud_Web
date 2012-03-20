@@ -1,4 +1,40 @@
+//run query functionality
+//run query when necessary
+function datQuery(hiveID,alias){
+	//event.stopPropagation();
+	
+	//debug, find out if button exists at this point
+	alert("button exists:");
+	
+		  //first, get the values to pass
+	  var startDate=$("#datePicker_start").val();
+		var endDate=$("#datePicker_end").val();
+		
+	
+		setParamByName("dp_start",startDate);
+		setParamByName("dp_end",endDate);
+		
+	  
+	  //reload the historical data div
+		loadHistoricalDataDiv(hiveID,alias,startDate,endDate);
+		alert("after2");
+		//$("#div_historicalData").show("blind");
+
+}
+
 $(document).ready(function() {
+
+	//for the love of god I hope we remove this before release
+	//because this is bush league
+	$(document).keypress(function(e) {
+	    if(e.keyCode == 13) {
+	        
+	    	alert("Key pressed");
+	    	datQuery();
+	    }
+	});
+
+	
 	// put all your jQuery goodness in here.
 
 	$("#div_hiveControls_grabber").load("/LoginServlet");
@@ -6,7 +42,7 @@ $(document).ready(function() {
 	// hide the historical data to start
 	$("#div_historicalData").hide();
 
-	loadHistoricalDataDiv("");
+	//loadHistoricalDataDiv("","");
 	$("#grabber_historicalData").click(function() {
 		if ($("#div_historicalData").is(':visible')) {
 			$("#div_historicalData").hide('blind');
@@ -19,7 +55,11 @@ $(document).ready(function() {
 
   $("#div_hiveControls").hide();
 
+  
+
 });
+
+
 
 // map functions
 function loadMarkersFromHiddenDivs() {
@@ -65,6 +105,12 @@ function loadMarkersFromHiddenDivs() {
 						// get hiveid
 						var hiveID = $(this).children(".hiveRecord_hiveID")
 								.text();
+						
+						
+						var alias= "LookIMaNAliAs";
+						
+
+						
 						var loc_lat = $(this).children(".hiveRecord_loc_lat")
 								.text();
 						var loc_long = $(this).children(".hiveRecord_loc_long")
@@ -111,9 +157,22 @@ function loadMarkersFromHiddenDivs() {
 						// show the historical information
 						google.maps.event.addListener(marker, 'click',
 								function() {
-									setParamHiveID(hiveID);
-									loadHistoricalDataDiv(hiveID);
+							
+									//get start and end dates from url...
+									var startDate=$("#datePicker_start").val();
+									var endDate=$("#datePicker_end").val();
+							
+							
+									setParamByName("hiveID",hiveID);
+									setParamByName("alias",alias);
+									setParamByName("dp_start",startDate);
+									setParamByName("dp_end",endDate);
+									
+
+									loadHistoricalDataDiv(hiveID,alias,startDate,endDate);
 									$("#div_historicalData").show("blind");
+									
+									//$("#badAssButton").on("click",datQuery(hiveId,alias));
 
 								});
 
@@ -121,12 +180,12 @@ function loadMarkersFromHiddenDivs() {
 
 }
 
-function setParamHiveID(hiveID) {
-	// get the element
 
-	window.location.hash = "hiveID=" + hiveID;
-
+function setParamByName(name,value){
+	window.location.hash += "&"+name+"="+value;
+	
 }
+
 
 function getWindowHash() {
 	alert(window.location.hash);
@@ -146,10 +205,20 @@ function getUrlVars() {
 	return vars;
 }
 
-function loadHistoricalDataDiv(hiveID) {
+//get the parent vars. Meaning do not look at the hash...I think...
+function getParentUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+
+function loadHistoricalDataDiv(hiveID,alias,startDate,endDate) {
 
 	$("#div_historicalData").load(
-			"includes/historicalData.jsp?hiveID=" + hiveID);
+			"includes/historicalData.jsp?hiveID=" + hiveID+"&alias="+alias+"&dp_start="+startDate+"&dp_end="+endDate);
 
 }
 
