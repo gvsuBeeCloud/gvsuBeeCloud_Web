@@ -1,4 +1,12 @@
-	<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
+response.setHeader("Pragma","no-cache"); //HTTP 1.0
+response.setDateHeader ("Expires", 0); //prevent caching at the proxy server
+
+//session.invalidate();
+%>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.google.appengine.api.users.User" %>
@@ -16,7 +24,7 @@
 <html>
 <head>
 
-</head>
+
 <link rel="stylesheet" href="css/admin_style.css" type="text/css"></link>
 
     <script type="text/javascript" src="js/jquery-1.7.1.js"></script>
@@ -24,7 +32,7 @@
     <link rel="stylesheet"
 	href="/css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
     <script type="text/javascript" src="js/admin_functions.js"></script>
-    
+</head>    
 <body>
 
 <%!
@@ -46,22 +54,13 @@ if(request.getParameter("editMode")!=null){
 		case 0://edit nothing
 			break;
 		case 1://edit hives
-			//determine if adding hide
-			if(request.getParameter("addHive")!=null){
-				
-				//user would like to add a hive
-				addHive=true;
-				
-				
-			}else{
-				//user would like to edit an existing hive
+			//user would like to edit an existing hive
 			
 				if(request.getParameter("hiveID")!=null){
 				//get hive id to edit
 				hiveID=request.getParameter("hiveID");
 				}
-			}
-			
+						
 			break;
 		case 2://edit profile
 		
@@ -80,6 +79,10 @@ if(request.getParameter("editMode")!=null){
 			
 		
 			break;
+			
+		case 4://add hive
+			break;
+			
 		
 	
 	}
@@ -90,11 +93,23 @@ if(request.getParameter("editMode")!=null){
 <div id="div_banner">
 	<div id="div_banner_header">
 		Administration
+	<%
+		//handle user login
+		UserService userService = UserServiceFactory.getUserService();
+    	User user = userService.getCurrentUser();
+    	if (user != null){
+	%>
+		<div id='div_banner_user'>Welcome, <%=user.getNickname() %>[<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">logout</a>]</div>
+	<%
+    	}else{
+    		
+    		%>
+    		
+    		<div id='div_banner_user'><a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a></div>
+    		<%
+    	}
+	%>
 	
-		<div id='div_banner_user'>
-		Welcome, Admin [<a href="#">logout</a>]
-		
-	</div>
 	
 	</div>
 	
@@ -124,37 +139,42 @@ if(request.getParameter("editMode")!=null){
 
 <label class='sectionHeader'>Hive Management</label> 
 <div id='div_createHive'>
-	<input type='button' value="Add New Hive" />
+			
 </div>
 	<div id='div_existingHives'> 
-	
+		
 		<%
 			//determine if add hive panel should be visible
-			if(addHive){
+			if(editMode==4){
 				//show form
 				%>
-					<form>
-						<input type='text' />
-						<input type='text' />
-						<input type='submit' value='Add' />
+					<form method="get" action="/UpdateHive">
+						<label>Hive ID</label><input type='text' name="hiveID" />
+						<label>Description</label><input type='text' name="description" />
+						<input type="hidden" value="<%= user.getEmail() %>" name="userID"/>
+						<input type='submit' class='button'  value='Add' />
 					</form>
 				<%
 			
 				
+			}else{
+		%>
+		<form method="get" action="/administration.jsp">
+		<input type="hidden" name="editMode" value="4" />
+		<input class='button' type="submit" value="Add Hive" />
+		</form>
+		
+		<%
 			}
 		%>
-		
 		<table id="table_existingHives">
-		<th> Name</th><th>Description</th><th>Manage</th>
+		<th class='th_hiveID'> Name</th><th>Description</th><th>Manage</th>
 		
 		<%
 			//get existing hives for the user
 			//try querying
 			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    		Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
-    		// Run an ancestor query to ensure we see the most up-to-date
-    		// view of the Greetings belonging to the selected Guestbook.
-    		Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    		Query query = new Query("Hive").addFilter("userID", Query.FilterOperator.EQUAL, user.getEmail()).addSort("hiveID", Query.SortDirection.DESCENDING);
 				
     		List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
 		
@@ -172,12 +192,17 @@ if(request.getParameter("editMode")!=null){
     	    			//show edit row
     	    			
     	    				%>
+    	    				<form method="get" action="/UpdateHive">
     	    				<tr>
-	    						<td class='hiveRecord_hiveID'><%=record.getProperty("hiveID") %></td>
+    	    				<input type='hidden' name='userID' value="<%=record.getProperty("userID") %>" />
+    	    				<input type='hidden' name='hiveID' value="<%=record.getProperty("hiveID") %>" />
+    	    				
+	    						<td class='hiveRecord_alias'><input type='text' name='alias' value="<%=record.getProperty("alias") %>" /></td>
 
-	    						<td class='hiveRecord_weight'><input type='text' value=<%=record.getProperty("description") %> /></td>
-								<td><input type='button' value='Save' /> | <input type='button' value='Delete' /> </td>
+	    						<td class='hiveRecord_description'><input type='text' name='description' value=<%=record.getProperty("description") %> /></td>
+								<td><input type='submit' class='button' value='Save' /><input type='button' class='button' class='button' value='Delete' /> </td>
 							</tr>
+							</form>
 							<%
     	    			
     	    		}else{
@@ -186,10 +211,12 @@ if(request.getParameter("editMode")!=null){
     	    			
     	    			%>
     	    			<tr>
-	    					<td class='hiveRecord_hiveID'><%=record.getProperty("hiveID") %></td>
+    	    		    	    				
+    	    				<td class='hiveRecord_alias'><%=record.getProperty("alias") %></td>
 
-	    					<td class='hiveRecord_weight'><%=record.getProperty("description") %></td>
-							<td><input type='button' value='Edit' /> | <input type='button' value='Delete' /> </td>
+	    					<td class='hiveRecord_description'><%=record.getProperty("description") %></td>
+							<td><a  class='button' n' href="administration.jsp?editMode=1&hiveID=<%=record.getProperty("hiveID") %>" > Edit</a> </td>
+							
 						</tr>
     	    			
     	    			<% 
@@ -213,30 +240,49 @@ if(request.getParameter("editMode")!=null){
 		</tr>
 		
 		<%
+			//get all profile data
+			    		Key profileKey = KeyFactory.createKey("Users", user.getEmail());
+
+			Query profileQuery = new Query("Users",profileKey);
+    		List<Entity> profileRecords = datastore.prepare(profileQuery).asList(FetchOptions.Builder.withLimit(1));
+		
+    		if(profileRecords.isEmpty()){
+    			//create a sample record
+    			profileRecords.add(new Entity(profileKey));
+    		}
+			for(Entity profile:profileRecords){
+			
+		
 			//determine if user wants to edit profile
 			if(editMode==2){
 				//show in edit mode
+
 				
 				
-				%>
+				
+				%><form method="get" action="/UpdateProfile">
 				<tr>
-					<td class='table_label'> First Name </td> <td class='table_label'> Email </td>
+				
+					<td class='table_label'>First Name  </td> <td class='table_label'> Email </td>
 					</tr>
 					<tr>
-						<td> Bob </td> <td>bob.loblaw@mail.com</td>
+						<td><input name="firstName" value="<%=profile.getProperty("firstName") %>" type='text' /> </td> <td><input name="email" value="<%=profile.getProperty("email") %>" type="text"/></td>
 					</tr>
 					<tr>
 						<td class='table_label'> Last Name </td><td class='table_label'> Organization </td>
 					</tr>
 					<tr>
-						 <td> Loblaw </td> <td> Independent </td>
+						 <td><input name="lastName" value="<%=profile.getProperty("lastName") %>" type="text"/> </td> <td> <input name="organization" value="<%=profile.getProperty("organization") %>" type="text"/> </td>
 					</tr>
 					<tr>
 						<td class='table_label'> Username </td><td class='table_label'> Manage </td>
-		
-					<tr>
-						<td> bobloblaw</td>  <td> <input type='button' value='Save'/> </td>
 					</tr>
+					<tr>
+						
+						<td> <input name="username" value="<%=profile.getProperty("username") %>" type="text"/></td>  <td> <input type='submit' class='button' value='Save'/> </td>
+						
+					</tr>
+					</form>
 				<%
 			}else{
 				//show in normal mode
@@ -246,21 +292,22 @@ if(request.getParameter("editMode")!=null){
 					<td class='table_label'> First Name </td> <td class='table_label'> Email </td>
 				</tr>
 				<tr>
-					<td> Bob </td> <td>bob.loblaw@mail.com</td>
+					<td> <%=profile.getProperty("firstName") %> </td> <td><%=profile.getProperty("email") %></td>
 				</tr>
 				<tr>
 					<td class='table_label'> Last Name </td><td class='table_label'> Organization </td>
 				</tr>
 				<tr>
-			 		<td> Loblaw </td> <td> Independent </td>
+			 		<td> <%=profile.getProperty("lastName") %> </td> <td> <%=profile.getProperty("organization") %> </td>
 				</tr>
 				<tr>
 					<td class='table_label'> Username </td><td class='table_label'> Manage </td>
 		
 				<tr>
-						<td> bobloblaw</td>  <td> <input type='button' value='Edit'/> </td>
+						<td> <%=profile.getProperty("username") %></td>  <td> <a class='button' href="administration.jsp?editMode=2">Edit</a></td>
 				</tr>
 				<%
+			}
 			}
 		%>
 		
@@ -275,32 +322,34 @@ if(request.getParameter("editMode")!=null){
 <div id='div_data' class='div_module'>
 <label class='sectionHeader'>Data</label>
 	<div id='div_dataQuery'>
+	<form method="get" action="administration.jsp">
+	<input type="hidden" value="3" name="editMode" />
 	<br />
 	
 		<label class='lbl_section'>Select Hive</label>
-		<select> 
+		<select name="hives"> 
 					<option> All</option>
 					
 				<%
 			//query available hives
 			//try querying
 
-    		//query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    		Query hiveQuery = new Query("Hive").addFilter("userID", Query.FilterOperator.EQUAL, user.getEmail()).addSort("hiveID", Query.SortDirection.DESCENDING);
 				
-    		//records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
+    		List<Entity> hiveNameRecords = datastore.prepare(hiveQuery).asList(FetchOptions.Builder.withLimit(999999999));
 		
 					
-    	    if(records.isEmpty()){
+    	    if(hiveNameRecords.isEmpty()){
     	    	%>
     	    	<!-- option> Records are empty </option-->
     	    	<%
     	    }else{
-    	    	for(Entity record: records){
+    	    	for(Entity record: hiveNameRecords){
 		%>
 		
 		
 
-			<option> <%=record.getProperty("hiveID") %> </option>
+			<option> <%=record.getProperty("alias") %> </option>
 			
 			<%
 				}
@@ -313,7 +362,7 @@ if(request.getParameter("editMode")!=null){
 		<label class='lbl_section'>End Date </label>
 		<input id='queryEndDate' type='text' />
 		<label class='lbl_section'>Fields</label>
-		<select size=5 multiple>
+		<select name="fields" size=5 multiple>
 		<%
 			//query available hives
 			//try querying
@@ -342,9 +391,9 @@ if(request.getParameter("editMode")!=null){
 			}
 		%>
 		</select>
-		
-		<input type='button'  value='query'/>
-		
+			<input type='submit' class='button'  value='Query'/>		
+	
+</form>	
 	</div>
 	
 	<div id='div_dataResults'>
@@ -376,14 +425,14 @@ if(request.getParameter("editMode")!=null){
 		//Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
 		// Run an ancestor query to ensure we see the most up-to-date
 		// view of the Greetings belonging to the selected Guestbook.
-		Query resultsQuery = new Query("HiveRecord",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+		Query resultsQuery = new Query("hiveRecord").addFilter("hiveID",Query.FilterOperator.EQUAL,hivesToSearch[0].trim() 	).addSort("hiveID", Query.SortDirection.DESCENDING);
 			
-		List<Entity> hiveRecords = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
-	
+		List<Entity> hiveRecords = datastore.prepare(resultsQuery).asList(FetchOptions.Builder.withLimit(999999999));
+		
 				
 	    if(hiveRecords.isEmpty()){
 	    	%>
-	    	<p> Records are empty </p>
+	    	<p> Records are empty for hive <%=hivesToSearch[0] %> </p>
 	    	<%
 	    }else{
 	    	for(Entity hiveRecord: hiveRecords){
