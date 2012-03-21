@@ -21,7 +21,6 @@ public class CreateHive extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws IOException {
 
-		
 		//build hashmap
 		HashMap paramHash=buildHashMapFromParams(req);
 		//build entity

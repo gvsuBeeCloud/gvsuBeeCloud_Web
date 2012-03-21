@@ -36,9 +36,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 
-import com.techventus.server.voice.Voice;
-import com.techventus.server.voice.datatypes.records.SMSThread;
-
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
 	private static final String[] fieldNamesInHiveTable = { "timeStamp", "weight", "intTemp",
@@ -53,32 +50,16 @@ public class UploadHive extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException 
 	{
-	/*	SMStoText SMSCollection = new SMStoText();
-		ArrayList<String> records = new ArrayList<String>();
-		try
-		{
-			Voice voice = new Voice("gvsuBeeCloud@gmail.com", "cis4672012");
-			SMSCollection.setVoice(voice);
-			SMSCollection.createHiveRecord(SMSCollection.getVoice(), SMSCollection.getUnreadRecords());
-			records = SMSCollection.getRecords();
-		}
-  		catch (NullPointerException npe) 
-  		{
-			resp.getWriter().print("Caught something..."+npe.getMessage());
-  		}*/
-		
-		String testString = "hiveID=6166488272&year=2012&month=03&day=19&time=10:20&weight=200&intTemp=92&extTemp=23&battery=30";
 				
-
 		// build hashmap
-//		HashMap paramHash = buildHashMapFromParams(req,resp);
-//		// build entity
-//		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
-//
-//		// store the entity
-//		storeEntity(entity_toStore);
-//		
-//		resp.sendRedirect("/map.jsp");
+		HashMap paramHash = buildHashMapFromParams(req,resp);
+		// build entity
+		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
+		
+		// store the entity
+		storeEntity(entity_toStore);
+		
+		resp.sendRedirect("/map.jsp");
 		
 	}
 
