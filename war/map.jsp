@@ -29,10 +29,39 @@
 	
 	
 	<div class='shouldBeHidden' id='div_param_hiveID'> </div>
+	<%! 
+		String weight = "";
+		String int_temp = "";
+		String ext_temp = "";
+	%>
 	<%
-		//try querying
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Key hiveRecordKey = KeyFactory.createKey("hiveRecordParent", "hiveRecordParentKey");
+	
+		// Run an ancestor query to ensure we see the most up-to-date
+		// view of the Greetings belonging to the selected Guestbook.
+		Query hivePopUp = new Query("hiveRecord",hiveRecordKey).addSort("timeStamp", Query.SortDirection.DESCENDING);
+			
+		List<Entity> rec = datastore.prepare(hivePopUp).asList(FetchOptions.Builder.withLimit(999999999));
+			
+    	if(rec.isEmpty()){
+    		%>
+    		<p>Must Be A New Hive With No Records</p>
+    		<%
+    	}
+    	else{
+    		Entity lastRecord = rec.get(0);
+    	
+    		weight = (lastRecord.getProperty("weight")).toString(); 
+			int_temp = (lastRecord.getProperty("intTemp")).toString();
+			ext_temp = (lastRecord.getProperty("extTemp")).toString();
+		
+    	}
+	
+		//try querying
+		datastore = DatastoreServiceFactory.getDatastoreService();
     	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	
     	// Run an ancestor query to ensure we see the most up-to-date
     	// view of the Greetings belonging to the selected Guestbook.
     	Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
@@ -52,13 +81,8 @@
 	    				<div class='hiveRecord_loc_lat'><%=record.getProperty("location_lat") %></div>
 	    				<div class='hiveRecord_loc_long'><%=record.getProperty("location_long") %></div>
 	    				<div class='hiveRecord_weight'><%=record.getProperty("weight") %></div>
-	    				<div class='hiveRecord_temperature'><%=record.getProperty("temperature_interior") %></div>
-	    				
-	    				
-	    				
-	    				
-	    		
-	    		
+	    				<div class='hiveRecord_iTemperature'><%=record.getProperty("intTemp") %></div>
+	    				<div class='hiveRecord_eTemperature'><%=record.getProperty("extTemp") %></div>
 	    		</div>  
 	    		
 	    		<%
@@ -67,7 +91,8 @@
 	    	}
 	    	
 	    }
-	
+	    
+	    
 	%>
 	
 	</div>
