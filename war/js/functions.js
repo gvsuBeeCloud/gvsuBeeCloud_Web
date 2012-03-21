@@ -7,19 +7,34 @@ function datQuery(hiveID,alias){
 	alert("button exists:");
 	
 		  //first, get the values to pass
-	  var startDate=$("#datePicker_start").val();
+	    var startDate=$("#datePicker_start").val();
 		var endDate=$("#datePicker_end").val();
-		
-	
 		setParamByName("dp_start",startDate);
 		setParamByName("dp_end",endDate);
 		
+		var listOfChecked = $(":checked");
+		
+		for(var i=0; i < listOfChecked.length; i++)
+		{
+			var identifier = getElementIDByObject(listOfChecked[i]);
+			
+			setParamByName(identifier,"1");
+		}
+		
+			
+	
+		
+		
 	  
 	  //reload the historical data div
-		loadHistoricalDataDiv(hiveID,alias,startDate,endDate);
+		loadHistoricalDataDiv(hiveID,alias,startDate,endDate,"blah");
 		alert("after2");
 		//$("#div_historicalData").show("blind");
 
+}
+
+function getElementIDByObject(elementObjectRef){
+	return $(elementObjectRef).attr('id');
 }
 
 $(document).ready(function() {
@@ -215,11 +230,13 @@ function getParentUrlVars() {
 }
 
 
-function loadHistoricalDataDiv(hiveID,alias,startDate,endDate) {
+function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 
-	$("#div_historicalData").load(
-			"includes/historicalData.jsp?hiveID=" + hiveID+"&alias="+alias+"&dp_start="+startDate+"&dp_end="+endDate);
-
+	//$("#div_historicalData").load(
+		//	"includes/historicalData.jsp?hiveID=" + hiveID+"&alias="+alias+"&dp_start="+startDate+"&dp_end="+endDate+"&ch_query_options="+checkbox_status);
+	var str = window.location.hash;
+	alert(str.substring(1,str.length));
+	$("#div_historicalData").load("includes/historicalData.jsp?"+str.substring(1,str.length));
 }
 
 function historicalDivActions() {

@@ -401,18 +401,13 @@
 	});
 </script>
 
+
 <script type="text/javascript">
-	//max and min table functionality
-
-	//$(document).ready(function() {
-		function getCalendar(field)
-		{
-			$(document).ready(function(){$("#" + field).datepicker();});
-		}
-		
-	//});
-</script>
-
+						$(document).ready(function() {
+							$( "#datePicker_start" ).datepicker();
+							//$( "#datePicker_end" ).datepicker();
+						});
+					</script>
 
 
 </head>
@@ -496,17 +491,6 @@
 		//out.println("ALIAS: "+aliasID);
 	%>
 
-	<script type="text/javascript">
-	//Function used in the historical data table to carry out queries
-	//for the min and max data.
-	function doQuery()
-	{
-		var sDate = document.getElementById("datePicker_start").value;
-		var eDate = document.getElementById("datePicker_end").value;
-		
-	}
-	</script>
-
 	<div id='div_historicalData_maxAndMins'>
 		<div id='div_historicalData_maxAndMins_record_wrapper'>
 			<div id='div_historicalData_maxAndMins_record'>
@@ -519,19 +503,19 @@
 
 				<div id='div_historicalData_maxAndMins_record_contents'>
 					<div id='nav_historicalData_maxAndMins_record_contents'>
-							Start Date: <input type='text' id="datePicker_start" name ="dp_start" onclick="getCalendar(this.id)"/>
-							End Date:   <input type='text' id="datePicker_end" name="dp_end" onclick="getCalendar(this.id)"/>
+							Start Date: <input type='text' id="datePicker_start" name ="dp_start"/>
+							End Date:   <input type='text' id="datePicker_end" name="dp_end"/>
 							<input id='badAssButton' type='button' value="Submit"/>
-							Max Int Temp <input type='checkbox' name='query_options' value='maxIntTemp'/>
-							Min Int Temp <input type='checkbox' name='query_options' value='minIntTemp'/>
-							Max Ext Temp <input type='checkbox' name='query_options' value='maxExtTemp'/>
-							Min Ext Temp <input type='checkbox' name='query_options' value='minExtTemp'/>
-							Max Weight <input type='checkbox' name='query_options' value='maxWeight'/>
-							Min Weight <input type='checkbox' name='query_options' value='minWeight'/>
+							Max Int Temp <input class="ch_query_options" id="qo_cb0" type='checkbox' name='query_options' value='maxIntTemp'/>
+							Min Int Temp <input class="ch_query_options" id="qo_cb1" type='checkbox' name='query_options' value='minIntTemp'/>
+							Max Ext Temp <input class="ch_query_options" id="qo_cb2" type='checkbox' name='query_options' value='maxExtTemp'/>
+							Min Ext Temp <input class="ch_query_options" id="qo_cb3" type='checkbox' name='query_options' value='minExtTemp'/>
+							Max Weight <input class="ch_query_options" id="qo_cb4" type='checkbox' name='query_options' value='maxWeight'/>
+							Min Weight <input class="ch_query_options" id="qo_cb5" type='checkbox' name='query_options' value='minWeight'/>
 
 					</div>
 
-
+					
 						
 						
 						
@@ -539,9 +523,16 @@
 							String alias=request.getParameter("alias");
 							String dp_start=request.getParameter("dp_start");
 							String dp_end=request.getParameter("dp_end");
-							String[] fields = request.getParameterValues("query_options");
+							String[] fields = request.getParameterValues("ch_query_options");
 							
+							//MOVE ME
+								if(request.getParameter("qb0")!=null){
+								    //then that means use it as a sort
+								    
+								    //build the query
+								}
 							
+							// LATEr
 							long endDate = new Long("999999999999");
 							long startDate = new Long ("000000000000");
 							
@@ -639,6 +630,7 @@
 							<p>End Date long Form: <%=endDate%> </p>
 							<p>Start Date long Form: <%=startDate%> </p>
 							<p>End Date String Form <%=eDate%> </p>
+							<p>Fields Value: <%=fields[0] %></p>
 						<%
 						
 						} else {
@@ -744,7 +736,7 @@
 								<td> Lowest Weight: <%=lowWeight%> </td>
 								<td> Timestamp of occurence: <%=lW_tStamp%> </td>
 							</tr>
-				
+										
 
 					</table>
 					<%
