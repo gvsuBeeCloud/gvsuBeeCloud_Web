@@ -349,7 +349,7 @@ if(request.getParameter("editMode")!=null){
 		
 		
 
-			<option> <%=record.getProperty("alias") %> </option>
+			<option value="<%=record.getProperty("hiveID")%>"> <%=record.getProperty("alias") %> </option>
 			
 			<%
 				}
@@ -366,18 +366,18 @@ if(request.getParameter("editMode")!=null){
 		<%
 			//query available hives
 			//try querying
-    		//query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    		Query hiveRecordFieldsQuery = new Query("hiveRecord").addSort("hiveID", Query.SortDirection.DESCENDING);
 				
-    		//records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
+    		List<Entity>hiveRecordFields = datastore.prepare(hiveRecordFieldsQuery).asList(FetchOptions.Builder.withLimit(2));
 		
 					
-    	    if(records.isEmpty()){
+    	    if(hiveRecordFields.isEmpty()){
     	    	%>
     	    	<option> No fields to display </option>
     	    	<%
     	    }else{
     	    	
-    	    	Entity sampleRecord = records.get(0);
+    	    	Entity sampleRecord = hiveRecordFields.get(0);
     	    	Map<String,Object> props =sampleRecord.getProperties();
     	    	for(String prop: props.keySet()){
 		%>

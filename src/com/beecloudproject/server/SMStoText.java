@@ -3,6 +3,7 @@ package com.beecloudproject.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import com.techventus.server.voice.Voice;
 import com.techventus.server.voice.datatypes.records.SMSThread;
@@ -154,5 +155,28 @@ public class SMStoText{
 			  recordsToBeFormatted.set(i, tempRecord);
 		  }
 		return recordsToBeFormatted;
+	  }
+	  
+	  /**
+	   * Break down a message (string) to key value pairs
+	   * @param message -- the original message in string format
+	   * @param paramDelimiter -- the delimiter between parameters
+	   * @param valueDelimiter -- the delimiter between keys and values
+	   * @return -- the constructed hashMap
+	   */
+	  public HashMap getParametersAsHashMap(String message,String paramDelimiter, String valueDelimiter){
+		  HashMap paramMap = new HashMap();
+		  
+		  //split on parameters
+		  String[] paramTokens = message.split(paramDelimiter);
+		  //for each parameter, store it
+		  for(String param: paramTokens){
+			  //split for key value
+			  String[] keyValueTokens = param.split(valueDelimiter);
+			  paramMap.put(keyValueTokens[0], keyValueTokens[1]);
+		  }
+		  
+		  
+		  return paramMap;
 	  }
 }
