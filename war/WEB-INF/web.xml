@@ -26,6 +26,11 @@
   </servlet>
   
   
+  <servlet>
+  	<servlet-name>Listener</servlet-name>
+  	<servlet-class>com.beecloudproject.server.Listener</servlet-class>
+  </servlet>
+  
    <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>com.beecloudproject.server.LoginServlet</servlet-class>
@@ -46,6 +51,11 @@
     <servlet-name>UploadHive</servlet-name>
     <url-pattern>/uploadHive</url-pattern>
   </servlet-mapping> 
+  
+  <servlet-mapping>
+  	<servlet-name>Listener</servlet-name>
+  	<url-pattern>/Listener</url-pattern>
+  </servlet-mapping>
   
        <servlet-mapping>
     <servlet-name>CreateHive</servlet-name>
