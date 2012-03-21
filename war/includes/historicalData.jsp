@@ -1,16 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.lang.String"%>
+<%@ page import="java.lang.Integer"%>
+<%@ page import="java.io.*"%>
+<%@ page import="java.lang.Long"%>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.text.ParseException"%>
 <%@ page import="com.google.appengine.api.users.User"%>
 <%@ page import="com.google.appengine.api.users.UserService"%>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
-<%@ page
-	import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
+<%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService"%>
 <%@ page import="com.google.appengine.api.datastore.Query"%>
-<%@ page import="com.google.appengine.api.datastore.Entity"%>
-<%@ page import="com.google.appengine.api.datastore.FetchOptions"%>
-<%@ page import="com.google.appengine.api.datastore.Key"%>
-<%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
+<%@ page import="com.google.appengine.api.datastore.PreparedQuery"%>
+<%@ page import="com.google.appengine.api.datastore.Entity" %>
+<%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
+<%@ page import="com.google.appengine.api.datastore.Key" %>
+<%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
 
 <html>
 <head>
@@ -312,7 +318,7 @@
 			size : 100
 		});
 
-		/*
+		
 		 combo_chart = new Highcharts.Chart({
 		 chart : {
 		 renderTo : 'container_weight'
@@ -390,46 +396,23 @@
 		 } ]
 		 });
 		
-		 */
+		 
 
 	});
 </script>
+
 
 <script type="text/javascript">
-	//max and min table functionality
+						$(document).ready(function() {
+							$( "#datePicker_start" ).datepicker();
+							//$( "#datePicker_end" ).datepicker();
+						});
+					</script>
 
-	$(document).ready(function() {
 
-		//when page loads, show six month by default
-		//hide all others
-		$('.td_maxMin_twelve').hide();
-
-		//if six month selected
-		$('#rad_maxMin_6').click(function() {
-
-			$('.td_maxMin_twelve').hide();
-			$('.td_maxMin_six').show();
-
-		});
-
-		//if twelve month selected
-
-		$('#rad_maxMin_12').click(function() {
-
-			$('.td_maxMin_six').hide();
-			$('.td_maxMin_twelve').show();
-
-		});
-
-		$("#datePicker_start").datepicker();
-		$("#datePicker_end").datepicker();
-
-		//if ....
-
-	});
-</script>
 </head>
 <body>
+	
 
 	<div id="tab_historicalData">
 		<ul>
@@ -444,26 +427,28 @@
 			//get all the previous records
 			String hiveID = request.getParameter("hiveID");
 			//try querying
-			DatastoreService datastore = DatastoreServiceFactory
-					.getDatastoreService();
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			        
 			Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
-			// Run an ancestor query to ensure we see the most up-to-date
-			// view of the Greetings belonging to the selected Guestbook.
-			Query query = new Query("hiveRecord", hiveKey).addSort("hiveID",
-					Query.SortDirection.DESCENDING);
+			Key hiveRecordKey = KeyFactory.createKey("hiveRecord", hiveID);
+
+			Query query = new Query("hiveRecord", hiveRecordKey).addSort("hiveID",
+			        Query.SortDirection.DESCENDING);
 			List<Entity> records = datastore.prepare(query).asList(
-					FetchOptions.Builder.withLimit(5));
+			        FetchOptions.Builder.withLimit(5));
 
 			//TODO: run query
 			for (Entity record : records) {
-
-				String tmpDate = "1.24.2012";
+			    
+				String tmpDate = (String)record.getProperty("timeStamp");
+				tmpDate = (tmpDate.substring(4,6) + "/" + tmpDate.substring(6,8) + "/" + tmpDate.substring(0,4));
 				String tmpTemp_interior = (String) record
-						.getProperty("temperature_interior");
+						.getProperty("intTemp");
 				String tmpTemp_exterior = (String) record
-						.getProperty("temperature_exterior");
+						.getProperty("extTemp");
 				String tmpWeight = (String) record.getProperty("weight");
 		%>
+		
 		<div class='div_previousHiveRecord'>
 
 			<div class='div_previousHiveRecord_title'>
@@ -492,10 +477,20 @@
 
 		//get parameter
 		//	String hiveID=request.getParameter("hiveID");
+	
+		//String getUserInput() {
+			//define any variables we need
+			//String aliasID =request.getParameter("alias");
+			//String sDate = request.getParameter("dp_start");
+			//String eDate = request.getParameter("dp_end");
+		//}
 
+
+	
 		//for debug, echo param
-		//out.println("HIVE ID: "+hiveID);
+		//out.println("ALIAS: "+aliasID);
 	%>
+
 	<div id='div_historicalData_maxAndMins'>
 		<div id='div_historicalData_maxAndMins_record_wrapper'>
 			<div id='div_historicalData_maxAndMins_record'>
@@ -508,87 +503,243 @@
 
 				<div id='div_historicalData_maxAndMins_record_contents'>
 					<div id='nav_historicalData_maxAndMins_record_contents'>
-						<div class='rad_large' id='rad_maxMin_allTime' name='rad_maxMin'
-							value='99'>All Time</div>
-
-						<div class='rad_large'>
-							Start <input type='text' id="datePicker_start">
-
-						</div>
-						<div class='rad_large'>
-
-							End <input type='text' id="datePicker_end">
-
-						</div>
-
+							Start Date: <input type='text' id="datePicker_start" name ="dp_start"/>
+							End Date:   <input type='text' id="datePicker_end" name="dp_end"/>
+							<input id='badAssButton' type='button' value="Submit"/>
+							Max Int Temp <input class="ch_query_options" id="qo_cb0" type='checkbox' name='query_options' value='maxIntTemp'/>
+							Min Int Temp <input class="ch_query_options" id="qo_cb1" type='checkbox' name='query_options' value='minIntTemp'/>
+							Max Ext Temp <input class="ch_query_options" id="qo_cb2" type='checkbox' name='query_options' value='maxExtTemp'/>
+							Min Ext Temp <input class="ch_query_options" id="qo_cb3" type='checkbox' name='query_options' value='minExtTemp'/>
+							Max Weight <input class="ch_query_options" id="qo_cb4" type='checkbox' name='query_options' value='maxWeight'/>
+							Min Weight <input class="ch_query_options" id="qo_cb5" type='checkbox' name='query_options' value='minWeight'/>
 
 					</div>
 
+					
+						
+						
+						
+						<% 
+							String alias=request.getParameter("alias");
+							String dp_start=request.getParameter("dp_start");
+							String dp_end=request.getParameter("dp_end");
+							String[] fields = request.getParameterValues("ch_query_options");
+							
+							//MOVE ME
+								if(request.getParameter("qb0")!=null){
+								    //then that means use it as a sort
+								    
+								    //build the query
+								}
+							
+							// LATEr
+							long endDate = new Long("999999999999");
+							long startDate = new Long ("000000000000");
+							
+							//Record High Interior Temperature set to a Default Value
+							int highITemp = -999;
+							//Record High Exterior Temperature set to a Default Value
+							int highETemp = -999;
+							//Record High Weight set to a Default Value
+							int highWeight = -999;
+							//Record Low Interior Temperature set to a Default Value
+							int lowITemp = 999;
+							//Record Low Exterior Temperature set to a Default Value
+							int lowETemp = 999;
+							//Record Low Weight set to a Default Value
+							int lowWeight = 999;
+							
+							//Strings that will contain the user inputed date, if the date
+							//is valid
+							String sDate = new String();
+							String eDate = new String();
+							
+							//Strings that will hold the timestamp for the highest/lowest
+							//temperature found by the min_max_query
+							String hIT_tStamp = "-1"; //High Interior Temperature
+							String hET_tStamp = "-1"; //High Exterior Temperature
+							String hW_tStamp = "-1"; //High Weight
+							String lIT_tStamp = "-1"; //Low Interior Temperature
+							String lET_tStamp = "-1"; //Low Exterior Temperature
+							String lW_tStamp = "-1"; //Low Weight
 
-					<%
-						//define any variables we need					
-
-						//build the query
-						//try querying
+						if(!dp_start.equals("undefined") && !dp_end.equals("undefined"))
+						{
+												
+							//take the start date from a standard format and turn it into timeStamp format
+							String[] sDate_pieces = dp_start.split(",");
+							
+							//take the end date from a standard format and turn it into timeStamp format
+							String[] eDate_pieces = dp_end.split(",");
+							
+							//Since incoming date format is mm/dd/yyyy, we need to do a swap on
+							//elements 0 and 1 in the array so it appears the incoming format was
+							//really dd/mm/yyyy
+							if(sDate_pieces.length > 1)
+							{
+							    
+							    String temp = sDate_pieces[0];
+							    sDate_pieces[0] = sDate_pieces[1];
+							    sDate_pieces[1] = temp;
+							    
+							    for(int i = 0; i < sDate_pieces.length; i++)
+								{
+									sDate = sDate_pieces[i] + sDate;
+								}
+								sDate = sDate + "0000";
+								startDate = Long.parseLong(sDate);
+							}
+							
+							//same swap function mentioned above now for the end date
+							if(eDate_pieces.length > 1)
+							{
+							    
+							    String temp = eDate_pieces[0];
+							    eDate_pieces[0] = eDate_pieces[1];
+							    eDate_pieces[1] = temp;
+							    
+							    for(int i = 0; i < eDate_pieces.length; i++)
+								{
+									eDate = eDate_pieces[i] + eDate;
+								}							
+								eDate = eDate + "9999";
+								endDate = Long.parseLong(eDate);
+							}
+							
+						}	
 						datastore = DatastoreServiceFactory.getDatastoreService();
-						hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
-						// Run an ancestor query to ensure we see the most up-to-date
-						// view of the Greetings belonging to the selected Guestbook.
-						query = new Query("Hive", hiveKey).addSort("hiveID",
-								Query.SortDirection.DESCENDING);
-						query.addFilter("hiveID", Query.FilterOperator.EQUAL, hiveID);
-						records = datastore.prepare(query).asList(
-								FetchOptions.Builder.withLimit(999999999));
+						//Query for Highest and Lowest Records in the given date range
+						Query min_max_Query = new Query("hiveRecord", hiveRecordKey);
+						
+						//Make sure that the hiveID is the same as one specified by the user
+						min_max_Query.addFilter("hiveID", Query.FilterOperator.EQUAL, hiveID);
+											
+						//Make sure that the timeStamp of the record is between the start and end date specified
+						//by the user.
+						min_max_Query.addFilter("timeStamp", Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
+						min_max_Query.addFilter("timeStamp", Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
+						min_max_Query.addSort("timeStamp", Query.SortDirection.ASCENDING);
+						
+						//prepare query, run it, and return a list of records
+						records = datastore.prepare(min_max_Query).asList(FetchOptions.Builder.withLimit(999999999));
 
 						if (records.isEmpty()) {
-					%>
-					<p>Records are empty</p>
-					<%
-						} else {
-							for (Entity record : records) {
-					%>
-					<table id='table_historicalData_maxAndMins'>
-						<tr>
-							<th>Hive ID</th>
-							<th class='td_maxMin_six'>Exterior Max Temperature</th>
-							<th class='td_maxMin_six'>Exterior Min Temperature</th>
-							<th class='td_maxMin_six'>Exterior Avg Temperature</th>
-							<th class='td_maxMin_twelve'>Exterior Max Weight</th>
-							<th class='td_maxMin_twelve'>Exterior Min Weight</th>
-							<th class='td_maxMin_twelve'>Exterior Avg Weight</th>
-							
-						</tr>
-
-						<tr>
-							<td><%=record.getProperty("hiveID")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("temperature_exterior_max_six")%></td>
-
-							<td class='td_maxMin_six'><%=record
-							.getProperty("temperature_exterior_min_six")%></td>
-							
-							<td class='td_maxMin_six'><%=record
-							.getProperty("temperature_exterior_min_six")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("temperature_exterior_max_twelve")%></td>
-
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("temperature_exterior_min_twelve")%></td>
-							
-							<td class='td_maxMin_twelve'><%=record
-							.getProperty("temperature_exterior_min_twelve")%></td>
-
-						</tr>
+						%>
 						
+							<p>No Matching Records</p>
+							<p>End Date long Form: <%=endDate%> </p>
+							<p>Start Date long Form: <%=startDate%> </p>
+							<p>End Date String Form <%=eDate%> </p>
+							<p>Fields Value: <%=fields[0] %></p>
+						<%
+						
+						} else {
+						    %>
+						    <table id='table_historicalData_maxAndMins'>
+							<tr>
+								<th>Hive ID</th>
+								<th class='td_maxMin_six'>Timestamp</th>
+								<th class='td_maxMin_six'>Exterior Temperature</th>
+								<th class='td_maxMin_six'>Interior Temperature</th>
+								<th class='td_maxMin_twelve'>Battery</th>
+								<th class='td_maxMin_twelve'>Weight</th>
+							</tr>
+							<%
+						    //Records that have a timestamp within the user specified parameters 
+						    //and selected hiveId, are returned. Now we can retrieve the statistics
+						    //that were requested by the user.
+							for (Entity record : records) {
+						%>
+						
+						<tr>
+								<td><%=record.getProperty("hiveID")%></td>
 
-				
+								<td class='td_maxMin_six'><%=record
+								.getProperty("timeStamp")%></td>
 
-					</table>
+								<td class='td_maxMin_six'><%=record
+								.getProperty("extTemp")%></td>
+							
+								<td class='td_maxMin_six'><%=record
+								.getProperty("intTemp")%></td>
+
+								<td class='td_maxMin_twelve'><%=record
+								.getProperty("battery")%></td>
+
+								<td class='td_maxMin_twelve'><%=record
+								.getProperty("weight")%></td>
+							</tr>
+							
+							<% 
+							//The weight and interior/exterior temperature for the current record
+							int record_intTemp = Integer.parseInt(((String)record.getProperty("intTemp")).toString());
+							int record_extTemp = Integer.parseInt(((String)record.getProperty("extTemp")).toString());
+							int record_weight = Integer.parseInt(((String)record.getProperty("weight")).toString());
+							
+							//If the current record's value in the aforementioned catagories is higher/lower
+							//than the current min/max, the current min/max is updated with the value of the
+							//record.
+							//Interior Temperature
+							if(record_intTemp > highITemp) 
+						    {
+							    highITemp = Integer.parseInt(((String)record.getProperty("intTemp")).toString());
+							    hIT_tStamp = ((String)record.getProperty("timeStamp")).toString();
+						    }
+							if(record_intTemp < lowITemp)
+							{
+							    lowITemp = Integer.parseInt(((String)record.getProperty("intTemp")).toString());
+							    lIT_tStamp = ((String)record.getProperty("timeStamp")).toString();
+							}
+							
+							//Exterior Temperature
+							if(record_extTemp > highETemp) 
+						    {
+							    highETemp = Integer.parseInt(((String)record.getProperty("extTemp")).toString());
+							    hET_tStamp = ((String)record.getProperty("timeStamp")).toString();
+						    }
+							if(record_extTemp < lowETemp) 
+						    {
+							    lowETemp = Integer.parseInt(((String)record.getProperty("extTemp")).toString());
+							    lET_tStamp = ((String)record.getProperty("timeStamp")).toString();
+						    }
+							
+							//Weight
+							if(record_weight > highWeight)
+							{
+							    highWeight = Integer.parseInt(((String)record.getProperty("weight")).toString());
+							    hW_tStamp = ((String)record.getProperty("timeStamp")).toString();
+							}
+							if(record_weight < lowWeight)
+							{
+							    lowWeight = Integer.parseInt(((String)record.getProperty("weight")).toString());
+							    lW_tStamp = ((String)record.getProperty("timeStamp")).toString();
+							}
+						%>
+						
 
 					<%
 						}
+							%>
+							<tr>
+								<td> Highest Interior Temp: <%=highITemp%> </td>
+								<td> Timestamp of occurence: <%=hIT_tStamp%> </td>
+								<td> Highest Exterior Temp: <%=highETemp%> </td>
+								<td> Timestamp of occurence: <%=hET_tStamp%> </td>
+								<td> Highest Weight: <%=highWeight%> </td>
+								<td> Timestamp of occurence: <%=hW_tStamp%> </td>
+							</tr>
+							<tr>
+								<td> Lowest Interior Temp: <%=lowITemp%> </td>
+								<td> Timestamp of occurence: <%=lIT_tStamp%> </td>
+								<td> Lowest Exterior Temp: <%=lowETemp%> </td>
+								<td> Timestamp of occurence: <%=lET_tStamp%> </td>
+								<td> Lowest Weight: <%=lowWeight%> </td>
+								<td> Timestamp of occurence: <%=lW_tStamp%> </td>
+							</tr>
+										
+
+					</table>
+					<%
 						}
 					%>
 
