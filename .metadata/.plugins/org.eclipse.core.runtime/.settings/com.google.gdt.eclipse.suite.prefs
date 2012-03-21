@@ -1,6 +1,6 @@
-#Tue Jan 17 16:21:32 EST 2012
+SdkRegistrants_1326253913544=com.google.appengine.eclipse.sdkbundle_1.6.1.v201112160242r37,com.google.gwt.eclipse.sdkbundle_2.4.0.v201112160242-rel-r37
+SdkRegistrants_1331158382508=com.google.appengine.eclipse.sdkbundle_1.6.3.v201202290255r37,com.google.gwt.eclipse.sdkbundle_2.4.0.v201202290255-rel-r37
 addedNewWizardActions1.2_org.eclipse.jdt.ui.JavaPerspective=com.google.gdt.eclipse.suite.wizards.newProjectWizard|com.google.gwt.eclipse.core.newModuleWizard|com.google.gwt.eclipse.core.newHostPageWizard|com.google.gwt.eclipse.core.newEntryPointWizard|com.google.gwt.eclipse.core.newClientBundleWizard|com.google.gwt.eclipse.core.newUiBinderWizard
 eclipse.preferences.version=1
-SdkRegistrants_1326253913544=com.google.appengine.eclipse.sdkbundle_1.6.1.v201112160242r37,com.google.gwt.eclipse.sdkbundle_2.4.0.v201112160242-rel-r37
-versionForLastForcedRebuild_beecloudproject=2.5.0.v201112160242-rel-r37
 versionForLastForcedRebuild_BeeCloudProject_Web=2.5.0.v201112160242-rel-r37
+versionForLastForcedRebuild_beecloudproject=2.5.0.v201112160242-rel-r37

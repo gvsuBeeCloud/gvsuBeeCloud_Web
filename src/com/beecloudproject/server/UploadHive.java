@@ -1,6 +1,12 @@
 package com.beecloudproject.server;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -32,14 +38,8 @@ import com.google.appengine.api.datastore.Key;
 
 public class UploadHive extends HttpServlet {
 	// array of field names in hive table
-	private static final String[] fieldNamesInHiveTable = { "temperature_interior",
-			"temperature_exterior", "weight" };
-	// array of endings for hive table
-	private static final String[] hiveTableSuffix_max = { "_max_six", "_max_twelve" };
-	private static final String[] hiveTableSuffix_min = { "_min_six", "_min_twelve" };
-	// hashmap of max and min
-	HashMap maxAndMin = new HashMap();
-	// hashmap of current values
+	private static final String[] fieldNamesInHiveTable = { "timeStamp", "weight", "intTemp",
+			"extTemp", "battery", "hiveID" };
 	HashMap currentValues = new HashMap();;
 	// hashMap of hive table record
 	HashMap hiveTableRecord = new HashMap();
@@ -48,75 +48,106 @@ public class UploadHive extends HttpServlet {
 	//existing record key
 	Key existingRecordKey;
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-
-		resp.getWriter().println("Weight: " + req.getParameter("weight"));
-
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException 
+	{
+				
 		// build hashmap
-		HashMap paramHash = buildHashMapFromParams(req);
+		HashMap paramHash = buildHashMapFromParams(req,resp);
 		// build entity
 		Entity entity_toStore = buildEntityFromHashMap("hiveRecord", paramHash);
-
+		
 		// store the entity
-		//storeEntity(entity_toStore);
-
-		// query Hive
-		queryDataStoreForExistingRecord(hiveID);
-		// build max and min stuff
-		addToHiveTable(paramHash);
-
-		// build Hive entity
-		Entity entity_Hive = buildEntityFromHashMap("Hive", hiveTableRecord);
-
-		// store Hive entity
-			storeEntity(entity_Hive);
-
-		resp.getWriter().println("Hive Table Record");
-		for (Object o : hiveTableRecord.keySet()) {
-			resp.getWriter().println("key "+(String) o+ " Val: "+(String)hiveTableRecord.get(o));
-		}
-
-		resp.getWriter().println("End Hive Table Record");
-
-		resp.getWriter().println("Current Values");
-		for (Object o : currentValues.keySet()) {
+		storeEntity(entity_toStore);
 		
-			resp.getWriter().println("KEY: "+(String)o + " Val: "+(String) currentValues.get(o));
-		}
-
-		resp.getWriter().println("End Current Values");
+		resp.sendRedirect("/map.jsp");
 		
-		
-		//resp.sendRedirect("/map.jsp");
-
-
-
 	}
 
 	/**
 	 * Build a hashmap from the parameters sent in the http request
 	 * @param req -- the sent httprequest
 	 * @return  -- the constructed hashmap
+	 * @throws IOException 
 	 */
-	public HashMap buildHashMapFromParams(HttpServletRequest req) {
+	public HashMap buildHashMapFromParams(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// declare hive fields
 		HashMap paramMap = new HashMap();
+		boolean BuildTimeStamp=false;
+		boolean TimeBuilt=false;
+		boolean TimeGood=true;
+		String timeStamp="";
+		String Year="";
+		String Month="";
+		String Day="";
+		String Hours="";
+		String Minutes="";
+		int TimeCount=0;
 
 		Enumeration parameterNames = req.getParameterNames();
 		// for each parameter name
 		while (parameterNames.hasMoreElements()) {
-
+			boolean id=false;
+			boolean paramTime=false;
 			// get the name
 			String parameterName = (String) parameterNames.nextElement();
 			// if hiveID parameter, set it
 			if (parameterName.equals("hiveID")) {
+				id=true;
 				hiveID = req.getParameter(parameterName);
 			}
+
 			// look for its value
 			String parameterValue = req.getParameter(parameterName);
 			// add to hashmap
-			paramMap.put(parameterName, parameterValue);
+
+			
+			if((parameterName.equals("year")) || (parameterName.equals("month")) || (parameterName.equals("day")) ||
+					(parameterName.equals("timeH")) || (parameterName.equals("timeM"))) {
+				paramTime=true;
+				if(isValidWithCDM(parameterName,parameterValue,resp) && TimeGood) {
+					TimeCount++;
+					if(parameterName.equals("year"))
+						Year=parameterValue;
+					if(parameterName.equals("month"))
+						Month=parameterValue;
+					if(parameterName.equals("day"))
+						Day=parameterValue;
+					if(parameterName.equals("timeH"))
+						Hours=parameterValue;
+					if(parameterName.equals("timeM"))
+						Minutes=parameterValue;
+					
+				}
+				else {
+					TimeGood=false;
+//					resp.getWriter().println("time not good: "+parameterName+ " "+parameterValue);
+				}
+				if(TimeCount==5 && TimeGood) {
+					timeStamp+=Month;
+					timeStamp+=Day;
+					timeStamp+=Year;
+					timeStamp+=Hours;
+					timeStamp+=Minutes;
+					TimeBuilt=true;
+				}
+			}
+			if(id) {
+				paramMap.put(parameterName, parameterValue);
+			}
+			else {
+				if(!paramTime) {
+					if(!isValidWithCDM(parameterName,parameterValue,resp)) {
+						resp.getWriter().println("!!!" + parameterName+":"+parameterValue+" is not valid!!!");
+					}
+					else
+						paramMap.put(parameterName, parameterValue);
+				}
+				if(TimeBuilt && TimeGood){
+//					resp.getWriter().println("timeStamp = "+timeStamp);
+					paramMap.put("timeStamp", timeStamp);
+				}
+			}
+			
 		}
 
 		return paramMap;
@@ -202,7 +233,8 @@ public class UploadHive extends HttpServlet {
 	 * 
 	 * @param hiveID
 	 */
-	public boolean queryDataStoreForExistingRecord(String hiveID) {
+	public boolean queryDataStoreForExistingRecord(String hiveID) 
+	{
 		boolean aRecordReturned;
 		// query
 		// try querying
@@ -225,7 +257,8 @@ public class UploadHive extends HttpServlet {
 			//set hiveID
 			//set blah...
 			
-		}else{//get the keys that are in the table!
+		}
+		else{//get the keys that are in the table!
 			aRecordReturned=true;
 			existingRecordKey=record.getKey();
 			// break down record
@@ -240,7 +273,9 @@ public class UploadHive extends HttpServlet {
 		return aRecordReturned;
 
 	}
+
 	/**
+	 
 	 * Determine if the field is in the hive table based on an associative array
 	 * 
 	 * @param fieldName
@@ -265,93 +300,6 @@ public class UploadHive extends HttpServlet {
 
 
 	/**
-	 * Determine if a given value is a max or minimum for a field based on current data.
-	 * @param fieldName -- the field to investigate
-	 * @param value -- the new value for comparison
-	 * @param whatToTestFor -- 0 for max, 1 for min
-	 * @return
-	 */
-	public String[] isMaxOrMin(String fieldName, String value, int whatToTestFor){
-		// make string array to return
-		String[] fieldsThatShouldBeUpdated = new String[hiveTableRecord.size()];
-		// keep track of position in array
-		int position = 0;
-		// determine suffix array to use
-		String [] hiveTableSuffix={};
-		
-		
-		//determine comparison
-		switch(whatToTestFor){
-			case 0: //test max
-				hiveTableSuffix=hiveTableSuffix_max;
-				
-				break;
-			case 1: //test min
-				hiveTableSuffix=hiveTableSuffix_min;
-				break;
-		}
-		
-		// check each hive table value
-				for (String baseHiveTableFieldName : fieldNamesInHiveTable) {
-
-					// make sure we are looking at the right field
-					if (baseHiveTableFieldName.equals(fieldName)) {
-
-						// build each field variation
-						for (String hiveTableFieldNameSuffix : hiveTableSuffix) {
-							String fullHiveTableFieldName = baseHiveTableFieldName
-									+ hiveTableFieldNameSuffix;
-
-							// convert to doubles
-							double newValue = Double.parseDouble(value);
-							// break down existing value
-							double existingValue;
-							try{
-									
-									existingValue=Double
-									.parseDouble((String) hiveTableRecord
-											.get(fullHiveTableFieldName));
-							}catch(Exception e){
-								existingValue=99999;
-								e.printStackTrace();
-							}
-							
-							switch(whatToTestFor){
-							case 0: //max
-								// check if the new value is lower than the old value
-								if(newValue > existingValue){
-									// add to string array
-									fieldsThatShouldBeUpdated[position] = fullHiveTableFieldName;
-									position++;
-
-								}
-								break;
-							case 1: //min
-								// check if the new value is lower than the old value
-								if(newValue < existingValue){
-									// add to string array
-									fieldsThatShouldBeUpdated[position] = fullHiveTableFieldName;
-									position++;
-
-								}
-								break;
-							}
-
-		
-
-						}
-
-					}// else do nothing because we are not looking at that field
-
-				}
-		
-		return fieldsThatShouldBeUpdated;
-		
-		
-	}
-
-
-	/**
 	 * Add a given value to the current values hash map.
 	 * @param fieldname  -- the field to set
 	 * @param entryValue -- the value to set the field to
@@ -364,72 +312,82 @@ public class UploadHive extends HttpServlet {
 	}
 
 	/**
-	 * 
-	 * @param paramHash
+	 * test to see if parameter is valid with cdm
+	 * @param paramName  -- name of parameter to test against cdm
+	 * @param paramValue --  value to test against cdm
+	 * @throws IOException 
 	 */
-	public void addToHiveTable(HashMap paramHash) {
+	public static boolean isValidWithCDM(String paramName, String paramValue,  HttpServletResponse resp) throws IOException {
+//		resp.getWriter().printf("starting '%s':%s\n", paramName,paramValue);
+		boolean valid = false;
+		try
+		{
+			FileInputStream fstream = new FileInputStream("includes/CDM.txt");
+			DataInputStream in = new DataInputStream(fstream);
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-		// iterate over each property
-		Map<String, Object> propertyNames = paramHash;
-
-		// for each property, determine if it is in the hive table
-		for (Map.Entry<String, Object> entry : propertyNames.entrySet()) {
-
-			// get name of entry
-			String entryName = entry.getKey();
-			// if so, check if new high or low
-			if (isInHiveTable(entryName)) {
-
-				
-				String entryValue = (String) entry.getValue();
-				String entryValue_toUseForMax=entryValue;
-				String entryValue_toUseForMin=entryValue;
-				
-				//check if entry value is null
-				if(entryValue == null){
-					//set to impossible
-					entryValue_toUseForMax = "-99999";
-					entryValue_toUseForMin ="99999";
-				}
-				// update current Hive field values
-				addToCurrentValues(entryName, (String)""+ entry.getValue());
-
-				// if the hive table record is empty, dont do a comparison
-				// so only check if max or min if not empty
-				if (!hiveTableRecord.isEmpty()) {
-
-					// get field names of what it is higher than
-					String[] maxFieldsToUpdate = isMaxOrMin(entryName, entryValue_toUseForMax,0);
-
-					// get field names of what it is less than
-					String[] minFieldsToUpdate = isMaxOrMin(entryName,entryValue_toUseForMin,1);
-
-					// replace values in the original hashmap
-					for (String field : maxFieldsToUpdate) {
-						if(field != null){
-						// update record hashmap
-						hiveTableRecord.put(field, entryValue_toUseForMax);
-						}
-
-					}
-					for (String field : minFieldsToUpdate) {
-						if(field!=null){
-						// update record hashmap
-						hiveTableRecord.put(field, entryValue_toUseForMin);
-						}
-					}
-
-				} else { // hive table record is empty so just update with the
-							// current values
-							// update all of the values to the current values
-					hiveTableRecord = currentValues;
-
-				}
-
-			}
-
+	        String readIn;
+	        while ((readIn = br.readLine()) != null) 
+	        {
+	        	String[] subs;
+	        	subs=readIn.split("\t");
+	        	if(subs[0].compareTo(paramName)==0)
+	        	{
+//	        		resp.getWriter().printf("Comparing '%s' with value %s\n",paramName,paramValue);
+	        		valid = true;
+	        		
+		        	if(subs[1].compareTo("String")==0) {
+		        		String tempS=paramValue;
+		        		if(tempS.compareTo("xxxxx")==0) {
+		        			valid=false;
+		        			break;
+		        		}
+		        		break;		        			
+			        }
+		        	else if(subs[1].compareTo("Double")==0) {
+		        		Double tempD=new Double(paramValue);
+		        		DecimalFormat df = new DecimalFormat("#.###");
+		                String tempDformat = df.format(tempD);
+		                tempD = new Double(tempDformat);
+		                //getting high and low value
+	                	int Low = Integer.valueOf(subs[2]);
+	                	int High = Integer.valueOf(subs[3]);
+	                	if(tempD<Low || tempD>High) {
+//	                		resp.getWriter().printf("out of bounds: %f\n", tempD);
+	                		valid=false;
+	                	}
+	                	break;
+		        	}
+		        	else if(subs[1].compareTo("int")==0) {
+		        		int tempI=Integer.valueOf(paramValue);
+		        		//getting high and low value
+		        		int Low = Integer.valueOf(subs[2]);
+	                	int High = Integer.valueOf(subs[3]);
+	                	if(tempI<Low || tempI>High) {
+//	                		resp.getWriter().printf("out of bounds: %d\n", tempI);
+	                		valid=false;
+	                	}
+	                	break;
+		        	}
+		        	else {
+		        		valid=false;
+		        		break;
+		        	}
+	        	
+	        	}
+	        	
+	        }
+	        br.close();
+	        in.close();
+	        fstream.close();
 		}
-
+		catch (Exception e)
+        {			
+			resp.getWriter().printf("****Exception Thrown...****");
+			valid=false;
+        }
+		return valid;
 	}
+
 
 }
