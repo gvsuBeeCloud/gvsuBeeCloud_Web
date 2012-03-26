@@ -4,7 +4,7 @@ function datQuery(hiveID,alias){
 	//event.stopPropagation();
 	
 	//debug, find out if button exists at this point
-	//alert("button exists:");
+	alert("update17");
 	
 		  //first, get the values to pass
 	    var startDate=$("#datePicker_start").val();
@@ -29,6 +29,7 @@ function datQuery(hiveID,alias){
 	  //reload the historical data div
 		loadHistoricalDataDiv(hiveID,alias,startDate,endDate,"blah");
 		//$("#div_historicalData").show("blind");
+		//clrURLForQuery();
 
 }
 
@@ -47,7 +48,7 @@ $(document).ready(function() {
 	    	datQuery();
 	    }
 	});
-
+	
 	
 	// put all your jQuery goodness in here.
 
@@ -62,7 +63,7 @@ $(document).ready(function() {
 			$("#div_historicalData").hide('blind');
 		} else {
 			$("#div_historicalData").show("blind");
-
+			
 		}
 
 	});
@@ -119,22 +120,20 @@ function loadMarkersFromHiddenDivs() {
 						// get hiveid
 						var hiveID = $(this).children(".hiveRecord_hiveID")
 								.text();
-						
-						
-						var alias= "LookIMaNAliAs";
-						
-
-						
+					
+						var alias = $(this).children(".hiveRecord_aliasID")
+						.text();
+	
 						var loc_lat = $(this).children(".hiveRecord_loc_lat")
 								.text();
 						var loc_long = $(this).children(".hiveRecord_loc_long")
 								.text();
-						var weight = $(this).children(".hR_weight")
+						var weight = $(this).children(".hiveRecord_weight")
 								.text();
 						var iTemperature = $(this).children(
-								".hR_iTemperature").text();
+								".hiveRecord_iTemperature").text();
 						var eTemperature = $(this).children(
-							".hR_eTemperature").text();
+							".hiveRecord_eTemperature").text();
 
 						// create lat long
 						var markLatLong = new google.maps.LatLng(loc_lat,
@@ -151,6 +150,8 @@ function loadMarkersFromHiddenDivs() {
 								{
 									content : "<div class='div_infoWindow'><div style='z-index:99' class='clickable_hiveID'>"
 											+ hiveID
+											+ "<br />"
+											+ alias
 											+ "</div><br />"
 											+ "iT:"
 											+ iTemperature
@@ -186,9 +187,6 @@ function loadMarkersFromHiddenDivs() {
 
 									loadHistoricalDataDiv(hiveID,alias,"blah","blah","blah");
 									$("#div_historicalData").show("blind");
-									
-									
-
 								});
 
 					});
@@ -229,11 +227,36 @@ function getParentUrlVars() {
     return vars;
 }
 
+function clrURLForQuery()
+{
+	var str = window.location.hash;
+	var urlStr = "";
+	var count = 0;
+	for(var i = 0; i < str.length; i++)
+	{
+		if(str.charAt(i) == '&')
+		{
+			count++;
+		}
+		if(count > 2)
+		{
+			break;
+		}
+		else
+		{
+			urlStr = urlStr + str.substring(i,i+1);
+		}
+	}
+	alert(urlStr);
+	return urlStr;
+}
+
 
 function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 	var str = window.location.hash;
 	//alert(str.substring(1,str.length));
 	$("#div_historicalData").load("includes/historicalData.jsp?"+str.substring(1,str.length));
+	//window.location.href.replace("includes/historicalData.jsp?"+str.substring(1,str.length), "includes/historicalData.jsp?" + clrURLForQuery() );
 }
 
 function historicalDivActions() {
@@ -257,7 +280,6 @@ function historicalDivActions() {
 		
 		// show max and mins
 		$("#div_historicalData_maxAndMins").show();
-		//$("#badAssButton").on("click",datQuery(hiveId,alias));
 	});
 
 }

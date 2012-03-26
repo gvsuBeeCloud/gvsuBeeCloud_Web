@@ -398,16 +398,12 @@
 
 	});
 </script>
-
-
 <script type="text/javascript">
-						$(document).ready(function() {
-							$( "#datePicker_start" ).datepicker();
-							//$( "#datePicker_end" ).datepicker();
-						});
-					</script>
-
-
+	$(document).ready(function(){
+  		$('#datePicker_start').datepicker();
+  		$('#datePicker_end').datepicker();
+ 	});
+</script>
 </head>
 <body>
 	
@@ -503,20 +499,15 @@
 					<div id='nav_historicalData_maxAndMins_record_contents'>
 							Start Date: <input type='text' id="datePicker_start" name ="dp_start"/>
 							End Date:   <input type='text' id="datePicker_end" name="dp_end"/>
-							<input id='badAssButton' type='button' value="Submit"/>
+							<input id='badAssButton' type='submit' onclick='datQuery()' value="Submit"/>
 							Max Int Temp <input class="ch_query_options" id="maxIntTemp" type='checkbox' name='query_options'/>
 							Min Int Temp <input class="ch_query_options" id="minIntTemp" type='checkbox' name='query_options'/>
 							Max Ext Temp <input class="ch_query_options" id="maxExtTemp" type='checkbox' name='query_options'/>
 							Min Ext Temp <input class="ch_query_options" id="minExtTemp" type='checkbox' name='query_options'/>
 							Max Weight <input class="ch_query_options" id="maxWeight" type='checkbox' name='query_options'/>
 							Min Weight <input class="ch_query_options" id="minWeight" type='checkbox' name='query_options'/>
-
 					</div>
 
-					
-						
-						
-						
 						<% 
 							boolean readyToGo = true;
 							String[] expectedParams={"dp_start","dp_end"};
@@ -534,15 +525,7 @@
 								String dp_start=request.getParameter("dp_start");
 								String dp_end=request.getParameter("dp_end");
 						
-							
-								//MOVE ME
-								if(request.getParameter("qb0")!=null){
-								    //then that means use it as a sort
-								    
-								    //build the query
-								}
-							
-							// LATEr
+						
 							long endDate = new Long("999999999999");
 							long startDate = new Long ("000000000000");
 							
