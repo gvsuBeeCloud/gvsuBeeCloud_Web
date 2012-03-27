@@ -289,3 +289,15 @@ border-top-right-radius: 10px;
 a:link{
 	text-decoration:none;
 }
+/* super cool popup cards */
+.div_popup{
+	position:absolute;
+	left:50%;
+	top:50%;
+	
+	//display:inline-block;
+	width:400px;
+	height:400px;
+	background-color:white;
+	border:1px solid #000000;
+}

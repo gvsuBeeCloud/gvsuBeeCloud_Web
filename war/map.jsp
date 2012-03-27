@@ -32,10 +32,10 @@
 	<%
 		//try querying
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	//Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
     	// Run an ancestor query to ensure we see the most up-to-date
     	// view of the Greetings belonging to the selected Guestbook.
-    	Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    	Query query = new Query("Hive").addSort("hiveID", Query.SortDirection.DESCENDING);
 				
     	List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
 				

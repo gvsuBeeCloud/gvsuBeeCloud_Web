@@ -88,14 +88,14 @@ function loadMarkersFromHiddenDivs() {
 	var map = new google.maps.Map(document.getElementById("div_map_container"),
 			myOptions);
 
-	// var image = new google.maps.MarkerImage('images/beeico.png',
+	// var image = new google.maps.MarkerImage('images/beeico.gif',
 	// new google.maps.Size(20, 32),
 	// The origin for this image is 0,0.
 	// new google.maps.Point(0,0),
 	// The anchor for this image is the base of the flagpole at 0,32.
 	// new google.maps.Point(0, 32));
 
-	var image = new google.maps.MarkerImage('images/beeico.png');
+	var image = new google.maps.MarkerImage('images/beeico.gif');
 
 	// var myLatLng = new google.maps.LatLng(42.9634,-85.6681);
 	// var marker = new google.maps.Marker({

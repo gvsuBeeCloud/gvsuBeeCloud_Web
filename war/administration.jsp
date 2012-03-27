@@ -198,9 +198,16 @@ if(request.getParameter("editMode")!=null){
     	    				<input type='hidden' name='hiveID' value="<%=record.getProperty("hiveID") %>" />
     	    				
 	    						<td class='hiveRecord_alias'><input type='text' name='alias' value="<%=record.getProperty("alias") %>" /></td>
+	    						
 
 	    						<td class='hiveRecord_description'><input type='text' name='description' value=<%=record.getProperty("description") %> /></td>
-								<td><input type='submit' class='button' value='Save' /><input type='button' class='button' class='button' value='Delete' /> </td>
+								<td>
+								<input type='hidden' name='location_lat' value="<%=record.getProperty("location_lat") %>" />
+								<input type='hidden' name='location_long' value="<%=record.getProperty("location_long") %>" />
+								
+								<input type='submit' class='button' value='Save' /><input type='button' class='button' class='button' value='Delete' /> 
+								
+								</td>
 							</tr>
 							</form>
 							<%
