@@ -86,6 +86,10 @@
 <span style="color:white;">Click a hive to view data.</span>
 
 
-</div></div>
+</div>
+
+
+
+</div>
 </body>
 </html>
