@@ -13,6 +13,7 @@
 
 <html>
 <head>
+<title>Project Bee Cloud</title>
 <link rel="stylesheet" href="css/style.css" type="text/css"></link>
 
 <script type="text/javascript"
@@ -29,10 +30,18 @@
 	
 	
 	<div class='shouldBeHidden' id='div_param_hiveID'> </div>
+	<%! 
+		String weight = "";
+		String int_temp = "";
+		String ext_temp = "";
+		String message = "";
+		String battery = "";
+		String timeStamp = "";
+	%>
 	<%
-		//try querying
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    	//Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	
     	// Run an ancestor query to ensure we see the most up-to-date
     	// view of the Greetings belonging to the selected Guestbook.
     	Query query = new Query("Hive").addSort("hiveID", Query.SortDirection.DESCENDING);
@@ -45,20 +54,47 @@
 	    	<%
 	    }else{
 	    	for(Entity record: records){
-	    		
 	    		//add hidden values
 	    		%> <div class='shouldBeHidden hiveRecord'>
-	    				<div class='hiveRecord_hiveID'><%=record.getProperty("hiveID") %></div>
+	    				<div class='hiveRecord_hiveID'><%=(record.getProperty("hiveID")).toString() %></div>
+	    				<div class='hiveRecord_aliasID'><%=(record.getProperty("aliasID")).toString() %></div>
 	    				<div class='hiveRecord_loc_lat'><%=record.getProperty("location_lat") %></div>
 	    				<div class='hiveRecord_loc_long'><%=record.getProperty("location_long") %></div>
-	    				<div class='hiveRecord_weight'><%=record.getProperty("weight") %></div>
-	    				<div class='hiveRecord_temperature'><%=record.getProperty("temperature_interior") %></div>
 	    				
-	    				
-	    				
-	    				
-	    		
-	    		
+	    				<%
+						datastore = DatastoreServiceFactory.getDatastoreService();
+	    				Key hiveRecordKey = KeyFactory.createKey("hiveRecord", "hiveID");
+	    				Query hivePopUp = new Query("hiveRecord");
+	    				hivePopUp.addFilter("hiveID", Query.FilterOperator.EQUAL, (record.getProperty("hiveID")).toString());
+	    				//Need to find a way to reduce number of records by implementing something that 
+	    				//can call a date
+	    				hivePopUp.addSort("timeStamp", Query.SortDirection.DESCENDING);
+	    				List<Entity> rec = datastore.prepare(hivePopUp).asList(FetchOptions.Builder.withLimit(1));
+			
+    					if(rec.isEmpty()){
+	    					message = "No Records";		
+    					}
+    					else{
+    					    //Get the most recent record from the list
+    						Entity lastRecord = rec.get(0);
+    					    
+    						//Convert the timeStamp to a more readable date and time
+    						String tmpDate = (String)lastRecord.getProperty("timeStamp");
+    						tmpDate = (tmpDate.substring(4,6) + "/" + tmpDate.substring(6,8) + "/" + tmpDate.substring(0,4) + " " + tmpDate.substring(8,12));
+    						
+    						//Return the requested statistics
+    						timeStamp = tmpDate;
+    						weight = (lastRecord.getProperty("weight")).toString(); 
+							int_temp = (lastRecord.getProperty("intTemp")).toString();
+							ext_temp = (lastRecord.getProperty("extTemp")).toString();
+							battery = (lastRecord.getProperty("battery")).toString();
+						}
+    					%> 
+	    				<div class='hiveRecord_weight'><%=weight %></div>
+	    				<div class='hiveRecord_iTemperature'><%=int_temp %></div>
+	    				<div class='hiveRecord_eTemperature'><%=ext_temp %></div>
+	    				<div class='hiveRecord_battery'><%=battery %></div>
+	    				<div class='hiveRecord_timeStamp'><%=timeStamp %></div>
 	    		</div>  
 	    		
 	    		<%
@@ -67,7 +103,8 @@
 	    	}
 	    	
 	    }
-	
+	    
+	    
 	%>
 	
 	</div>
@@ -85,6 +122,10 @@
 <div id="container_historicalData"><div id="grabber_historicalData"></div><div id='div_historicalData'> 
 <span style="color:white;">Click a hive to view data.</span>
 
+<p> Weight: <%=weight%> </p>
+<p> iTemp: <%=int_temp%> </p>    
+<p> eTemp: <%=ext_temp%> </p>
+<p> message: <%=message%> </p>
 
 </div></div>
 </body>
