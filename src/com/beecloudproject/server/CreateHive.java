@@ -20,18 +20,22 @@ public class CreateHive extends HttpServlet {
 	
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws IOException {
-
 		//build hashmap
-		HashMap paramHash=buildHashMapFromParams(req);
+	 HashMap paramHash=buildHashMapFromParams(req);
 		//build entity
-		Entity entity_toStore=buildEntityFromHashMap(paramHash);
+	//	Entity entity_toStore=buildEntityFromHashMap(paramHash);
 		
 		//store the entity
-		storeEntity(entity_toStore);
+		//storeEntity(entity_toStore);
+		
+		for(Object param:paramHash.values()){
+			resp.getWriter().println("Value :"+(String)param);
+			
+		}
 		
 		
 
-	resp.sendRedirect("/map.jsp");
+	//resp.sendRedirect("/map.jsp");
 	
 	}
 	

@@ -1,18 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <datastore-indexes
   autoGenerate="true">
   
-      <datastore-index kind="Hive" ancestor="true">
+    <datastore-index kind="Hive" ancestor="true">
         <property name="user" direction="desc" />
+    </datastore-index>
+    
+    <datastore-index kind="Hive" ancestor="true" source="manual">
+        <property name="hiveID" direction="desc"/>
     </datastore-index>
     
     <datastore-index kind="hiveRecord" ancestor="true" source="manual">
         <property name="hiveID" direction="desc"/>
     </datastore-index>
-    
-    <datastore-index kind="Hive" ancestor="true" source="manual">
+
+<datastore-index kind="Hive" ancestor="false" source="manual">
+        <property name="userID" direction="asc"/>
         <property name="hiveID" direction="desc"/>
+    </datastore-index>	
+    
+        <datastore-index kind="Hive" ancestor="true" source="manual">
+        <property name="userID" direction="asc"/>
+        <property name="hiveID" direction="desc"/>
+    </datastore-index>
+    
+    <datastore-index kind="hiveRecord" ancestor="true" source="manual">
+        <property name="timeStamp" direction="asc"/>
+    </datastore-index>
+    
+    <datastore-index kind="hiveRecord" ancestor="true" source="manual">
+        <property name="hiveID" direction="asc"/>
+        <property name="timeStamp" direction="asc"/>
     </datastore-index>
 
 </datastore-indexes>
