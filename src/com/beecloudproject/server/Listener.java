@@ -25,14 +25,15 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 import com.techventus.server.voice.Voice;
 
 public class Listener extends HttpServlet
 {
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException 
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 	{		
 		
-		SMStoText SMSCollection = new SMStoText();
+		SMStoText SMSCollection;
 		
 		ArrayList<String> records = new ArrayList<String>();
 		try
@@ -249,4 +250,3 @@ public class Listener extends HttpServlet
 
 
 }
-	

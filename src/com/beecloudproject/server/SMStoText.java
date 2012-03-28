@@ -1,6 +1,11 @@
 package com.beecloudproject.server;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -107,11 +112,17 @@ public class SMStoText{
 	    String lookForMessage = "text=";
 	    int someLeft = 0;
 	    int someLeftAgain = -1;
+	    int otherSomeLeftAgain = -1;
 	    while((someLeft = record.lastIndexOf(lookForMessage)) != -1)
 	    {
 	    	String rightHalfOfMessage = record.substring(someLeft, record.length());
 	    	record = record.substring(0, someLeft);
-	    	someLeftAgain = rightHalfOfMessage.lastIndexOf(" - ");
+	    	someLeftAgain = rightHalfOfMessage.indexOf("]");
+	    	otherSomeLeftAgain = rightHalfOfMessage.lastIndexOf(" - ");
+	    	if(otherSomeLeftAgain < someLeftAgain && otherSomeLeftAgain != -1)
+	    	{
+	    		someLeftAgain = otherSomeLeftAgain;
+	    	}
 	    	if(someLeftAgain != -1)
 	    	{
 	    	String message = rightHalfOfMessage.substring(lookForMessage.length(), someLeftAgain);
@@ -135,25 +146,25 @@ public class SMStoText{
 	    
 	    return hiveID;
 	  }
-	
+	  
 	  public ArrayList<String> listOfRecordsFormatted(ArrayList<String> recordsToBeFormatted)
 	  {
 		  String tempRecord = "";
-		  for(int i=0; i<recordsToBeFormatted.size();i++)
+		  ArrayList<String> CDMValues = getValuesFromCDM();
+		  
+		  for(int i=0; i<recordsToBeFormatted.size(); i++)
 		  {
 			  tempRecord = recordsToBeFormatted.get(i);
 			  tempRecord = tempRecord.replaceAll(":", " ");
-			  tempRecord = tempRecord.replaceFirst(" ", "&month=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&day=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&timeH=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&timeM=");		  
-			  tempRecord = tempRecord.replaceFirst(" ", "&weight=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&intTemp=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&extTemp=");
-			  tempRecord = tempRecord.replaceFirst(" ", "&battery=");
-
+			  
+			  for(int j=1; j<CDMValues.size(); j++)
+			  {
+				  tempRecord = tempRecord.replaceFirst(" ", "&" + CDMValues.get(j) + "=");
+			  }
+			  
 			  recordsToBeFormatted.set(i, tempRecord);
 		  }
+		  
 		return recordsToBeFormatted;
 	  }
 	  
@@ -179,4 +190,38 @@ public class SMStoText{
 		  
 		  return paramMap;
 	  }
+	  
+	    public ArrayList<String> getValuesFromCDM()
+	    {
+	    	ArrayList<String> CDMValues = new ArrayList<String>();
+	    	
+	    	FileInputStream fstream;
+			try 
+			{
+				fstream = new FileInputStream("includes/CDM.txt");
+				DataInputStream in = new DataInputStream(fstream);
+				BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+	    	String readIn;
+	    	int i = 0;
+	    	while ((readIn = br.readLine()) != null)
+	    	{
+	    		String[] valuesOfLine;
+	    		valuesOfLine = readIn.split("\t");
+	    		CDMValues.add(valuesOfLine[0]);
+	    		i++;
+	    	}
+			
+			} 
+			catch (FileNotFoundException e) 
+			{
+
+			} 
+			catch (IOException e) {
+
+			}
+	    	
+			return CDMValues;
+
+	    }
 }
