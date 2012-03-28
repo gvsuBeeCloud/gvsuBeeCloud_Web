@@ -21,8 +21,9 @@
 
 <html>
 <head>
-<script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
 <script type="text/javascript"src="../js/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
+
 <link rel="stylesheet" href="../css/style.css" type="text/css"></link>
 <link rel="stylesheet"href="../css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
 <script type="text/javascript" src="../js/highcharts.js"></script>
@@ -399,10 +400,12 @@
 	});
 </script>
 <script type="text/javascript">
-	$(document).ready(function(){
+	$(function(){
   		$('#datePicker_start').datepicker();
   		$('#datePicker_end').datepicker();
  	});
+	
+	
 </script>
 </head>
 <body>

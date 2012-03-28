@@ -28,7 +28,7 @@
         <property name="timeStamp" direction="desc"/>
     </datastore-index>
     
-     <datastore-index kind="hiveRecord" ancestor="true" source="manual">
+     <datastore-index kind="hiveRecord" ancestor="false" source="manual">
         <property name="hiveID" direction="asc"/>
         <property name="timeStamp" direction="desc"/>
     </datastore-index>

@@ -1,35 +1,28 @@
-//run query functionality
-//run query when necessary
+//Retrieve the start and end dates specified by the user, as
+//well as the checkboxes that have been selected
 function datQuery(hiveID,alias){
-	//event.stopPropagation();
-	
-	//debug, find out if button exists at this point
-	alert("update17");
-	
-		  //first, get the values to pass
+
+ 	    //get the start and end date parameters
 	    var startDate=$("#datePicker_start").val();
 		var endDate=$("#datePicker_end").val();
 		setParamByName("dp_start",startDate);
 		setParamByName("dp_end",endDate);
 		
+		//identify the checkboxes that were checked
 		var listOfChecked = $(":checked");
-		
 		for(var i=0; i < listOfChecked.length; i++)
 		{
 			var identifier = getElementIDByObject(listOfChecked[i]);
 			
 			setParamByName(identifier,"1");
 		}
-		
-			
-	
-		
-		
-	  
-	  //reload the historical data div
+			  
+	    //reload the historical data div with the new URL
 		loadHistoricalDataDiv(hiveID,alias,startDate,endDate,"blah");
-		//$("#div_historicalData").show("blind");
-		//clrURLForQuery();
+		
+		//Remove old query information from the URL another query can
+		//be performed.
+		window.location = clrURLForQuery();
 
 }
 
@@ -38,17 +31,6 @@ function getElementIDByObject(elementObjectRef){
 }
 
 $(document).ready(function() {
-
-	//for the love of god I hope we remove this before release
-	//because this is bush league
-	$(document).keypress(function(e) {
-	    if(e.keyCode == 13) {
-	        
-	    	//alert("Key pressed");
-	    	datQuery();
-	    }
-	});
-	
 	
 	// put all your jQuery goodness in here.
 
@@ -123,6 +105,9 @@ function loadMarkersFromHiddenDivs() {
 					
 						var alias = $(this).children(".hiveRecord_aliasID")
 						.text();
+						
+						var timestamp = $(this).children(".hiveRecord_timeStamp")
+						.text();
 	
 						var loc_lat = $(this).children(".hiveRecord_loc_lat")
 								.text();
@@ -134,6 +119,8 @@ function loadMarkersFromHiddenDivs() {
 								".hiveRecord_iTemperature").text();
 						var eTemperature = $(this).children(
 							".hiveRecord_eTemperature").text();
+						var battery = $(this).children(
+						".hiveRecord_battery").text();
 
 						// create lat long
 						var markLatLong = new google.maps.LatLng(loc_lat,
@@ -152,15 +139,17 @@ function loadMarkersFromHiddenDivs() {
 											+ hiveID
 											+ "<br />"
 											+ alias
+											+ "<br />"
+											+ timestamp
 											+ "</div><br />"
-											+ "iT:"
-											+ iTemperature
+											+ "iT: " + iTemperature + " C"
 											+ "<br />"
-											+ "eT:"
-											+ eTemperature
+											+ "eT: " + eTemperature + " C"
 											+ "<br />"
-											+ "W:"
-											+ weight + "<br />" + "</div>"
+											+ "W: "+ weight + " lbs."
+											+ "<br />"
+											+ "B: " + battery + " %"
+											+"</div>"
 								});
 						
 						// add open listener
