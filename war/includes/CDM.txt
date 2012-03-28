@@ -4,6 +4,6 @@ day	int	1	31
 timeH	int	1	24
 timeM	int	1	60
 weight	int	0	999
-intTemp	int	-100	100
-extTemp	int	-100	100
+intTemp	Double	-100	100
+extTemp	Double	-100	100
 battery	int	0	100
