@@ -38,143 +38,124 @@ public class Listener extends HttpServlet
 		ArrayList<String> records = new ArrayList<String>();
 		try
 		{
+			SMSCollection = new SMStoText();
 			Voice voice = new Voice("gvsuBeeCloud@gmail.com", "cis4672012");
 			SMSCollection.setVoice(voice);
 			SMSCollection.createHiveRecord(SMSCollection.getVoice(), SMSCollection.getUnreadRecords());
 			records = SMSCollection.getRecords();
-		}
-		catch (NullPointerException npe) 
-		{
-//			resp.getWriter().println("ERROR: could not log in");
-		}
 		
-//		String recordAsString = "http://www.beecloudproject.appspot.com/uploadHive?";	
-//		recordAsString = recordAsString + records.get(0);
-		
-//		recordAsString = "http://www.beecloudprojectcam.appspot.com/uploadHive?hiveID=6166488274&year=2012&month=02&day=19&timeH=12&timeM=23&weight=200&intTemp=89.3&extTemp=97.2&battery=88";
-			
-		
-		
-//		try {
-//		    URL myURL = new URL(recordAsString);
-//		    URLConnection myURLConnection = myURL.openConnection();
-//		    myURLConnection.connect();
-//		} 
-//		catch (MalformedURLException e) { 
-//
-//		} 
-//		catch (IOException e) {   
-//
-//		   
-//		}
-		
-		//needed to build timeStamp
-		boolean BuildTimeStamp=false;
-		boolean TimeBuilt=false;
-		boolean TimeGood=true;
-		String timeStamp="";
-		String Year="";
-		String Month="";
-		String Day="";
-		String Hours="";
-		String Minutes="";
-		int TimeCount=0;
-		/******************************************************
-		 *  Store to the data store
-		 *******************************************************/
-		for(String record: records){
-			//get all parameters
-			HashMap reqParams = SMSCollection.getParametersAsHashMap(record, "&", "=");	
-			//String userEmail=req.getParameter("email");
+			//needed to build timeStamp
+			boolean BuildTimeStamp=false;
+			boolean TimeBuilt=false;
+			boolean TimeGood=true;
+			String timeStamp="";
+			String Year="";
+			String Month="";
+			String Day="";
+			String Hours="";
+			String Minutes="";
+			int TimeCount=0;
+
+			for(String record: records)
+			{
+				//get all parameters
+				HashMap reqParams = SMSCollection.getParametersAsHashMap(record, "&", "=");	
 			
 			
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Transaction txn = datastore.beginTransaction();
-			try {
-				//create the key to search and build with
-				Key hiveRecordKey = KeyFactory.createKey("hiveRecord", (String) reqParams.get("hiveID"));
-				Entity hiveRecord;
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Transaction txn = datastore.beginTransaction();
+			
+				try 
+				{
+					//create the key to search and build with
+					Key hiveRecordKey = KeyFactory.createKey("hiveRecord", (String) reqParams.get("hiveID"));
+					Entity hiveRecord;
 				
-//				try {
-//					//attempt to lock the hive record
-//					hiveRecord = datastore.get(hiveRecordKey);
-//				} catch (EntityNotFoundException e) {			
-//					//if the entity is not found, create it
-					hiveRecord = new Entity(hiveRecordKey);
-//				}
+					hiveRecord = new Entity("hiveRecord", hiveRecordKey);
 					
-				//set all parameters
-				for(Object paramKey: reqParams.keySet()){
-					boolean id=false;
-					boolean paramTime=false;
-					String parameter = (String)paramKey;
-					if (parameter.equals("hiveID")) 
-						id=true;
-					//print data
-//					resp.getWriter().println((String)paramKey+" "+(String)reqParams.get(paramKey));
-					//if checks against CDM, set prop
-						//if "time" unit, save and wait until they are all there,
-						//	then build timeStamp
-					if( (parameter.equals("year")) || (parameter.equals("month")) || (parameter.equals("day")) ||
-							(parameter.equals("timeH")) || (parameter.equals("timeM")) ) 
+					//set all parameters
+					for(Object paramKey: reqParams.keySet())
 					{
-						paramTime=true;
-						if(isValidWithCDM((String)paramKey,(String)reqParams.get(paramKey),resp) && TimeGood) {
-							TimeCount++;
-							if(parameter.equals("year"))
-								Year=(String)reqParams.get(paramKey);
-							if(parameter.equals("month"))
-								Month=(String)reqParams.get(paramKey);
-							if(parameter.equals("day"))
-								Day=(String)reqParams.get(paramKey);
-							if(parameter.equals("timeH"))
-								Hours=(String)reqParams.get(paramKey);
-							if(parameter.equals("timeM"))
-								Minutes=(String)reqParams.get(paramKey);
+						boolean id=false;
+						boolean paramTime=false;
+						String parameter = (String)paramKey;
+						if (parameter.equals("hiveID"))
+						{
+							id=true;
 						}
-						else {
-							TimeGood=false;
-							resp.getWriter().println("time not good: "+(String)paramKey+ " "+(String)reqParams.get(paramKey));
+
+						if( (parameter.equals("year")) || (parameter.equals("month")) || (parameter.equals("day")) ||
+							(parameter.equals("timeH")) || (parameter.equals("timeM")) ) 
+						{
+							paramTime=true;
+							if(isValidWithCDM((String)paramKey,(String)reqParams.get(paramKey),resp) && TimeGood) 
+							{
+								TimeCount++;
+								if(parameter.equals("year"))
+									Year=(String)reqParams.get(paramKey);
+								if(parameter.equals("month"))
+									Month=(String)reqParams.get(paramKey);
+								if(parameter.equals("day"))
+									Day=(String)reqParams.get(paramKey);
+								if(parameter.equals("timeH"))
+									Hours=(String)reqParams.get(paramKey);
+								if(parameter.equals("timeM"))
+									Minutes=(String)reqParams.get(paramKey);
+							}
+							else 
+							{
+								TimeGood=false;
+								resp.getWriter().println("time not good: "+(String)paramKey+ " "+(String)reqParams.get(paramKey));
+							}
+							if(TimeCount==5 && TimeGood) 
+							{
+								timeStamp+=Month;
+								timeStamp+=Day;
+								timeStamp+=Year;
+								timeStamp+=Hours;
+								timeStamp+=Minutes;
+								TimeBuilt=true;
+							}
 						}
-						if(TimeCount==5 && TimeGood) {
-							timeStamp+=Month;
-							timeStamp+=Day;
-							timeStamp+=Year;
-							timeStamp+=Hours;
-							timeStamp+=Minutes;
-							TimeBuilt=true;
-						}
-					}
-					if(id)
-						hiveRecord.setProperty((String)paramKey, (String)reqParams.get(paramKey));
-					if(!paramTime && !id) {
-						if(!isValidWithCDM((String)paramKey, (String)reqParams.get(paramKey), resp)) {
-							resp.getWriter().println("!!!" + (String)paramKey+":"+(String)reqParams.get(paramKey)+" is not valid!!!");
-						}
-						else {
+						if(id)
 							hiveRecord.setProperty((String)paramKey, (String)reqParams.get(paramKey));
+						if(!paramTime && !id) 
+						{
+							if(!isValidWithCDM((String)paramKey, (String)reqParams.get(paramKey), resp)) 
+							{
+								resp.getWriter().println("!!!" + (String)paramKey+":"+(String)reqParams.get(paramKey)+" is not valid!!!");
+							}
+							else 
+							{
+							hiveRecord.setProperty((String)paramKey, (String)reqParams.get(paramKey));
+							}
+						}
+						if(TimeBuilt && TimeGood)
+						{
+							hiveRecord.setProperty("timeStamp", timeStamp);
 						}
 					}
-					if(TimeBuilt && TimeGood){
-						hiveRecord.setProperty("timeStamp", timeStamp);
-					}
-				}
 				//store record
 				datastore.put(hiveRecord);
 				txn.commit();
 				
-			}  finally {
-			    if (txn.isActive()) {
-			    	txn.rollback();
-			    }
+				}  
+				
+				finally 
+				{
+					if (txn.isActive()) 
+					{
+						txn.rollback();
+					}
+				}
 			}
-		
-			/***************************************************
-			 * End storage
-			 *****************************************************/
 		}
-//		resp.getWriter().print(recordAsString);
+		catch (Exception e)
+		{
+			
+		}
 	}
+
 	
 	public static boolean isValidWithCDM(String paramName, String paramValue,  HttpServletResponse resp) throws IOException {
 //		resp.getWriter().printf("starting '%s':%s\n", paramName,paramValue);
