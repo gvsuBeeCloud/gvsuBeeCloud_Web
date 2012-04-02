@@ -122,11 +122,6 @@
 <div id="container_historicalData"><div id="grabber_historicalData"></div><div id='div_historicalData'> 
 <span style="color:white;">Click a hive to view data.</span>
 
-<p> Weight: <%=weight%> </p>
-<p> iTemp: <%=int_temp%> </p>    
-<p> eTemp: <%=ext_temp%> </p>
-<p> message: <%=message%> </p>
-
 </div></div>
 </body>
 </html>

@@ -142,9 +142,9 @@ function loadMarkersFromHiddenDivs() {
 											+ "<br />"
 											+ timestamp
 											+ "</div><br />"
-											+ "iT: " + iTemperature + " C"
+											+ "iT: " + iTemperature + " °C"
 											+ "<br />"
-											+ "eT: " + eTemperature + " C"
+											+ "eT: " + eTemperature + " °C"
 											+ "<br />"
 											+ "W: "+ weight + " lbs."
 											+ "<br />"
@@ -236,7 +236,7 @@ function clrURLForQuery()
 			urlStr = urlStr + str.substring(i,i+1);
 		}
 	}
-	alert(urlStr);
+	//alert(urlStr);
 	return urlStr;
 }
 
