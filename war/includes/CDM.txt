@@ -3,6 +3,7 @@ month	int	1	12	0
 day	int	1	31	0	0
 timeH	int	1	24	0
 timeM	int	1	60	0
+timeS	int	1	60	0
 weight	int	0	999	1	50	300
 intTemp	Double	-100	100	1	0	50
 extTemp	Double	-100	100	1	0	50

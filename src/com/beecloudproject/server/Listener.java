@@ -43,6 +43,11 @@ public class Listener extends HttpServlet
 			SMSCollection.setVoice(voice);
 			SMSCollection.createHiveRecord(SMSCollection.getVoice(), SMSCollection.getUnreadRecords());
 			records = SMSCollection.getRecords();
+			
+			for(int i=0; i<records.size();i++)
+			{
+				resp.getWriter().println(i + ":  " + records.get(i));
+			}
 		
 			//needed to build timeStamp
 			boolean BuildTimeStamp=false;
@@ -54,6 +59,7 @@ public class Listener extends HttpServlet
 			String Day="";
 			String Hours="";
 			String Minutes="";
+			String Seconds="";
 			int TimeCount=0;
 
 			for(String record: records)
@@ -85,7 +91,7 @@ public class Listener extends HttpServlet
 						}
 
 						if( (parameter.equals("year")) || (parameter.equals("month")) || (parameter.equals("day")) ||
-							(parameter.equals("timeH")) || (parameter.equals("timeM")) ) 
+							(parameter.equals("timeH")) || (parameter.equals("timeM")) || (parameter.equals("timeS")) ) 
 						{
 							paramTime=true;
 							if(isValidWithCDM((String)paramKey,(String)reqParams.get(paramKey),resp) && TimeGood) 
@@ -101,6 +107,8 @@ public class Listener extends HttpServlet
 									Hours=(String)reqParams.get(paramKey);
 								if(parameter.equals("timeM"))
 									Minutes=(String)reqParams.get(paramKey);
+								if(parameter.equals("timeS"))
+									Seconds=(String)reqParams.get(paramKey);
 							}
 							else 
 							{
@@ -114,6 +122,7 @@ public class Listener extends HttpServlet
 								timeStamp+=Year;
 								timeStamp+=Hours;
 								timeStamp+=Minutes;
+								timeStamp+=Seconds;
 								TimeBuilt=true;
 							}
 						}

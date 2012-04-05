@@ -1,5 +1,4 @@
-$(document).ready(function (){
-		
-		$("#datePicker_start").datepicker();
-  		$( "#datePicker_end" ).datepicker();
+$(document).ready(function (){	
+	$("#datePicker_start").not('.hasDatePicker').datepicker();
+	$("#datePicker_end").not('.hasDatePicker').datepicker();
 });

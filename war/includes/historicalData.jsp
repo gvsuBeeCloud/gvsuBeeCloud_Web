@@ -26,7 +26,8 @@
 <script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="../js/datepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker.js"> </script>
+
 
 <link rel="stylesheet" href="../css/style.css" type="text/css"></link>
 <link rel="stylesheet"href="../css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
@@ -403,22 +404,7 @@
 
 	});
 </script>
-<script type="text/javascript">
-	$(document).ready(function (){
-		
-		//$("#datePicker_start").datepicker().focus(function () {$("#datePicker_start").datepicker("show");}).focus();
-  		//$( "#datePicker_end" ).datepicker().delay(800);
-		$(document).ready(function() {
-			("#datePicker_start").datepicker({
-			dateFormat: "mm-dd-yy"
-			});
-			("#datePicker_start").focus(function() {
-				("#datePicker_start").datepicker("show");
-			});
-			("#datePicker_start").focus();
-			});
- 	});					
-</script>
+
 </head>
 
 <body>
@@ -532,7 +518,6 @@ List<String> availableOptions = getValuesFromCDM();
 
 				<div id='div_historicalData_maxAndMins_record_contents'>
 					<div id='nav_historicalData_maxAndMins_record_contents'>
-					
 							Start Date: <input type='text' id="datePicker_start" name ="dp_start" readonly="readonly"/>
 							End Date:   <input type='text' id="datePicker_end" name="dp_end" readonly="readonly"/>
 							<input id='badAssButton' type='submit' onclick='datQuery()' value="Submit"/>
@@ -573,7 +558,6 @@ List<String> availableOptions = getValuesFromCDM();
 									}
 							    }
 							%>
-							
 					</div>
 					
 					
@@ -590,107 +574,107 @@ List<String> availableOptions = getValuesFromCDM();
 							}
 							if(readyToGo == true)
 							{
+							    boolean dateCorrect = false;
 								String alias=request.getParameter("alias");
 								String dp_start=request.getParameter("dp_start");
 								String dp_end=request.getParameter("dp_end");
 						
 						
-							long endDate = new Long("999999999999");
-							long startDate = new Long ("000000000000");
+								long endDate = new Long("999999999999");
+								long startDate = new Long ("000000000000");
 							
-							//Strings that will contain the user inputed date, if the date
-							//is valid
-							String sDate = new String();
-							String eDate = new String();
+								//Strings that will contain the user inputed date, if the date
+								//is valid
+								String sDate = new String();
+								String eDate = new String();
 
-						if(!dp_start.equals("undefined") && !dp_end.equals("undefined"))
-						{
+								if(!dp_start.equals("undefined") && !dp_end.equals("undefined") && !dp_start.isEmpty() && !dp_end.isEmpty())
+								{
 												
-							//take the start date from a standard format and turn it into timeStamp format
-							String[] sDate_pieces = dp_start.split("/");
+									//take the start date from a standard format and turn it into timeStamp format
+									String[] sDate_pieces = dp_start.split("/");
 							
-							//take the end date from a standard format and turn it into timeStamp format
-							String[] eDate_pieces = dp_end.split("/");
+									//take the end date from a standard format and turn it into timeStamp format
+									String[] eDate_pieces = dp_end.split("/");
 							
-							//Since incoming date format is mm/dd/yyyy, we need to do a swap on
-							//elements 0 and 1 in the array so it appears the incoming format was
-							//really dd/mm/yyyy
-							if(sDate_pieces.length > 1)
-							{
+									//Since incoming date format is mm/dd/yyyy, we need to do a swap on
+									//elements 0 and 1 in the array so it appears the incoming format was
+									//really dd/mm/yyyy
+									if(sDate_pieces.length > 1)
+									{
 							    
-							    String temp = sDate_pieces[0];
-							    sDate_pieces[0] = sDate_pieces[1];
-							    sDate_pieces[1] = temp;
+							    		String temp = sDate_pieces[0];
+							    		sDate_pieces[0] = sDate_pieces[1];
+							    		sDate_pieces[1] = temp;
 							    
-							    for(int i = 0; i < sDate_pieces.length; i++)
-								{
-									sDate = sDate_pieces[i] + sDate;
+							    		for(int i = 0; i < sDate_pieces.length; i++)
+										{
+											sDate = sDate_pieces[i] + sDate;
+										}
+										sDate = sDate + "0000";
+										startDate = Long.parseLong(sDate);
+									}
+							
+									//same swap function mentioned above now for the end date
+									if(eDate_pieces.length > 1)
+									{
+							    
+							    		String temp = eDate_pieces[0];
+							    		eDate_pieces[0] = eDate_pieces[1];
+							    		eDate_pieces[1] = temp;
+							    
+							    		for(int i = 0; i < eDate_pieces.length; i++)
+										{
+											eDate = eDate_pieces[i] + eDate;
+										}							
+										eDate = eDate + "9999";
+										endDate = Long.parseLong(eDate);
+									}
+									dateCorrect = true;
 								}
-								sDate = sDate + "0000";
-								startDate = Long.parseLong(sDate);
-							}
-							
-							//same swap function mentioned above now for the end date
-							if(eDate_pieces.length > 1)
-							{
-							    
-							    String temp = eDate_pieces[0];
-							    eDate_pieces[0] = eDate_pieces[1];
-							    eDate_pieces[1] = temp;
-							    
-							    for(int i = 0; i < eDate_pieces.length; i++)
+								if((startDate <= endDate) && (dateCorrect == true))
 								{
-									eDate = eDate_pieces[i] + eDate;
-								}							
-								eDate = eDate + "9999";
-								endDate = Long.parseLong(eDate);
-							}
-							
-						}	
-						datastore = DatastoreServiceFactory.getDatastoreService();
-						//Query for Highest and Lowest Records in the given date range
-						Query min_max_Query = new Query("hiveRecord", hiveRecordKey);
+								    dateCorrect = false;
+									datastore = DatastoreServiceFactory.getDatastoreService();
+									//Query for Highest and Lowest Records in the given date range
+									Query min_max_Query = new Query("hiveRecord", hiveRecordKey);
 						
-						//Make sure that the hiveID is the same as one specified by the user
-						min_max_Query.addFilter("hiveID", Query.FilterOperator.EQUAL, hiveID);
+									//Make sure that the hiveID is the same as one specified by the user
+									min_max_Query.addFilter("hiveID", Query.FilterOperator.EQUAL, hiveID);
 											
-						//Make sure that the timeStamp of the record is between the start and end date specified
-						//by the user.
-						min_max_Query.addFilter("timeStamp", Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
-						min_max_Query.addFilter("timeStamp", Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
-						min_max_Query.addSort("timeStamp", Query.SortDirection.ASCENDING);
+									//Make sure that the timeStamp of the record is between the start and end date specified
+									//by the user.
+									min_max_Query.addFilter("timeStamp", Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
+									min_max_Query.addFilter("timeStamp", Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
+									min_max_Query.addSort("timeStamp", Query.SortDirection.ASCENDING);
 						
-						//prepare query, run it, and return a list of records
-						records = datastore.prepare(min_max_Query).asList(FetchOptions.Builder.withLimit(999999999));
+									//prepare query, run it, and return a list of records
+									records = datastore.prepare(min_max_Query).asList(FetchOptions.Builder.withLimit(999999999));
 
-						if (records.isEmpty()) {
-						%>		
-							<p>No Matching Records</p>
-						<%
-						
-						} else {
+									if (records.isEmpty()) 
+									{
+										%><p>No Matching Records</p><%
+									}
+									
+									else 
+									{
 						        
-							List<String> requestedOptions = new ArrayList<String>();
+										List<String> requestedOptions = new ArrayList<String>();
  						    
- 						        
- 						        
- 						    
- 						    
-						    
-							//Loop through all the possible fields to be queryed and add the ones
-							//that have been selecected to the requested list
+										//Loop through all the possible fields to be queryed and add the ones
+										//that have been selecected to the requested list
 							
-							for(int i = 0; i < availableOptions.size(); i++)
-							{
-							    if(request.getParameter("max" + availableOptions.get(i)) != null)
-							    {
-							        requestedOptions.add("max" + availableOptions.get(i));
-							    }
-							    if(request.getParameter("min" + availableOptions.get(i)) != null)
-							    {
-							        requestedOptions.add("min" + availableOptions.get(i));
-							    }
-							}
+										for(int i = 0; i < availableOptions.size(); i++)
+										{
+							    			if(request.getParameter("max" + availableOptions.get(i)) != null)
+							    			{
+							        			requestedOptions.add("max" + availableOptions.get(i));
+							    			}
+							    		if(request.getParameter("min" + availableOptions.get(i)) != null)
+							    		{
+							        		requestedOptions.add("min" + availableOptions.get(i));
+							    		}
+									}
 						    							
 						    //Records that have a timestamp within the user specified parameters 
 						    //and selected hiveId, are returned. Now we can retrieve the statistics
@@ -706,7 +690,7 @@ List<String> availableOptions = getValuesFromCDM();
 						        //Either max or min
 						        String prefix = option.substring(0,3);
 						        
-						        //One of the available options
+						        //One of the available options from the availableOptions list
 						        String root = option.substring(3, option.length());
 						        
 						        //Sort through all the records add to both lists
@@ -748,7 +732,7 @@ List<String> availableOptions = getValuesFromCDM();
 						                }
 						            }	
 						        }
-						        	
+						        //Same as the if statement above, now for "min" prefixes	
 						        else
 						        {
 						            for(String temp : recordAttributes)
@@ -760,20 +744,31 @@ List<String> availableOptions = getValuesFromCDM();
 					                    	String rawTimestamp = temp.substring((temp.indexOf("*")+1), temp.length());
 					                    	rawTimestamp = (rawTimestamp.substring(4,6) + "/" + rawTimestamp.substring(6,8) + "/" + rawTimestamp.substring(0,4));
 					                    	
-					                    	//Add selected values ti the table
+					                    	//Add selected values to the table
 					                    	%>
 							       			<%=numericAttributes.get(0)%> </td>
 							       			<td><b>Timestamp of occurence:</b> <%=rawTimestamp%> </td></tr><%
 								       		break;
-					                	}
-						            }
-						            
-						        }
-						    }
+					                	}//end if
+						            }// end for each recordAttributes loop
+						        }//end else
+						    }//end for each requestedOptions loop
 						   
 						    %></table><% 
+						    }//end else
+						}//end if
+						else{
+						    if(dateCorrect == true)
+						    {
+						    	%><p>The Start Date Must Be Before The End Date.</p><%						        
 						    }
-						}
+						    else
+						    {
+						    	%><p>Neither of The Date Fields Can Be Blank</p><%
+						    }
+						}//end else
+					}//end if readyToGo
+							
 						    %>
 
 

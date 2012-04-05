@@ -66,16 +66,16 @@ public class SMStoText{
 			for(int i = 0; i< records.size(); i++)
 			{
 				String transmissionID = parseForID(records.get(i));
-				String hiveID = parseForHiveID(records.get(i));
 				ArrayList<String> dataRecords = parseForMessage(records.get(i));
-				dataRecords = listOfRecordsFormatted(dataRecords);
+				dataRecords = listOfRecordsFormatted(dataRecords, records);
 				
 				for(int j = 0; j< dataRecords.size(); j++)
 				{
-					hiveID = "hiveID=" + hiveID  + "&year=" + dataRecords.get(j);
-					fullRecord.add(hiveID);
+				//	hiveID = "hiveID=" + hiveID + dataRecords.get(j);
+					fullRecord.add(dataRecords.get(j));
 				}
-								myVoice.deleteMessage(transmissionID);
+				
+				myVoice.deleteMessage(transmissionID);
 			}
 	  }
 	  
@@ -147,25 +147,45 @@ public class SMStoText{
 	    return hiveID;
 	  }
 	  
-	  public ArrayList<String> listOfRecordsFormatted(ArrayList<String> recordsToBeFormatted)
+	  public ArrayList<String> listOfRecordsFormatted(ArrayList<String> recordsToBeFormatted, ArrayList<String> toGetHiveID)
 	  {
 		  String tempRecord = "";
 		  ArrayList<String> CDMValues = getValuesFromCDM();
 		  
+		  String nothing = "";
+		  
+		  ArrayList<String> records = new ArrayList<String>();
+		  
 		  for(int i=0; i<recordsToBeFormatted.size(); i++)
 		  {
 			  tempRecord = recordsToBeFormatted.get(i);
-			  tempRecord = tempRecord.replaceAll(":", " ");
+			  tempRecord = " " + tempRecord;
+			  tempRecord = tempRecord.replaceAll("<", nothing);
+			  tempRecord = tempRecord.replaceAll(">", "#");
+			  String[] tempArrayOfRecords = tempRecord.split("#");
 			  
-			  for(int j=1; j<CDMValues.size(); j++)
+			  String hiveID = "hiveID=" + parseForHiveID(toGetHiveID.get(i));
+			  String reset = hiveID;
+			  
+			  for(int k=0; k<tempArrayOfRecords.length; k++)
 			  {
-				  tempRecord = tempRecord.replaceFirst(" ", "&" + CDMValues.get(j) + "=");
+				  hiveID = reset;
+				  tempRecord = tempArrayOfRecords[k];
+				  tempRecord = tempRecord.replaceAll(":", " ");
+				  
+				  for(int j=0; j<CDMValues.size(); j++)
+				  {
+					  tempRecord = tempRecord.replaceFirst(" ", "&" + CDMValues.get(j) + "=");
+				  }
+				  
+					hiveID = hiveID + tempRecord;
+
+				  
+				//  recordsToBeFormatted.set(i, tempRecord);  
+				  records.add(hiveID);
 			  }
-			  
-			  recordsToBeFormatted.set(i, tempRecord);
-		  }
-		  
-		return recordsToBeFormatted;
+		  }		  
+		return records;
 	  }
 	  
 	  /**
