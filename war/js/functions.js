@@ -19,7 +19,7 @@ function datQuery(hiveID,alias){
 			  
 	    //reload the historical data div with the new URL
 		loadHistoricalDataDiv(hiveID,alias,startDate,endDate,"blah");
-		
+
 		//Remove old query information from the URL another query can
 		//be performed.
 		window.location = clrURLForQuery();
@@ -246,6 +246,7 @@ function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 	//alert(str.substring(1,str.length));
 	$("#div_historicalData").load("includes/historicalData.jsp?"+str.substring(1,str.length));
 	//window.location.href.replace("includes/historicalData.jsp?"+str.substring(1,str.length), "includes/historicalData.jsp?" + clrURLForQuery() );
+
 }
 
 function historicalDivActions() {

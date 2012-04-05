@@ -7,4 +7,3 @@ weight	int	0	999
 intTemp	Double	-100	100
 extTemp	Double	-100	100
 battery	int	0	100
-humidity	int	0	100
