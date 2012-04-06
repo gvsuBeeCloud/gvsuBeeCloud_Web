@@ -27,10 +27,10 @@ response.setDateHeader ("Expires", 0); //prevent caching at the proxy server
 
 <link rel="stylesheet" href="css/admin_style.css" type="text/css"></link>
 
-    <script type="text/javascript" src="js/jquery-1.7.1.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
+			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
     <link rel="stylesheet"
-	href="/css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
+	href="/css/ui-darkness/jquery-ui-1.8.18.custom.css" type="text/css"></link>
     <script type="text/javascript" src="js/admin_functions.js"></script>
 </head>    
 <body>
@@ -150,7 +150,7 @@ if(request.getParameter("editMode")!=null){
 				%>
 					<form method="get" action="/UpdateHive">
 						<label>Hive ID</label><input type='text' name="hiveID" />
-						<label>Description</label><input type='text' name="description" />
+						<label>Name</label><input type='text' name="name" />
 						<input type="hidden" value="<%= user.getEmail() %>" name="userID"/>
 						<input type='submit' class='button'  value='Add' />
 					</form>
@@ -168,7 +168,9 @@ if(request.getParameter("editMode")!=null){
 			}
 		%>
 		<table id="table_existingHives">
-		<th class='th_hiveID'> Name</th><th>Description</th><th>Manage</th>
+		
+		
+		<th>Hive ID</th><th class='th_hiveID'> Name</th><th>Alert Number</th><th>Latitude</th><th>Longitude</th><th>Manage</th>
 		
 		<%
 			//get existing hives for the user
@@ -197,17 +199,27 @@ if(request.getParameter("editMode")!=null){
     	    				<input type='hidden' name='userID' value="<%=record.getProperty("userID") %>" />
     	    				<input type='hidden' name='hiveID' value="<%=record.getProperty("hiveID") %>" />
     	    				
+    	    					<td>
+    	    						holder 1
+    	    					</td>
 	    						<td class='hiveRecord_alias'><input type='text' name='alias' value="<%=record.getProperty("alias") %>" /></td>
 	    						
 
-	    						<td class='hiveRecord_description'><input type='text' name='description' value=<%=record.getProperty("description") %> /></td>
+	    						<td><input type='text' name='description' value=<%=record.getProperty("someField") %> /></td>
+																<td>
+    	    						<input type='text' name='location_lat' value="<%=record.getProperty("location_lat") %>" />
+    	    					</td>
+    	    					<td>
+									<input type='text' name='location_long' value="<%=record.getProperty("location_long") %>" />
+								
+    	    					</td>
+								
 								<td>
-								<input type='hidden' name='location_lat' value="<%=record.getProperty("location_lat") %>" />
-								<input type='hidden' name='location_long' value="<%=record.getProperty("location_long") %>" />
 								
 								<input type='submit' class='button' value='Save' /><input type='button' class='button' class='button' value='Delete' /> 
 								
 								</td>
+
 							</tr>
 							</form>
 							<%
@@ -218,10 +230,18 @@ if(request.getParameter("editMode")!=null){
     	    			
     	    			%>
     	    			<tr>
-    	    		    	    				
+    	    		    	  	<td>
+    	    						<%=record.getProperty("hiveID") %>
+    	    					</td>				
     	    				<td class='hiveRecord_alias'><%=record.getProperty("alias") %></td>
 
 	    					<td class='hiveRecord_description'><%=record.getProperty("description") %></td>
+    	    		    	  	<td>
+    	    						<%=record.getProperty("alertPhone") %>
+    	    					</td>
+    	    		    	  	<td>
+    	    						<%=record.getProperty("otherfield") %>
+    	    					</td>
 							<td><a  class='button' n' href="administration.jsp?editMode=1&hiveID=<%=record.getProperty("hiveID") %>" > Edit</a> </td>
 							
 						</tr>
@@ -365,9 +385,9 @@ if(request.getParameter("editMode")!=null){
 
 		</select>
 		<label class='lbl_section'>Start Date</label>
-		<input id='queryStartDate' type='text' />
+		<input class='datepick' id='queryStartDate' type='text' />
 		<label class='lbl_section'>End Date </label>
-		<input id='queryEndDate' type='text' />
+		<input class='datepick' id='queryEndDate' type='text' />
 		<label class='lbl_section'>Fields</label>
 		<select name="fields" size=5 multiple>
 		<%

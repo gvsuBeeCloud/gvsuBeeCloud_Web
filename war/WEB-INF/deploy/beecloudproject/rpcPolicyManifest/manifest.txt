@@ -1,0 +1,3 @@
+# Module beecloudproject
+# RPC service class, partial path of RPC policy file
+com.beecloudproject.client.GreetingService, 4867261D0834B3A520A20BAF6F548B57.gwt.rpc

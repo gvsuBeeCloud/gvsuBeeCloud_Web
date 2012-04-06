@@ -125,7 +125,7 @@ border-top-right-radius: 10px;
 
 #div_hive{
 
-	width:49%;
+	width:100%;
 
 
 
@@ -226,8 +226,9 @@ border-top-right-radius: 10px;
 #div_profile{
 //background-color:#333333;
 	margin-bottom:20px;	
-	width:49%;
+	width:100%;
 	float:right;
+	margin-top:20px;
 }
 #table_profile{
 	width:100%;
