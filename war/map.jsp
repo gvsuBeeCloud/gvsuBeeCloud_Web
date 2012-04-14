@@ -44,7 +44,7 @@
     	
     	// Run an ancestor query to ensure we see the most up-to-date
     	// view of the Greetings belonging to the selected Guestbook.
-    	Query query = new Query("Hive").addSort("hiveID", Query.SortDirection.DESCENDING);
+    	Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
 				
     	List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
 				
@@ -121,11 +121,6 @@
 </div>
 <div id="container_historicalData"><div id="grabber_historicalData"></div><div id='div_historicalData'> 
 <span style="color:white;">Click a hive to view data.</span>
-
-<p> Weight: <%=weight%> </p>
-<p> iTemp: <%=int_temp%> </p>    
-<p> eTemp: <%=ext_temp%> </p>
-<p> message: <%=message%> </p>
 
 </div></div>
 </body>

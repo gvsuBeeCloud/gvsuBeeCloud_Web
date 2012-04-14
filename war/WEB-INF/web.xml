@@ -40,8 +40,12 @@
     <servlet-name>UpdateProfile</servlet-name>
     <servlet-class>com.beecloudproject.server.UpdateProfile</servlet-class>
   </servlet>
-  
-       <servlet>
+     <servlet>
+     	<servlet-name>Warnings</servlet-name>
+     	<servlet-class>com.beecloudproject.server.Warnings</servlet-class>
+     </servlet>
+
+     <servlet>
     <servlet-name>UpdateHive</servlet-name>
     <servlet-class>com.beecloudproject.server.UpdateHive</servlet-class>
   </servlet>
@@ -81,8 +85,12 @@
     <servlet-name>UpdateProfile</servlet-name>
     <url-pattern>/UpdateProfile</url-pattern>
   </servlet-mapping>
-  
-          <servlet-mapping>
+        <servlet-mapping>
+        	<servlet-name>Warnings</servlet-name>
+        	<url-pattern>/Warnings</url-pattern>
+        </servlet-mapping>
+
+        <servlet-mapping>
     <servlet-name>UpdateHive</servlet-name>
     <url-pattern>/UpdateHive</url-pattern>
   </servlet-mapping>

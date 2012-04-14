@@ -19,7 +19,7 @@ function datQuery(hiveID,alias){
 			  
 	    //reload the historical data div with the new URL
 		loadHistoricalDataDiv(hiveID,alias,startDate,endDate,"blah");
-		
+
 		//Remove old query information from the URL another query can
 		//be performed.
 		window.location = clrURLForQuery();
@@ -70,14 +70,14 @@ function loadMarkersFromHiddenDivs() {
 	var map = new google.maps.Map(document.getElementById("div_map_container"),
 			myOptions);
 
-	// var image = new google.maps.MarkerImage('images/beeico.gif',
+	// var image = new google.maps.MarkerImage('images/beeico.png',
 	// new google.maps.Size(20, 32),
 	// The origin for this image is 0,0.
 	// new google.maps.Point(0,0),
 	// The anchor for this image is the base of the flagpole at 0,32.
 	// new google.maps.Point(0, 32));
 
-	var image = new google.maps.MarkerImage('images/beeico.gif');
+	var image = new google.maps.MarkerImage('images/beeico.png');
 
 	// var myLatLng = new google.maps.LatLng(42.9634,-85.6681);
 	// var marker = new google.maps.Marker({
@@ -142,9 +142,9 @@ function loadMarkersFromHiddenDivs() {
 											+ "<br />"
 											+ timestamp
 											+ "</div><br />"
-											+ "iT: " + iTemperature + " C"
+											+ "iT: " + iTemperature + " °C"
 											+ "<br />"
-											+ "eT: " + eTemperature + " C"
+											+ "eT: " + eTemperature + " °C"
 											+ "<br />"
 											+ "W: "+ weight + " lbs."
 											+ "<br />"
@@ -236,7 +236,7 @@ function clrURLForQuery()
 			urlStr = urlStr + str.substring(i,i+1);
 		}
 	}
-	alert(urlStr);
+	//alert(urlStr);
 	return urlStr;
 }
 
@@ -246,6 +246,7 @@ function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 	//alert(str.substring(1,str.length));
 	$("#div_historicalData").load("includes/historicalData.jsp?"+str.substring(1,str.length));
 	//window.location.href.replace("includes/historicalData.jsp?"+str.substring(1,str.length), "includes/historicalData.jsp?" + clrURLForQuery() );
+
 }
 
 function historicalDivActions() {
