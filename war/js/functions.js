@@ -37,9 +37,9 @@ $(document).ready(function() {
 	$("#div_hiveControls_grabber").load("/LoginServlet");
 
 	// hide the historical data to start
-	$("#div_historicalData").hide();
+	//$("#div_historicalData").hide();
 
-	//loadHistoricalDataDiv("","");
+	/*
 	$("#grabber_historicalData").click(function() {
 		if ($("#div_historicalData").is(':visible')) {
 			$("#div_historicalData").hide('blind');
@@ -49,7 +49,7 @@ $(document).ready(function() {
 		}
 
 	});
-
+	*/
   $("#div_hiveControls").hide();
 
   

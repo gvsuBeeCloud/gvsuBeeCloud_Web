@@ -122,6 +122,11 @@
 <div id="container_historicalData"><div id="grabber_historicalData"></div><div id='div_historicalData'> 
 <span style="color:white;">Click a hive to view data.</span>
 
-</div></div>
+
+</div>
+
+
+
+</div>
 </body>
 </html>
