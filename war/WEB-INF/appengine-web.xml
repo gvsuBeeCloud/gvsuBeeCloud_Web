@@ -41,5 +41,5 @@
     stale session data. For details, see
     http://code.google.com/appengine/docs/java/config/appconfig.html#Enabling_Sessions
   -->
-
+<precompilation-enabled>false</precompilation-enabled>
 </appengine-web-app>
