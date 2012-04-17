@@ -77,7 +77,7 @@ function loadMarkersFromHiddenDivs() {
 	// The anchor for this image is the base of the flagpole at 0,32.
 	// new google.maps.Point(0, 32));
 
-	var image = new google.maps.MarkerImage('images/beeico.png');
+	var image = new google.maps.MarkerImage('images/beeico.gif');
 
 	// var myLatLng = new google.maps.LatLng(42.9634,-85.6681);
 	// var marker = new google.maps.Marker({

@@ -19,7 +19,7 @@
 <script type="text/javascript"
 	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCQnswJmYxTHOZdj3MbKtUE-bR_Fg6mx5c&sensor=true">
     </script>
-    <script type="text/javascript" src="js/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
     <script type="text/javascript" src="js/functions.js"></script>
 
@@ -31,39 +31,43 @@
 	
 	<div class='shouldBeHidden' id='div_param_hiveID'> </div>
 	<%! 
+	
 		String weight = "";
 		String int_temp = "";
 		String ext_temp = "";
 		String message = "";
 		String battery = "";
 		String timeStamp = "";
+
 	%>
 	<%
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    	Key hiveKey = KeyFactory.createKey("HiveParent", "hiveParentKey");
+    	//Key hiveKey = KeyFactory.createKey("HiveParent");
     	
     	// Run an ancestor query to ensure we see the most up-to-date
-    	// view of the Greetings belonging to the selected Guestbook.
-    	Query query = new Query("Hive",hiveKey).addSort("hiveID", Query.SortDirection.DESCENDING);
+    	Query query = new Query("Hive").addSort("hiveID", Query.SortDirection.DESCENDING);
 				
     	List<Entity> records = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(999999999));
 				
-	    if(records.isEmpty()){
+	   if(records.isEmpty()){
 	    	%>
 	    	<p> Records are empty </p>
 	    	<%
-	    }else{
+	    }
+	   else{
 	    	for(Entity record: records){
+	    		
 	    		//add hidden values
-	    		%> <div class='shouldBeHidden hiveRecord'>
-	    				<div class='hiveRecord_hiveID'><%=(record.getProperty("hiveID")).toString() %></div>
-	    				<div class='hiveRecord_aliasID'><%=(record.getProperty("aliasID")).toString() %></div>
+	    		%> 
+	    		<div class='shouldBeHidden hiveRecord'>
+	    				<div class='hiveRecord_hiveID'><%= record.getProperty("hiveID") %></div>
+	    				<div class='hiveRecord_aliasID'><%= record.getProperty("aliasID") %></div>
 	    				<div class='hiveRecord_loc_lat'><%=record.getProperty("location_lat") %></div>
 	    				<div class='hiveRecord_loc_long'><%=record.getProperty("location_long") %></div>
 	    				
 	    				<%
-						datastore = DatastoreServiceFactory.getDatastoreService();
-	    				Key hiveRecordKey = KeyFactory.createKey("hiveRecord", "hiveID");
+	    				
+	    				//Key hiveRecordKey = KeyFactory.createKey("hiveRecord", "hiveID");
 	    				Query hivePopUp = new Query("hiveRecord");
 	    				hivePopUp.addFilter("hiveID", Query.FilterOperator.EQUAL, (record.getProperty("hiveID")).toString());
 	    				//Need to find a way to reduce number of records by implementing something that 
@@ -75,7 +79,9 @@
 	    					message = "No Records";		
     					}
     					else{
-    					    //Get the most recent record from the list
+    					    
+    						
+    						//Get the most recent record from the list
     						Entity lastRecord = rec.get(0);
     					    
     						//Convert the timeStamp to a more readable date and time
@@ -84,29 +90,29 @@
     						
     						//Return the requested statistics
     						timeStamp = tmpDate;
-    						weight = (lastRecord.getProperty("weight")).toString(); 
-							int_temp = (lastRecord.getProperty("intTemp")).toString();
-							ext_temp = (lastRecord.getProperty("extTemp")).toString();
-							battery = (lastRecord.getProperty("battery")).toString();
-						}
+    						weight = ""+lastRecord.getProperty("weight"); 
+							int_temp =""+ lastRecord.getProperty("intTemp");
+							ext_temp = ""+lastRecord.getProperty("extTemp");
+							battery = ""+lastRecord.getProperty("battery");
+							
+					}
     					%> 
 	    				<div class='hiveRecord_weight'><%=weight %></div>
 	    				<div class='hiveRecord_iTemperature'><%=int_temp %></div>
 	    				<div class='hiveRecord_eTemperature'><%=ext_temp %></div>
-	    				<div class='hiveRecord_battery'><%=battery %></div>
-	    				<div class='hiveRecord_timeStamp'><%=timeStamp %></div>
+	    				<div class='hiveRecord_battery'><%= battery %></div>
+	    				<div class='hiveRecord_timeStamp'><%= timeStamp %></div>
 	    		</div>  
+
+	    		<%  
 	    		
-	    		<%
-	    		
-	    		
-	    	}
+	    		} 
 	    	
-	    }
-	    
-	    
-	%>
-	
+	    	  }
+	    		
+	    		
+	    		%>
+
 	</div>
 	<div id="div_map_container"></div>
 

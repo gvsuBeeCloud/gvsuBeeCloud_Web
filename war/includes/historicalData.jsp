@@ -23,14 +23,14 @@
 <html>
 <head>
 <script type="text/javascript" src="../js/jquery-ui-1.8.17.custom.min.js"></script>
-<script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="../js/datepicker.js"> </script>
 
 
 <link rel="stylesheet" href="../css/style.css" type="text/css"></link>
-<link rel="stylesheet"href="../css/smoothness/jquery-ui-1.8.17.custom.css" type="text/css"></link>
+<link rel="stylesheet"href="../css/ui-darkness/jquery-ui-1.8.18.custom.css" type="text/css"></link>
 <script type="text/javascript" src="../js/highcharts.js"></script>
 <script src="../js/modules/exporting.js" type="text/javascript"></script>
 
