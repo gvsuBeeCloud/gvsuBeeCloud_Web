@@ -172,7 +172,7 @@ function loadMarkersFromHiddenDivs() {
 								function() {
 						
 									//get start and end dates from url...
-				
+									window.location.hash="";
 							
 									setParamByName("hiveID",hiveID);
 									setParamByName("alias",alias);
