@@ -23,6 +23,10 @@ function datQuery(hiveID,alias){
 		//Remove old query information from the URL another query can
 		//be performed.
 		window.location = clrURLForQuery();
+		
+		
+		
+		
 
 }
 
@@ -34,7 +38,6 @@ $(document).ready(function() {
 	
 	// put all your jQuery goodness in here.
 
-	$("#div_hiveControls_grabber").load("/LoginServlet");
 
 	// hide the historical data to start
 	//$("#div_historicalData").hide();
@@ -51,9 +54,10 @@ $(document).ready(function() {
 	});
 	*/
   $("#div_hiveControls").hide();
-
+  $("#div_login").hide();
   
 
+  loadHistoricalDataDiv("blah","blah","blah","blah","blah");
 });
 
 
