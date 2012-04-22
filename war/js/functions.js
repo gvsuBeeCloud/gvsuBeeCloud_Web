@@ -57,7 +57,9 @@ $(document).ready(function() {
   $("#div_login").hide();
   
 
-  loadHistoricalDataDiv("blah","blah","blah","blah","blah");
+  setup();
+  loadHistoricalDataDiv();
+  
 });
 
 
@@ -178,8 +180,8 @@ function loadMarkersFromHiddenDivs() {
 									setParamByName("alias",alias);
 								
 
-									loadHistoricalDataDiv(hiveID,alias,"blah","blah","blah");
-									$("#div_historicalData").show("blind");
+									loadHistoricalDataDiv();
+									//$("#div_historicalData").show("blind");
 								});
 
 					});
@@ -252,28 +254,320 @@ function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 	//window.location.href.replace("includes/historicalData.jsp?"+str.substring(1,str.length), "includes/historicalData.jsp?" + clrURLForQuery() );
 
 }
+function loadHistoricalDataDiv() {
+	var str = window.location.hash;
+	//alert(str.substring(1,str.length));
+	$("#div_historicalData").load('includes/historicalData.jsp?'+str.substring(1,str.length +'#include_wrapper'));
+	//window.location.href.replace("includes/historicalData.jsp?"+str.substring(1,str.length), "includes/historicalData.jsp?" + clrURLForQuery() );
 
-function historicalDivActions() {
-	// setup historical data listeners
-	// hide max to start
+}
+
+
+
+
+
+function setup(){
+	
+	
+
+	//alert("Script working");
+	//setup historical data listeners
+	//hide max to start
 	$("#div_historicalData_maxAndMins").hide();
+	$("#div_historicalData_previousRecords").hide();
+	$("#div_historicalData_Charts").show();
 
-	$("#tab_historicalData_previousRecords").click(function() {
+	$("#btn_historicalData_previousRecords").click(function() {
 
-		// hide other divs
+		//hide other divs
 		$("#div_historicalData_maxAndMins").hide();
+		$("#div_historicalData_Charts").hide();
 
-		// show previous records div
+		//show previous records div
 		$("#div_historicalData_previousRecords").show();
 
 	});
 
-	$("#tab_historicalData_maxAndMins").click(function() {
-		// hide other divs
+	$("#btn_historicalData_MaxMin").click(function() {
+		//hide other divs
 		$("#div_historicalData_previousRecords").hide();
-		
-		// show max and mins
+		$("#div_historicalData_Charts").hide();
+
+		//show max and mins
 		$("#div_historicalData_maxAndMins").show();
 	});
 
+	$("#btn_historicalData_Charts").click(function() {
+		//hide other divs
+		$("#div_historicalData_maxAndMins").hide();
+		$("#div_historicalData_previousRecords").hide();
+
+		//show charts
+		$("#div_historicalData_Charts").show();
+
+	});
+	
+
+//alert("this far");
+	
+	
+	Highcharts.setOptions({
+		global : {
+			useUTC : false
+		}
+	});
+	//alert("after");
+/*
+	//make charts
+	chart_combo = new Highcharts.Chart({
+		chart : {
+
+			renderTo : 'container_interiorTemperature',
+			defaultSeriesType : 'spline',
+			marginRight : 100,
+			marginTop : 100,
+			events : {
+				load : function() {
+
+					// set up the updating of the chart each second
+					var series = this.series[0];
+					setInterval(function() {
+						var x = (new Date()).getTime(), // current time
+						y = Math.random();
+						series.addPoint([ x, y ], true, true);
+					}, 5000);
+
+					// set up the updating of the chart each second
+					var series2 = this.series[1];
+
+					setInterval(function() {
+						var x = (new Date()).getTime(), // current time
+						y = Math.random();
+						series2.addPoint([ x, y ], true, true);
+					}, 5000);
+
+					// set up the updating of the chart each second
+					var series3 = this.series[2];
+
+					setInterval(function() {
+						var x = (new Date()).getTime(), // current time
+						y = Math.random() * 200;
+						series3.addPoint([ x, y ], true, true);
+					}, 5000);
+
+				}
+			}
+		},
+		title : {
+			text : "Hive Metrics"
+		},
+
+		// exporting module
+		exporting : {
+			buttons : {
+				exportButton : {
+					hoverSymbolFill : "#768F3E",
+					//	onclick: ,
+				    menuItems: null,
+					symbol : "exportIcon",
+					symbolFill : "#A8BF77",
+					x : 10,
+					align : "right",
+					backgroundColor: "#000000",
+					borderColor : "#B0B0B0",
+					borderRadius : 3,
+					borderWidth : 1,
+					enabled : true,
+					height : 20,
+					hoverBorderColor : "#909090",
+					hoverSymbolStroke : "#4572A5",
+					symbolSize : 12,
+					symbolStroke : "#A0A0A0",
+					symbolStrokeWidth : 1,
+					symbolX : 11.5,
+					symbolY : 10.5,
+					verticalAlign : "top",
+					width : 24,
+					y : 10
+				},
+				printButton : {
+					hoverSymbolFill : "#779ABF",
+					//	onclick: ,
+					symbol : "printIcon",
+					symbolFill : "#B5C9DF",
+					x : -36,
+					align : "right",
+					//	backgroundColor: ,
+					borderColor : "#B0B0B0",
+					borderRadius : 3,
+					borderWidth : 1,
+					enabled : true,
+					height : 20,
+					hoverBorderColor : "#909090",
+					hoverSymbolStroke : "#4572A5",
+					symbolSize : 12,
+					symbolStroke : "#A0A0A0",
+					symbolStrokeWidth : 1,
+					symbolX : 11.5,
+					symbolY : 10.5,
+					verticalAlign : "top",
+					width : 24,
+					y : 10
+				}
+			},
+			enabled : true,
+			enableImages : false,
+			filename : "chart",
+			type : "image/png",
+			url : "http://export.highcharts.com",
+			width : 800
+		},
+		navigation: {
+		//	menuStyle: ,
+		//  menuItemStyle: ,
+		//	menuItemHoverStyle: ,
+			buttonOptions: {
+			align: "right",
+		//	backgroundColor: ,
+			borderColor: "#B0B0B0",
+			borderRadius: 3,
+			borderWidth: 1,
+			enabled: true,
+			height: 20,
+			hoverBorderColor: "#909090",
+			hoverSymbolFill: "#81A7CF",
+			hoverSymbolStroke: "#4572A5",
+			symbolFill: "#E0E0E0",
+			symbolSize: 12,
+			symbolStroke: "#A0A0A0",
+			symbolStrokeWidth: 1,
+			symbolX: 11.5,
+			symbolY: 10.5,
+			verticalAlign: "top",
+			width: 24,
+			y: 10
+			}
+			},
+
+		xAxis : {
+			type : 'datetime',
+			tickPixelInterval : 150
+		},
+		yAxis : [ {
+			title : {
+				text : 'Temperature'
+			},
+			opposite : false,
+
+			plotLines : [ {
+				value : 0,
+				width : 1,
+				color : '#808080'
+			} ]
+		}, { //secondary y axis 
+			title : {
+				text : 'Weight'
+			},
+			opposite : true,
+			plotLines : [ {
+				value : 0,
+				width : 1,
+				color : '#333aaa'
+			} ]
+
+		}
+
+		],
+		tooltip : {
+			
+			
+			*/
+			/*formatter : function() {
+				return '<b>'
+						+ this.series.name
+						+ '</b><br/>'
+						+ Highcharts.dateFormat(
+								'%Y-%m-%d %H:%M:%S', this.x)
+						+ '<br/>'
+						+ Highcharts.numberFormat(this.y, 2);
+			}
+			}*/
+
+			
+			/*
+		
+			formatter : function() {
+				var unit = {
+					'Weight' : 'lbs',
+					'Exterior Temperature' : '¡C',
+					'Interior Temperature' : '¡C'
+				}[this.series.name];
+
+				return '' + this.x + ': ' + this.y + ' ' + unit;
+			}
+		},
+		legend : {
+			enabled : false
+		},
+		exporting : {
+			enabled : false
+		},
+		series : [ {
+			name : 'Interior Temperature',
+			data : (function() {
+				// generate an array of random data
+				var data = [], time = (new Date()).getTime(), i;
+
+				for (i = -19; i <= 0; i++) {
+					data.push({
+						x : time + i * 1000,
+						y : Math.random()
+					});
+				}
+				return data;
+			})()
+		}, {
+
+			name : 'Exterior Temperature',
+			data : (function() {
+				// generate an array of random data
+				var data = [], time = (new Date()).getTime(), i;
+
+				for (i = -19; i <= 0; i++) {
+					data.push({
+						x : time + i * 1000,
+						y : Math.random()
+					});
+				}
+				return data;
+			})()
+		}, {
+			type : 'spline',
+			name : 'Weight',
+			yAxis : 1,
+			data : (function() {
+				// generate an array of random data
+				var data = [], time = (new Date()).getTime(), i;
+
+				for (i = -19; i <= 0; i++) {
+					data.push({
+						x : time + i * 1000,
+						y : Math.random() * 200
+					});
+				}
+				return data;
+			})()
+		}
+
+		],
+		center : [ 100, 80 ],
+		size : 100
+	});
+	*/
+
+	//alert("now here");
+	var box=$('#datePicker_start');
+	box.datepicker();
+	//alert("hello");
 }
+

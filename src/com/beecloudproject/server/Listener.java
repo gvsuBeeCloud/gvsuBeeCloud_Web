@@ -115,7 +115,7 @@ public class Listener extends HttpServlet
 								TimeGood=false;
 								resp.getWriter().println("time not good: "+(String)paramKey+ " "+(String)reqParams.get(paramKey));
 							}
-							if(TimeCount==5 && TimeGood) 
+							if(TimeCount==6 && TimeGood) 
 							{
 								timeStamp+=Month;
 								timeStamp+=Day;
@@ -142,6 +142,7 @@ public class Listener extends HttpServlet
 						if(TimeBuilt && TimeGood)
 						{
 							hiveRecord.setProperty("timeStamp", timeStamp);
+							resp.getWriter().println("||"+timeStamp);
 						}
 					}
 				//store record

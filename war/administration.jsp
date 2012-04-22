@@ -197,16 +197,13 @@ if(request.getParameter("editMode")!=null){
     	    				<form method="get" action="/UpdateHive">
     	    				<tr>
     	    				<input type='hidden' name='userID' value="<%=record.getProperty("userID") %>" />
-    	    				<input type='hidden' name='hiveID' value="<%=record.getProperty("hiveID") %>" />
+    	    					<td class='hiveRecord_hiveID'><input type='text' name='hiveID' value="<%=record.getProperty("hiveID") %>" /></td>
     	    				
-    	    					<td>
-    	    						holder 1
-    	    					</td>
 	    						<td class='hiveRecord_alias'><input type='text' name='alias' value="<%=record.getProperty("alias") %>" /></td>
 	    						
 
 	    						<td><input type='text' name='description' value=<%=record.getProperty("someField") %> /></td>
-																<td>
+								<td>
     	    						<input type='text' name='location_lat' value="<%=record.getProperty("location_lat") %>" />
     	    					</td>
     	    					<td>
@@ -235,13 +232,14 @@ if(request.getParameter("editMode")!=null){
     	    					</td>				
     	    				<td class='hiveRecord_alias'><%=record.getProperty("alias") %></td>
 
-	    					<td class='hiveRecord_description'><%=record.getProperty("description") %></td>
+	    					<td class='hiveRecord_description'><%=record.getProperty("alertPhone") %></td>
     	    		    	  	<td>
-    	    						<%=record.getProperty("alertPhone") %>
+    	    						<%=record.getProperty("location_lat") %>
     	    					</td>
     	    		    	  	<td>
-    	    						<%=record.getProperty("otherfield") %>
+    	    						<%=record.getProperty("location_long") %>
     	    					</td>
+    	    					
 							<td><a  class='button' n' href="administration.jsp?editMode=1&hiveID=<%=record.getProperty("hiveID") %>" > Edit</a> </td>
 							
 						</tr>

@@ -22,10 +22,7 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
     <script type="text/javascript" src="js/highcharts.js"></script>
-<script src="js/modules/exporting.js" type="text/javascript"></script>
-    
-    
-    
+	<script src="js/modules/exporting.js" type="text/javascript"></script>
     
     
     
@@ -130,10 +127,12 @@
 
 <div id='div_hiveControls_wrapper'><div id='div_hiveControls'></div><div id='div_hiveControls_grabber'>
 <ul>
-        	<li class='nav_main'>Other</li>
-        	<li class='nav_main' id='nav_login'>Log In</li>
+        	<li class='normal nav_main'>Administration</li>
+        	<li class='normal nav_main'>About </li>
+        	<li class='last nav_main' id='nav_login'>Logout</li>
+        	
 
-        	</ul>"+
+        	</ul>
 
         	<div id='div_login'>
         	<br />
@@ -154,6 +153,8 @@
 
 </div>
 <div id="container_historicalData"><div id='div_historicalData'> 
+
+<!--  %@ include file="includes/historicalData.jsp" %-->
 <span style="color:white;">Click a hive to view data.</span>
 
 

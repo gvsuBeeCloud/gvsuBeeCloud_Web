@@ -28,7 +28,7 @@
 
 
 
-<script type="text/javascript">
+<!--script type="text/javascript">
 	$(document).ready(function() {
 		
 		
@@ -38,7 +38,7 @@
 		//hide max to start
 		$("#div_historicalData_maxAndMins").hide();
 		$("#div_historicalData_previousRecords").hide();
-		$("#div_historicalData_Charts").hide();
+		$("#div_historicalData_Charts").show();
 
 		$("#btn_historicalData_previousRecords").click(function() {
 
@@ -331,16 +331,17 @@
 
 	
 	
-</script>
+</script-->
 
 </head>
 
 <body>
+<div id='include_wrapper'>
 	<div id="tab_historicalData">
 		<ul>
-			<li name='prev' id='btn_historicalData_PreviousRecords'>Records</li>
-			<li name='max' id='btn_historicalData_MaxMin'>MaxMin</li>
-			<li name='charts' id='btn_historicalData_Charts'>Charts</li>
+			
+			<li class='normal' name='max' id='btn_historicalData_MaxMin'>MaxMin</li>
+			<li class='last' name='charts' id='btn_historicalData_Charts'>Charts</li>
 		</ul>
 
 	</div>
@@ -386,6 +387,7 @@ List<String> availableOptions = getValuesFromCDM();
 
 	<div id='div_historicalData_previousRecords'>
 		<%
+		
 			//get all the previous records
 			String hiveID = request.getParameter("hiveID");
 			//try querying
@@ -685,16 +687,15 @@ List<String> availableOptions = getValuesFromCDM();
 						    %></table><% 
 						    }//end else
 						}//end if
-						else{
-						    if(dateCorrect == true)
+						else if(dateCorrect == true)
 						    {
 						    	%><p>The Start Date Must Be Before The End Date.</p><%						        
 						    }
-						    else
+						else
 						    {
 						    	%><p>Neither of The Date Fields Can Be Blank</p><%
 						    }
-						}//end else
+						//end else
 					}//end if readyToGo
 							
 						    %>
@@ -715,7 +716,7 @@ List<String> availableOptions = getValuesFromCDM();
 
 
 	</div>
-
+</div>
 
 </body>
 

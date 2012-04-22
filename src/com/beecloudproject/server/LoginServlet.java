@@ -68,10 +68,10 @@ public class LoginServlet extends HttpServlet {
     }
     
 	public void writeLinks(){
-		println("<link rel='stylesheet' href='css/style.css' type='text/css'></link>");
+	//	println("<link rel='stylesheet' href='css/style.css' type='text/css'></link>");
 		
-		println("    <script type='text/javascript' src='http://code.jquery.com/jquery-1.7.2.min.js'></script>");
-    println("<script type='text/javascript' src='js/jquery-ui-1.8.17.custom.min.js'></script>");
+	//	println("    <script type='text/javascript' src='http://code.jquery.com/jquery-1.7.2.min.js'></script>");
+    //println("<script type='text/javascript' src='js/jquery-ui-1.8.17.custom.min.js'></script>");
   // println("<script type='text/javascript' src='js/functions.js'></script>");
     
     
