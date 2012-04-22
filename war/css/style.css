@@ -363,6 +363,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 #div_historicalData_Charts{
 	width:100%;
 	height:100%;
+	 position: relative; 
 }
 #container_weight{
 	width:20%;
@@ -373,12 +374,34 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 
 }
 
+/* ------------------------------- */
+/* Chart styling */
 #container_interiorTemperature{
-	width:90%;
-	height:400px;
+	width:960;
+//	height:400px;
 	margin:auto;
-	overflow:hidden;
 	
+}
+
+#tbl_charts {
+	background-color:#83ABD2;
+}
+#tbl_charts input {
+	width:100%;
+}
+#tbl_charts select{
+	width:100%;	
+}
+.lbl_charts{
+	color:black;
+	font-size:18px;
+	font-weight:bold;
+}
+#tbl_charts tr{
+	width:100%;
+}
+#tbl_charts td{
+	width:20%;
 }
 
 #container_exteriorTemperature{
@@ -387,6 +410,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 	display:inline-block;
 	margin-right:15px;
 }
+
+/* -----------------------------*/
 /* button definitions */
 /* Dark Button CSS */
 
@@ -459,32 +484,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 	margin-top:10px;
 	border-radius:20px;
 	
-	
-}
-.div_previousHiveRecord_title{
-	background-color: #666666;
-	//height:15%;
-	width:100%;
-	display:block;
-	border-radius:20px 20px 0px 0px;
-	text-align:center;
-	font-size:28px;
-	color:#dddddd;
-	padding-top:5px;
-	padding-bottom:5px;
-}
-.div_previousHiveRecord_contents{
-	width:100%;
-	height:75%;
-	background-color:#ffffff;
-	display:block;
-}
-.div_previousHiveRecord_footer{
-	width:100%;
-	height:10%;
-	background-color:#666666;
-	display:block;
-	border-radius:0px 0px 20px 20px;
 	
 }
 /* hidden objects */

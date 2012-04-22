@@ -30,7 +30,9 @@
 </script>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
+<script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
+    <link rel="stylesheet"
+	href="/css/ui-darkness/jquery-ui-1.8.18.custom.css" type="text/css"></link>
 <script type="text/javascript" src="js/highcharts.js"></script>
 <script src="js/modules/exporting.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/map_functions.js"></script>
@@ -519,6 +521,52 @@
 <div id="charts" class="content_wrapper class_box_shadow">
 	
 			<div id='div_historicalData_Charts'>
+			<table id="tbl_charts">
+				<tr>
+				
+					<td> 
+						<label class="lbl_charts">Hive:</label> 
+						<select multiple="multiple" size="1">
+							<option> Hive 1</option>
+						</select>
+
+					</td>
+					
+					<td>
+						<label class="lbl_charts">Fields:</label>
+						<select multiple="multiple" size="1">
+							<option> Field 1</option>
+						</select>
+					</td>
+					<td>
+						<label class="lbl_charts">Interval:</label>
+						<select>
+							<option>
+							
+								Daily
+							</option>
+							<option>
+								Hourly
+							</option>
+							
+						</select>
+					</td>
+					
+					<td>
+						<label class="lbl_charts">Start Date:</label>
+						<input class="datePick" type="text"/>
+					
+					</td>
+					<td>
+						<label class="lbl_charts">End Date:</label>
+						<input class="datePick" type="text"/>
+					
+					</td>
+					<td>
+						<input type="button" value="Create" id="btn_createChart" />
+				</tr>
+			</table>
+			
 				<div id='container_interiorTemperature'></div>
 
 			</div>

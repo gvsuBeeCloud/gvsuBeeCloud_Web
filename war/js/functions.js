@@ -276,7 +276,9 @@ function setup(){
 	$("#div_historicalData_maxAndMins").hide();
 	$("#div_historicalData_previousRecords").hide();
 	$("#div_historicalData_Charts").show();
-
+	alert("before date");
+	$(".datePick").datepicker();
+	alert("changes");
 	$("#btn_historicalData_previousRecords").click(function() {
 
 		//hide other divs

@@ -21,43 +21,46 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-public class UpdateProfile extends HttpServlet {
+public class DeleteHive extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	//private static final long serialVersionUID = 1L;
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws IOException {
 		
 		//resp.getWriter().println("Resp working");
 		//get all parameters
-		//Map<String, String[]> reqParams = req.getParameterMap();
-		String userEmail=req.getParameter("email");
-		String firstName=req.getParameter("firstName");
-		String lastName=req.getParameter("lastName");
-		String username=req.getParameter("username");
-		String organization=req.getParameter("organization");
+		Map<String,String[]> reqParams = req.getParameterMap();
 		
+		//String userEmail=req.getParameter("email");
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 				Transaction txn = datastore.beginTransaction();
 				try {
-				    Key profileKey = KeyFactory.createKey("Users", userEmail);
+				   Key profileKey = KeyFactory.createKey("Hive", (String) reqParams.get("hiveID")[0]);
+
 				    
-				    Entity userRecord;
+				    Entity hiveRecord;
 					try {
-						userRecord = datastore.get(profileKey);
-					} catch (EntityNotFoundException e) {
+						//hiveRecord = datastore.get(profileKey);
+						datastore.delete(profileKey);
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						userRecord = new Entity(profileKey);
+						//hiveRecord = new Entity(profileKey);
+						resp.getWriter().print("Error deleting");
 					}
-					
-					//set all parameters				   
-					userRecord.setProperty("email", userEmail);
-					userRecord.setProperty("firstName", firstName);
-					userRecord.setProperty("lastName", lastName);
-					userRecord.setProperty("username", username);
-					userRecord.setProperty("organization", organization);
+					/*
+					//set all parameters
+					for(Object paramKey: reqParams.keySet()){
+				   
+						hiveRecord.setProperty((String)paramKey, (String) reqParams.get(paramKey)[0]);
 
-				    datastore.put(userRecord);
-
+					}
+				    datastore.put(hiveRecord);
+					 */
 				    txn.commit();
 				}  finally {
 				    if (txn.isActive()) {

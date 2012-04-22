@@ -202,7 +202,7 @@ if(request.getParameter("editMode")!=null){
 	    						<td class='hiveRecord_alias'><input type='text' name='alias' value="<%=record.getProperty("alias") %>" /></td>
 	    						
 
-	    						<td><input type='text' name='description' value=<%=record.getProperty("someField") %> /></td>
+	    						<td><input type='text' name='alertPhone' value=<%=record.getProperty("alertPhone") %> /></td>
 								<td>
     	    						<input type='text' name='location_lat' value="<%=record.getProperty("location_lat") %>" />
     	    					</td>
@@ -213,12 +213,15 @@ if(request.getParameter("editMode")!=null){
 								
 								<td>
 								
-								<input type='submit' class='button' value='Save' /><input type='button' class='button' class='button' value='Delete' /> 
+								<input type='submit' class='button' value='Save' /></form><form method="get" action="/DeleteHive">
 								
+								<input type="hidden" name="hiveID" value="<%=record.getProperty("hiveID") %>" />
+								<input type='submit' class='button' value='Delete' /> 
+								</form>
 								</td>
 
 							</tr>
-							</form>
+							
 							<%
     	    			
     	    		}else{
@@ -232,7 +235,7 @@ if(request.getParameter("editMode")!=null){
     	    					</td>				
     	    				<td class='hiveRecord_alias'><%=record.getProperty("alias") %></td>
 
-	    					<td class='hiveRecord_description'><%=record.getProperty("alertPhone") %></td>
+	    					<td class='hiveRecord_alertPhone'><%=record.getProperty("alertPhone") %></td>
     	    		    	  	<td>
     	    						<%=record.getProperty("location_lat") %>
     	    					</td>

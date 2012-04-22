@@ -67,7 +67,7 @@ public class UpdateHive extends HttpServlet {
 				}
 		
 				
-				resp.sendRedirect("/administration.jsp");
+				resp.sendRedirect("/administration.jsp?editMode=0");
 	}
 	
 		

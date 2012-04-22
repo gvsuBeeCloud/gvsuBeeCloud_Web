@@ -50,6 +50,11 @@
     <servlet-class>com.beecloudproject.server.UpdateHive</servlet-class>
   </servlet>
   
+       <servlet>
+    <servlet-name>DeleteHive</servlet-name>
+    <servlet-class>com.beecloudproject.server.DeleteHive</servlet-class>
+  </servlet>
+  
   
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
@@ -93,6 +98,11 @@
         <servlet-mapping>
     <servlet-name>UpdateHive</servlet-name>
     <url-pattern>/UpdateHive</url-pattern>
+  </servlet-mapping>
+  
+          <servlet-mapping>
+    <servlet-name>DeleteHive</servlet-name>
+    <url-pattern>/DeleteHive</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

@@ -49,7 +49,7 @@ $(document).ready(function() {
 function loadAllDivs(){
 	//$("#data").load("includes/maxMin.jsp");
 	
-	setupCharts();
+	//setupCharts();
 }
 function addListeners(){
 
@@ -60,6 +60,7 @@ function addListeners(){
 	
 	$("#div_map_container").hide();
 	$(".content_wrapper").hide();
+	$(".datePick").datepicker();
 	
 	determineView();
 
@@ -80,6 +81,10 @@ function addListeners(){
 		//show charts
 		$("#div_historicalData_Charts").show();
 
+	});
+	
+	$("#btn_createChart").click(function (){
+		createChart();
 	});
 	
 	
@@ -307,8 +312,8 @@ function setupCharts(){
 	
 	     var chart1 = new Highcharts.Chart({
 	         chart: {
-	            renderTo: 'charts',
-	            type: 'spline'
+	            renderTo: 'container_interiorTemperature',
+	            type: 'spline',
 	         },
 	         title: {
 	            text: 'Hive Metrics'
@@ -335,7 +340,7 @@ function setupCharts(){
 
 	
 	
-	
+	     chart1.setSize(960,800);
 	
 	
 			Highcharts.setOptions({
@@ -349,5 +354,9 @@ function setupCharts(){
 	//var box=$('#datePicker_start');
 //	box.datepicker();
 	//alert("hello");
+}
+
+function createChart(){
+	setupCharts();
 }
 
