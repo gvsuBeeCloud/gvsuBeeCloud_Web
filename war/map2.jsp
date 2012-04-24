@@ -68,11 +68,7 @@
 
 				//add hidden values
 	%>
-	<div class='shouldBeHidden hiveRecord'>
-		<div class='hiveRecord_hiveID'><%=record.getProperty("hiveID")%></div>
-		<div class='hiveRecord_aliasID'><%=record.getProperty("aliasID")%></div>
-		<div class='hiveRecord_loc_lat'><%=record.getProperty("location_lat")%></div>
-		<div class='hiveRecord_loc_long'><%=record.getProperty("location_long")%></div>
+
 
 		<%
 			//Key hiveRecordKey = KeyFactory.createKey("hiveRecord", "hiveID");
@@ -110,11 +106,37 @@
 
 					}
 		%>
-		<div class='hiveRecord_weight'><%=weight%></div>
-		<div class='hiveRecord_iTemperature'><%=int_temp%></div>
-		<div class='hiveRecord_eTemperature'><%=ext_temp%></div>
-		<div class='hiveRecord_battery'><%=battery%></div>
-		<div class='hiveRecord_timeStamp'><%=timeStamp%></div>
+	<div id="hive<%=record.getProperty("hiveID") %>" class='shouldBeHidden hiveRecord'>
+
+		<span class="hiveRecord_label">ID</span>
+		<span class='hiveRecord_field hiveRecord_hiveID'><%=record.getProperty("hiveID")%></span>
+		<span class="hiveRecord_label">Weight</span>
+		<span class='hiveRecord_field hiveRecord_weight'><%=weight%></span><br />
+		
+		
+		<span class="hiveRecord_label">Name</span>
+		<span class='hiveRecord_field hiveRecord_aliasID'><%=record.getProperty("aliasID")%></span>
+		<span class="hiveRecord_label">Interior Temperature</span>
+		<span class='hiveRecord_field hiveRecord_iTemperature'><%=int_temp%></span><br />
+		
+		<span class="hiveRecord_label">Latitude</span>
+		<span class='hiveRecord_field hiveRecord_loc_lat'><%=record.getProperty("location_lat")%></span>
+				<span class="hiveRecord_label">Exterior Temperature</span>
+		<span class='hiveRecord_field hiveRecord_eTemperature'><%=ext_temp%></span><br />
+		
+		<span class="hiveRecord_label">Longitude</span>
+		<span class='hiveRecord_field hiveRecord_loc_long'><%=record.getProperty("location_long")%></span>
+		<span class="hiveRecord_label">Battery</span>
+		<span class='hiveRecord_field hiveRecord_battery'><%=battery%></span>
+		
+		</span>
+		
+		
+
+		<span class="timestamp_wrapper">
+		<span class="hiveRecord_label hiveRecord_timeStamp_label" >Recent Collection</span>
+		<span class='hiveRecord_field hiveRecord_timeStamp'>4/22/2012 04:80<%=timeStamp%></span>
+
 	</div>
 
 	<%
@@ -163,7 +185,7 @@
 
 		FileInputStream fstream;
 		try {
-			fstream = new FileInputStream("http://www.beecloudproject.appspot.com/includes/CDM.txt");
+			fstream = new FileInputStream("includes/CDM.txt");
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
@@ -174,11 +196,13 @@
 				valuesOfLine = readIn.split("\t");
 				CDMValues.add(valuesOfLine[0]);
 				i++;
+				
 			}
 
 		}
 
 		catch (FileNotFoundException e) {
+		
 
 		} catch (IOException e) {
 
@@ -189,6 +213,7 @@
 
 	//Obtain field values from CDM
 	List<String> availableOptions = getValuesFromCDM();%>
+	
 
 
 
@@ -203,7 +228,21 @@
 			<div id='div_historicalData_maxAndMins_record_contents'>
 				<div id='nav_historicalData_maxAndMins_record_contents'>
 				<form methpd="get" action="/map2.jsp?view=data">
-				Hive: <select name="hiveID"><option value='19726163805'>CS Hive</option><option value='16166488272'>Eng Hive</option></select>
+				
+				
+				Hive: <select name="hiveID">
+				
+				
+				<% for(Entity hive : records){
+					%>
+						<option value='<%= hive.getProperty("hiveID")%>'><%=hive.getProperty("alias") %></option>
+					
+					<%
+					
+				}
+					%>
+				
+				</select>
 					Start Date: <input type='text' class="datePick"
 						id="datePicker_start" name="dp_start" /> End Date: <input
 						type='text' class="datePick" id="datePicker_end" name="dp_end" />
@@ -218,15 +257,14 @@
 						//Run a query to get the field values from the datastore
 						Query fieldsInTable = new Query("hiveRecord").addSort("timeStamp",
 								Query.SortDirection.DESCENDING);
-						fieldsInTable.addFilter("hiveID", Query.FilterOperator.EQUAL,
-								"16166488272");
+						//fieldsInTable.addFilter("hiveID", Query.FilterOperator.EQUAL,"16166488272");
 						List<Entity> recFields = datastore.prepare(fieldsInTable).asList(
 								FetchOptions.Builder.withLimit(1));
 
 						if (recFields.isEmpty()) {
 							//We do nothing
 							%>
-							<p> BADDDD </p>
+							<p> _ </p>
 							<%
 						} else {
 							//Grab entity from list
@@ -242,18 +280,29 @@
 									}
 								}
 								availableOptions = similar;
+							}else{
+								%>
+								<p> Fields null </p>
+								
+								<%
 							}
+							
+							%>
+							
+							
+							
+							<%
 							for (int count = 0; count < availableOptions.size(); count++) {
 					%>
 					Max
 					<%=availableOptions.get(count)%>
 					<input class="ch_query_options"
-						id="max<%=availableOptions.get(count)%>" type='checkbox'
-						name='query_options' /> Min
+						name="max<%=availableOptions.get(count)%>" type='checkbox'
+						 /> Min
 					<%=availableOptions.get(count)%>
 					<input class="ch_query_options"
-						id="min<%=availableOptions.get(count)%>" type='checkbox'
-						name='query_options' />
+						name="min<%=availableOptions.get(count)%>" type='checkbox'
+						 />
 					<%
 						}
 						}
@@ -298,36 +347,43 @@
 
 							//Since incoming date format is mm/dd/yyyy, we need to do a swap on
 							//elements 0 and 1 in the array so it appears the incoming format was
-							//really dd/mm/yyyy
+							//really yyyy/mm/dd
 							if (sDate_pieces.length > 1) {
 
-								String temp = sDate_pieces[0];
-								sDate_pieces[0] = sDate_pieces[1];
-								sDate_pieces[1] = temp;
+								String temp = sDate_pieces[2];
+								sDate_pieces[2] = sDate_pieces[1];
+								sDate_pieces[1] = sDate_pieces[0];
+								sDate_pieces[0] = temp;
 
+								//sDate=sDate_pieces.toString();
 								for (int i = 0; i < sDate_pieces.length; i++) {
-									sDate = sDate_pieces[i] + sDate;
+									sDate = sDate+ sDate_pieces[i];
 								}
 								sDate = sDate + "0000";
 								startDate = Long.parseLong(sDate);
 							}
 
+							
 							//same swap function mentioned above now for the end date
 							if (eDate_pieces.length > 1) {
 
-								String temp = eDate_pieces[0];
-								eDate_pieces[0] = eDate_pieces[1];
-								eDate_pieces[1] = temp;
+								String temp = eDate_pieces[2];
+								eDate_pieces[2] = eDate_pieces[1];
+								eDate_pieces[1] = eDate_pieces[0];
 
+								eDate_pieces[0] = temp;
+
+								//eDate=eDate_pieces.toString();
 								for (int i = 0; i < eDate_pieces.length; i++) {
-									eDate = eDate_pieces[i] + eDate;
+									eDate += eDate_pieces[i];
 								}
-								eDate = eDate + "99999999";
+								eDate = eDate + "999999";
 								endDate = Long.parseLong(eDate);
 							}
 							dateCorrect = true;
 						}
 						if ((startDate <= endDate) && (dateCorrect == true)) {
+					
 							dateCorrect = false;
 							datastore = DatastoreServiceFactory.getDatastoreService();
 							//Query for Highest and Lowest Records in the given date range
@@ -384,7 +440,7 @@
 										//String containing the record attribute and the timestamp
 										List<String> recordAttributes = new ArrayList<String>();
 										//Record attribute as an integer
-										List<Integer> numericAttributes = new ArrayList<Integer>();
+										List<Double> numericAttributes = new ArrayList<Double>();
 
 										//Either max or min
 										String prefix = option.substring(0, 3);
@@ -401,8 +457,8 @@
 														+ "*"
 														+ (record.getProperty("timeStamp")
 																.toString()));
-												numericAttributes.add(Integer
-														.parseInt(record.getProperty(root)
+												numericAttributes.add(Double
+														.parseDouble(record.getProperty(root)
 																.toString()));
 											}
 										}
@@ -431,8 +487,7 @@
  										0, 4));
 
  								//Add selected values to the table
- %> <%=numericAttributes
-												.get(numericAttributes.size() - 1)%>
+ %> <%=numericAttributes.get(numericAttributes.size() - 1)%>
 						</td>
 						<td><b>Timestamp of occurence:</b> <%=rawTimestamp%></td>
 					</tr>
@@ -526,7 +581,7 @@
 				
 					<td> 
 						<label class="lbl_charts">Hive:</label> 
-						<select multiple="multiple" size="1">
+						<select multiple="multiple" size="2">
 							<option> Hive 1</option>
 						</select>
 
@@ -534,12 +589,27 @@
 					
 					<td>
 						<label class="lbl_charts">Fields:</label>
-						<select multiple="multiple" size="1">
+						<select size="2" multiple="multiple" >
 							<option> Field 1</option>
+							<option> Field 2</option>
+							<option> Field 3</option>
+							<option> Field 4</option>
+							<option> Field 5</option>
+							<option> Field 6</option>
 						</select>
 					</td>
+
+					
 					<td>
-						<label class="lbl_charts">Interval:</label>
+						<label class="lbl_charts">Start Date:</label>
+						<input class="datePick" type="text"/>
+						<label class="lbl_charts">End Date:</label>
+						<input class="datePick" type="text"/>
+					
+					</td>
+
+					<td>
+											<label class="lbl_charts">Interval:</label>
 						<select>
 							<option>
 							
@@ -550,19 +620,8 @@
 							</option>
 							
 						</select>
-					</td>
-					
-					<td>
-						<label class="lbl_charts">Start Date:</label>
-						<input class="datePick" type="text"/>
-					
-					</td>
-					<td>
-						<label class="lbl_charts">End Date:</label>
-						<input class="datePick" type="text"/>
-					
-					</td>
-					<td>
+						<br />
+						<label class="lbl_charts">Create:</label>
 						<input type="button" value="Create" id="btn_createChart" />
 				</tr>
 			</table>
@@ -575,7 +634,9 @@
 </div>
 
 
-
+<div id='test'>
+HERE IS SOME TEXT
+</div>
 
 
 </body>

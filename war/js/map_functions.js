@@ -61,6 +61,7 @@ function addListeners(){
 	$("#div_map_container").hide();
 	$(".content_wrapper").hide();
 	$(".datePick").datepicker();
+	$("#test").hide();
 	
 	determineView();
 
@@ -188,7 +189,7 @@ function loadMarkersFromHiddenDivs() {
 							icon : image
 
 						});
-
+/*
 						var infowindow = new google.maps.InfoWindow(
 								{
 									content : "<div class='div_infoWindow'><div style='z-index:99' class='clickable_hiveID'>"
@@ -207,20 +208,54 @@ function loadMarkersFromHiddenDivs() {
 											+ "B: " + battery + " %"
 											+"</div>"
 								});
-						
+								
+								*/
+						//infowindow.open(map);
+
 						// add open listener
 						google.maps.event.addListener(marker, 'mouseover',
-								function() {
-									infowindow.open(map, marker);
+								function(event) {
+							var overlay = new google.maps.OverlayView();
+							overlay.draw = function() {};
+							overlay.setMap(map);
+							//alert("mouse");
+							
+							var projection = overlay.getProjection(); 
+						    var pixel = projection.fromLatLngToContainerPixel(marker.getPosition());
+						    
+						    var mouseX=pixel.x;
+						    var mouseY=pixel.y;
+						    
+						    $('#hive'+hiveID).css("left",$('#div_map_container').offset().left);
+						    $('#hive'+hiveID).css("top",$('#div_map_container').offset().top);
+						    $('#hive'+hiveID).css("z-index","99");
+						   // alert($('#div_map_container').offset().left);
+
+						    
+						//    alert($('#hive'+hiveID).css("left"));
+						    
+						    $(".hiveRecord").hide();
+						    if($('#hive'+hiveID).is(":visible")){
+						    	
+						    }
+						    $('#hive'+hiveID).slideDown();
+						  //  alert('#hive'+hiveID);
+					
+								
+							
+							
+
 								});
 						// add close listener
 						google.maps.event.addListener(marker, 'mouseout',
 								function() {
-									infowindow.close(map, marker);
-								});
+					       $('#hive'+hiveID).hide();
 
+								});
+/*
 						// show the historical information
 						google.maps.event.addListener(marker, 'click',
+								
 								function() {
 						
 									//get start and end dates from url...
@@ -233,8 +268,11 @@ function loadMarkersFromHiddenDivs() {
 									loadHistoricalDataDiv();
 									//$("#div_historicalData").show("blind");
 								});
+								
+							*/
 
 					});
+					
 
 }
 

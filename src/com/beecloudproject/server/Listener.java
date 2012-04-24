@@ -117,9 +117,9 @@ public class Listener extends HttpServlet
 							}
 							if(TimeCount==6 && TimeGood) 
 							{
+								timeStamp+=Year;
 								timeStamp+=Month;
 								timeStamp+=Day;
-								timeStamp+=Year;
 								timeStamp+=Hours;
 								timeStamp+=Minutes;
 								timeStamp+=Seconds;
