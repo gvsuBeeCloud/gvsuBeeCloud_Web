@@ -283,12 +283,6 @@ function setParamByName(name,value){
 }
 
 
-
-
-
-
-
-
 function loadHistoricalDataDiv(hiveID,alias,startDate,endDate,checkbox_status) {
 	var str = window.location.hash;
 	//alert(str.substring(1,str.length));

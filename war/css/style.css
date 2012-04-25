@@ -543,3 +543,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 	height:200px;
 	background-color:blue;
 }
+
+#table_query_averages tr{
+		text-align: center;
+}

@@ -59,9 +59,9 @@ public class SMStoText{
 		  return fullRecord;
 	  }
 	  
-	  public void createHiveRecord(Voice myVoice, String unreadRecords) throws IOException
+	  public void createHiveRecord(Voice myVoice, String unreadRecords1) throws IOException
 	  {
-			ArrayList<String> records = parseForRecords(unreadRecords);
+			ArrayList<String> records = parseForRecords(unreadRecords1);
 			
 			for(int i = 0; i< records.size(); i++)
 			{
@@ -79,16 +79,16 @@ public class SMStoText{
 			}
 	  }
 	  
-	  public ArrayList<String> parseForRecords(String unreadRecords)
+	  public ArrayList<String> parseForRecords(String unreadRecords1)
 	  {
 		  ArrayList<String> arrayOfRecords = new ArrayList<String>();
 		  String lookForMessage = "SMSThread";
 		  int someLeft = 0;
-		  while((someLeft = unreadRecords.lastIndexOf(lookForMessage)) != -1)
+		  while((someLeft = unreadRecords1.lastIndexOf(lookForMessage)) != -1)
 		  {
-			  String rightHalfOfMessage = unreadRecords.substring(someLeft, unreadRecords.length());
+			  String rightHalfOfMessage = unreadRecords1.substring(someLeft, unreadRecords1.length());
 			  arrayOfRecords.add(rightHalfOfMessage);
-			  unreadRecords = unreadRecords.substring(0, someLeft);		  
+			  unreadRecords1 = unreadRecords1.substring(0, someLeft);		  
 		  }
 		  return arrayOfRecords;
 	  }
