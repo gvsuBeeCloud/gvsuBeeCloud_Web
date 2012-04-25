@@ -35,6 +35,7 @@
 	href="/css/ui-darkness/jquery-ui-1.8.18.custom.css" type="text/css"></link>
 <script type="text/javascript" src="js/highcharts.js"></script>
 <script src="js/modules/exporting.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://www.kunalbabre.com/projects/table2CSV.js" > </script>
 <script type="text/javascript" src="js/map_functions.js"></script>
 
 </head>
@@ -560,12 +561,19 @@
 									Query.SortDirection.ASCENDING);
 
 							//prepare query, run it, and return a list of records
-							records = datastore.prepare(min_max_Query).asList(
+							List<Entity>minMaxRecords = datastore.prepare(min_max_Query).asList(
 									FetchOptions.Builder.withLimit(999999999));
+
 
 							if (records.isEmpty()) {
 				                %><p>No Matching Records</p><%
 					        }
+
+							if (minMaxRecords.isEmpty()) {
+				%><p>No Matching Records</p>
+				<%
+					}
+
 
 							else {
 
@@ -587,7 +595,7 @@
 								//Records that have a timestamp within the user specified parameters 
 								//and selected hiveId, are returned. Now we can retrieve the statistics
 								//that were requested by the user.
-				%><table id='table_historicalData_maxAndMins'>
+				%><input type="button" onclick="$('#table_historicalData_maxAndMins').table2CSV()" value="Generate CSV" ><table id='table_historicalData_maxAndMins'>
 					<%
 						for (String option : requestedOptions) {
 										//String containing the record attribute and the timestamp
@@ -602,7 +610,7 @@
 										String root = option.substring(3, option.length());
 
 										//Sort through all the records add to both lists
-										for (Entity record : records) {
+										for (Entity record : minMaxRecords) {
 											//Make sure the record value isn't empty
 											if (record.getProperty(root) != null) {
 												recordAttributes.add((record
@@ -641,8 +649,7 @@
 
  								//Add selected values to the table
  %> <%=numericAttributes.get(numericAttributes.size() - 1)%>
-						</td>
-						<td><b>Timestamp of occurence:</b> <%=rawTimestamp%></td>
+						</td><td><b>Timestamp of occurence:</b> <%=rawTimestamp%></td>
 					</tr>
 					<%
 						break;
@@ -731,53 +738,168 @@
 			<div id='div_historicalData_Charts'>
 			<table id="tbl_charts">
 				<tr>
-				
+					<form method="get" action="map2.jsp">
 					<td> 
 						<label class="lbl_charts">Hive:</label> 
-						<select multiple="multiple" size="2">
-							<option> Hive 1</option>
+						<select name="hiveID">
+							<% for(Entity hive : records){
+					%>
+						<option value='<%= hive.getProperty("hiveID")%>'><%=hive.getProperty("alias") %></option>
+					
+					<%
+					
+				}
+					%>
 						</select>
 
 					</td>
 					
-					<td>
-						<label class="lbl_charts">Fields:</label>
-						<select size="2" multiple="multiple" >
-							<option> Field 1</option>
-							<option> Field 2</option>
-							<option> Field 3</option>
-							<option> Field 4</option>
-							<option> Field 5</option>
-							<option> Field 6</option>
-						</select>
-					</td>
+
 
 					
 					<td>
 						<label class="lbl_charts">Start Date:</label>
-						<input class="datePick" type="text"/>
+						<input class="datePick"  name="dp_start" type="text"/>
 						<label class="lbl_charts">End Date:</label>
-						<input class="datePick" type="text"/>
+						<input class="datePick" name="dp_end" type="text"/>
 					
 					</td>
 
 					<td>
 											<label class="lbl_charts">Interval:</label>
-						<select>
-							<option>
+						<select name="interval">
+							<option value="Daily">
 							
 								Daily
 							</option>
-							<option>
+							<option value="Hourly">
 								Hourly
 							</option>
 							
 						</select>
 						<br />
 						<label class="lbl_charts">Create:</label>
-						<input type="button" value="Create" id="btn_createChart" />
+						<input type="submit" value="Create" id="btn_createChart" />
 				</tr>
+				<input type='hidden' name="view" value="charts" />
+				</form>
 			</table>
+			<%
+				if(request.getParameter("hiveID") != null && request.getParameter("dp_start") != null && request.getParameter("dp_end")!=null){
+					//populate the series through previous hiverecords
+					boolean dateCorrect = false;
+						//String alias = request.getParameter("alias");
+						String dp_start = request.getParameter("dp_start");
+						String dp_end = request.getParameter("dp_end");
+						String chartHiveID= request.getParameter("hiveID");
+
+						long endDate = new Long("9999999999999999");
+						long startDate = new Long("0000000000000000");
+
+						//Strings that will contain the user inputed date, if the date
+						//is valid
+						String sDate = new String();
+						String eDate = new String();
+
+						if (!dp_start.equals("undefined")
+								&& !dp_end.equals("undefined") && !dp_start.isEmpty()
+								&& !dp_end.isEmpty()) {
+
+							//take the start date from a standard format and turn it into timeStamp format
+							String[] sDate_pieces = dp_start.split("/");
+
+							//take the end date from a standard format and turn it into timeStamp format
+							String[] eDate_pieces = dp_end.split("/");
+
+							//Since incoming date format is mm/dd/yyyy, we need to do a swap on
+							//elements 0 and 1 in the array so it appears the incoming format was
+							//really yyyy/mm/dd
+							if (sDate_pieces.length > 1) {
+
+								String temp = sDate_pieces[2];
+								sDate_pieces[2] = sDate_pieces[1];
+								sDate_pieces[1] = sDate_pieces[0];
+								sDate_pieces[0] = temp;
+
+								//sDate=sDate_pieces.toString();
+								for (int i = 0; i < sDate_pieces.length; i++) {
+									sDate = sDate+ sDate_pieces[i];
+								}
+								sDate = sDate + "0000";
+								startDate = Long.parseLong(sDate);
+							}
+
+							
+							//same swap function mentioned above now for the end date
+							if (eDate_pieces.length > 1) {
+
+								String temp = eDate_pieces[2];
+								eDate_pieces[2] = eDate_pieces[1];
+								eDate_pieces[1] = eDate_pieces[0];
+
+								eDate_pieces[0] = temp;
+
+								//eDate=eDate_pieces.toString();
+								for (int i = 0; i < eDate_pieces.length; i++) {
+									eDate += eDate_pieces[i];
+								}
+								eDate = eDate + "999999";
+								endDate = Long.parseLong(eDate);
+							}
+							dateCorrect = true;
+						}
+						if ((startDate <= endDate) && (dateCorrect == true)) {
+					
+							dateCorrect = false;
+							datastore = DatastoreServiceFactory.getDatastoreService();
+							//Query for Highest and Lowest Records in the given date range
+							Query min_max_Query = new Query("hiveRecord");
+
+							//Make sure that the hiveID is the same as one specified by the user
+							min_max_Query.addFilter("hiveID",
+									Query.FilterOperator.EQUAL, chartHiveID);
+
+							//Make sure that the timeStamp of the record is between the start and end date specified
+							//by the user.
+							min_max_Query.addFilter("timeStamp",
+									Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
+							min_max_Query.addFilter("timeStamp",
+									Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
+							min_max_Query.addSort("timeStamp",
+									Query.SortDirection.ASCENDING);
+
+							//prepare query, run it, and return a list of records
+							List<Entity>chartRecords = datastore.prepare(min_max_Query).asList(
+									FetchOptions.Builder.withLimit(999999999));
+
+							if (chartRecords.isEmpty()) {
+				%><p>No Matching Records</p>
+				<%
+					}
+
+							else {
+								//generate hidden divs for javascript
+								for(Entity record : chartRecords){
+									%>
+									
+										<div id="hiveRecord_<%=record.getProperty("timeStamp") %>" class="shouldBeHidden div_chart_hiveRecord">
+											<span class="chart_intTemp"><%= record.getProperty("intTemp") %></span>
+											<span class="chart_extTemp"><%= record.getProperty("extTemp") %></span>
+											<span class="chart_weight"><%= record.getProperty("weight") %></span>
+										</div>
+									
+									<%
+									
+									
+									
+								}
+								
+							}
+						}
+				}
+					
+			
+			%>
 			
 				<div id='container_interiorTemperature'></div>
 

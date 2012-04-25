@@ -84,9 +84,8 @@ function addListeners(){
 
 	});
 	
-	$("#btn_createChart").click(function (){
-		createChart();
-	});
+
+	createChart();
 	
 	
 	
@@ -302,7 +301,7 @@ function loadHistoricalDataDiv() {
 function getUrlVars()
 {
     var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('#') + 1).split('&');
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for(var i = 0; i < hashes.length; i++)
     {
         hash = hashes[i].split('=');
@@ -316,13 +315,13 @@ function getUrlVars()
 function determineView(){
 	var vars= getUrlVars();
 	var view="unknown";
+
 	if(vars["view"]!=null){
 		view=vars["view"];
 	}
-	
 	if(view == "data"){
 		$("#data").show();
-	}else if(view=="charts"){
+	}else if(view == "charts"){
 		$("#charts").show();
 		
 	}else{
@@ -331,11 +330,31 @@ function determineView(){
 	}
 }
 
+function getAllValuesByName(series,name){
+	var values=[];
+	$("."+name).each(function(){
+		alert("found : "+ name);
+		alert("text"+ $(this).text());
+		values.push($(this).text());
+		
+		//alert("in");
+	});
+	
+	return values;
+}
 
 function setupCharts(){
+	alert("here");
+	//determine if all necessary information is present
+	if($(".div_chart_hiveRecord").length >0){
+		alert("found "+ $(".div_chart_hiveRecord").length +"records");
+		//alert("found "+ getAllValuesByName("chart_intTemp").length +"intTemp");
+		//alert("found "+ getAllValuesByName("chart_extTemp").length +"extTemp");
+		//alert("found "+ getAllValuesByName("chart_weight").length +"weight");
 	
 	
-	
+		
+
 	Highcharts.setOptions({
 		global : {
 			useUTC : false
@@ -360,32 +379,56 @@ function setupCharts(){
 	         },
 	         series: [{
 	            name: 'Weight',
-	            data: [103, 107, 103,100,115,107]
+	            data: []
 	         }, {
 	            name: 'Int Temperature',
-	            data: [93, 92, 92.5,91,95,93]
+	            data: []
 	         },{
 		            name: 'Ext Temperature',
-		            data: [52, 54, 56,58,38,60]
+		            data: []
 		         }]
 	      });
 
 	
+			$(".intTemp").each(function(){
+				//alert("found : "+ name);
+				//alert("text"+ $(this).text());
+				//values.push($(this).text());
+				chart1.options.series[1].data.push($(this).text());
+				//alert("in");
+			});
+			$(".extTemp").each(function(){
+			//	alert("found : "+ name);
+			//	alert("text"+ $(this).text());
+			//	values.push($(this).text());
+				chart1.options.series[2].data.push($(this).text());
+
+				//alert("in");
+			});
+			
+			$(".weight").each(function(){
+				//alert("found : "+ name);
+				//alert("text"+ $(this).text());
+				//values.push($(this).text());
+				chart1.options.series[0].data.push($(this).text());
+
+				
+				
+				//alert("in");
+			});
 	
 	     chart1.setSize(960,800);
 	
 	
-			Highcharts.setOptions({
-				global : {
-					useUTC : false
-				}
-			});
 
 		
 
 	//var box=$('#datePicker_start');
 //	box.datepicker();
-	//alert("hello");
+	//alert("hello")
+	}else{
+		alert("no records found");
+	}
 }
 
 function createChart(){
