@@ -116,16 +116,13 @@
 								
 						//Return the requested statistics
 						timeStamp = tmpM + "/"+tmpD+"/"+tmpY+" "+tmpH+":"+tmpMi;
-						timeStamp = (formatStamp(tmpDate) + " " + tmpDate.substring(8,12) );
-						weight = "" + lastRecord.getProperty("weight");
-						int_temp = "" + lastRecord.getProperty("intTemp");
-						ext_temp = "" + lastRecord.getProperty("extTemp");
-						battery = "" + lastRecord.getProperty("battery");
+
 
 					}
 		%>
 	<div id="hive<%=record.getProperty("hiveID") %>" class='shouldBeHidden hiveRecord'>
-
+		
+		
 		<span class="hiveRecord_label">ID</span>
 		<span class='hiveRecord_field hiveRecord_hiveID'><%=record.getProperty("hiveID")%></span>
 		<span class="hiveRecord_label">Weight</span>
@@ -133,7 +130,7 @@
 		
 		
 		<span class="hiveRecord_label">Name</span>
-		<span class='hiveRecord_field hiveRecord_aliasID'><%=record.getProperty("aliasID")%></span>
+		<span class='hiveRecord_field hiveRecord_aliasID'><%=record.getProperty("alias")%></span>
 		<span class="hiveRecord_label">Interior Temperature</span>
 		<span class='hiveRecord_field hiveRecord_iTemperature'><%=int_temp%></span><br />
 		
@@ -236,18 +233,19 @@
 
 	<div id='div_historicalData_maxAndMins_record_wrapper'>
 		<div id='div_historicalData_maxAndMins_record'>
-			<div id='div_historicalData_maxAndMins_record_title'>Record
-				Highs and Lows</div>
+			<div id='div_historicalData_maxAndMins_record_title'>Daily Averages</div>
 
 
 
 
 			<div id='div_historicalData_maxAndMins_record_contents'>
 				<div id='nav_historicalData_maxAndMins_record_contents'>
+				<div id='nav_historicalData_formWrapper'>
 				<form methpd="get" action="/map2.jsp?view=data">
 				
+				<label class='lbl_charts'>Hive</label><label class='lbl_charts' >Start Date</label><label class='lbl_charts'>End Date</label><br />
 				
-				Hive: <select name="hiveID">
+				<select class='charts_input_select' name="hiveID">
 				
 				
 				<% for(Entity hive : records){
@@ -260,9 +258,10 @@
 					%>
 				
 				</select>
-					Start Date: <input type='text' class="datePick" id="datePicker_start" name="dp_start" /> 
-					End Date: <input type='text' class="datePick" id="datePicker_end" name="dp_end" />
-					<input id='badAssButton' type='submit' value="Submit" /> <br />
+					
+					<input type='text' class="datePick charts_input" id="datePicker_start" name="dp_start" /> 
+					<input  type='text' class="datePick charts_input" id="datePicker_end" name="dp_end" />
+					<input class='charts_input_submit' id='badAssButton' type='submit' value="Submit" /> <br />
 					<%
 					
 						//get all the previous records
@@ -306,16 +305,30 @@
 							
 							<%
 							for (int count = 0; count < availableOptions.size(); count++) {
+								String chkField;
+								if(availableOptions.get(count).equals("intTemp")){
+									chkField="Interior Temperature";
+									
+								}else if(availableOptions.get(count).equals("extTemp")){
+									chkField="Exterior Temperature";
+								}else if(availableOptions.get(count).equals("weight")){
+									chkField="Weight";
+									
+								}else{
+									chkField=availableOptions.get(count);
+								}
 					%>
-					Avg
-					<%=availableOptions.get(count)%>
-					<input class="ch_query_options" name="avg<%=availableOptions.get(count)%>" type='checkbox'/> 
+					
+							
+					<label class='lbl_checkbox'>Avg <%=chkField%>
+					<input class="ch_query_options" name="avg<%=chkField%>" type='checkbox'/></label>
 					<%
 						}
 						}
 					%>
 					<input type="hidden" name="view" value="data" />
 					</form>
+					</div>
 				</div>
 
 
@@ -333,6 +346,7 @@
 						String alias = request.getParameter("alias");
 						String dp_start = request.getParameter("dp_start");
 						String dp_end = request.getParameter("dp_end");
+						String view=request.getParameter("view");
 
 						long endDate = new Long("9999999999999999");
 						long startDate = new Long("0000000000000000");
@@ -344,7 +358,7 @@
 
 						if (!dp_start.equals("undefined")
 								&& !dp_end.equals("undefined") && !dp_start.isEmpty()
-								&& !dp_end.isEmpty()) {
+								&& !dp_end.isEmpty() && view.equals("data")) {
 
 							//take the start date from a standard format and turn it into timeStamp format
 							String[] sDate_pieces = dp_start.split("/");
@@ -521,12 +535,24 @@
 					    	
 								}
 							    
-							    %><table id='table_query_averages'>
+							    %><br /><input class='charts_input_submit' type="button" onclick="$('#table_historicalData_maxAndMins').table2CSV()" value="Generate CSV" ><table id='table_historicalData_maxAndMins'>
 								  <tr><th>Date</th><%
 								  
 								for(String fields : avgReqOps)
 								{
-								    %><th><%=fields %></th><%
+									String field;
+									if(fields.equals("intTemp")){
+										field="Interior Temperature";
+										
+									}else if(fields.equals("extTemp")){
+										field="Exterior Temperature";
+									}else if(fields.equals("weight")){
+										field="Weight";
+										
+									}else{
+										field=fields;
+									}
+								    %><th><%=field %></th><%
 								}
 								
 								%></tr><tr><%
@@ -554,11 +580,7 @@
 								}
 								%></tr></table><%
 							}
-							
-							        
-						
-				%><input type="button" onclick="$('#table_historicalData_maxAndMins').table2CSV()" value="Generate CSV" >
-					<%
+	
 						}//end if
 						else if (dateCorrect == true) {
 				%><p>The Start Date Must Be Before The End Date.</p>

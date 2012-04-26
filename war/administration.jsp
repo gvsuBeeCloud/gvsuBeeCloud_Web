@@ -26,6 +26,8 @@ response.setDateHeader ("Expires", 0); //prevent caching at the proxy server
 
 
 <link rel="stylesheet" href="css/admin_style.css" type="text/css"></link>
+<link rel="stylesheet" href="css/menu_style.css" type="text/css"></link>
+
 
 			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
@@ -34,6 +36,16 @@ response.setDateHeader ("Expires", 0); //prevent caching at the proxy server
     <script type="text/javascript" src="js/admin_functions.js"></script>
 </head>    
 <body>
+<div class="menu5">
+<ul>
+<li><a href="map2.jsp?view=map">Map</a></li>
+<li><a href="map2.jsp?view=data">Data</a></li>
+<li><a href="map2.jsp?view=charts">Charts</a></li>
+<li class="active"><a href="adminstration.jsp">Admin</a></li>
+<div class="clearFloat"></div>
+</ul>
+</div>
+
 
 <%!
 //define globals

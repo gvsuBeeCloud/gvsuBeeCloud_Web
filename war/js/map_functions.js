@@ -409,7 +409,7 @@ function setupCharts(){
 			
 			
 			var chart1 = new Highcharts.Chart(chart1Options);
-			chart1.setSize(960,500);
+			chart1.setSize(960,600);
 			
 	
 

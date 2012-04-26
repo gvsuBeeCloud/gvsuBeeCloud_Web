@@ -107,7 +107,7 @@
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>welcome.jsp</welcome-file>
+    <welcome-file>map2.jsp</welcome-file>
   </welcome-file-list>
   
   
