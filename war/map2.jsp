@@ -7,11 +7,11 @@
 <%@ page import="java.io.*"%>
 <%@ page import="java.lang.Long"%>
 <%@ page import="java.util.Map"%>
+<%@ page import="java.util.Comparator"%>
 <%@ page import="com.google.appengine.api.users.User"%>
 <%@ page import="com.google.appengine.api.users.UserService"%>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
-<%@ page
-	import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
+<%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService"%>
 <%@ page import="com.google.appengine.api.datastore.Query"%>
 <%@ page import="com.google.appengine.api.datastore.Entity"%>
@@ -301,15 +301,9 @@
 							<%
 							for (int count = 0; count < availableOptions.size(); count++) {
 					%>
-					Max
-					<%=availableOptions.get(count)%>
-					<input class="ch_query_options" name="max<%=availableOptions.get(count)%>" type='checkbox'/>
 					Avg
 					<%=availableOptions.get(count)%>
 					<input class="ch_query_options" name="avg<%=availableOptions.get(count)%>" type='checkbox'/> 
-					Min
-					<%=availableOptions.get(count)%>
-					<input class="ch_query_options" name="min<%=availableOptions.get(count)%>" type='checkbox'/>
 					<%
 						}
 						}
@@ -389,6 +383,10 @@
 							}
 							dateCorrect = true;
 						}
+						
+						
+										
+						
 						if ((startDate <= endDate) && (dateCorrect == true)) {
 							//prepare for next query query
 							dateCorrect = false;
@@ -396,28 +394,8 @@
 							//call datastore
 							datastore = DatastoreServiceFactory.getDatastoreService();
 							        
-							 
+						
 							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							        
-							//Until we decide what we want....This will be duplicate code. This will
-							//later be merged or may take on a life of its own
 							List<String> avgReqOps = new ArrayList<String>(); 
 							List<String[]> averages = new ArrayList<String[]>();
 							
@@ -446,8 +424,7 @@
 							
 							else
 							{
-							    //Get the timestamp of the first record, so we have something to compare later
-							    String currentStamp = (avgRecords.get(0).getProperty("timeStamp").toString()).substring(0,8);
+							   
 							    //running total of whatever is being averaged and number of occurences
 							    double totalValue = 0;
 							    double occurence = 0;
@@ -463,9 +440,16 @@
 							    
 							    for(String selected : avgReqOps)
 							    {
+							        //Get the timestamp of the first record, so we have something to compare later
+								    String currentStamp = (avgRecords.get(0).getProperty("timeStamp").toString()).substring(0,8);
 							    	for(Entity aRecord : avgRecords)
 							    	{
-							        
+							    	    if(aRecord.getProperty(selected) == null || aRecord.getProperty("timeStamp") == null)
+							        	{
+							    	        numRecords++;
+							        	    continue;
+							        	}
+							    	    
 							        	String dateOnly = (aRecord.getProperty("timeStamp").toString()).substring(0,8);
 							        	if(dateOnly.equals(currentStamp))
 							        	{
@@ -482,16 +466,16 @@
 								            	String[] temp = {currentStamp,Double.toString(average)};
 								            	//Add the array to the list of averages that will later be displayed
 								            	averages.add(temp);
-							            	}
+								            }
 							        	}
 							        	else
 							        	{
 							            	//Calculate the average for the previous timestamp
 							            	average = totalValue / occurence;
 							            	//Package the timestamp and the average together in an array
-							            	String[] temp = {currentStamp,Double.toString(average)};
+							            	String[] temps = {currentStamp,Double.toString(average)};
 							            	//Add the array to the list of averages that will later be displayed
-							            	averages.add(temp);
+							            	averages.add(temps);
 							            
 							           		//Set the values for the now current timestamp
 							            	currentStamp = dateOnly;
@@ -512,185 +496,63 @@
 							            	}
 							        	}
 							    	}
-							    	%>
-							    	<table id='table_query_averages'>
-							    	<tr><th>Date</th><th><%=selected %></th></tr>
-							    	<%
-							    	for(String[] avgData : averages)
-							    	{
-							    	    String formatResult = avgData[1];
-							    	    formatResult = formatResult.substring(0,(formatResult.indexOf('.') + 2));
-							       		%><tr><td><%=formatStamp(avgData[0])%></td><td><%=formatResult%></td></tr><% 
-							    	}
-							    	%></table><%
-							    	averages.clear();
+							    	numRecords = 0;
+							    	average = 0;
+							    	totalValue = 0;
+								    occurence = 0;
+							    	//Sort the String arrays so that they are in ascending order by timestamp.
+							    	Collections.sort(averages, new Comparator < String[] > () {
+							    	    public int compare(String[] x, String[] y) {
+							    	        if (Double.parseDouble(x[0]) > Double.parseDouble(y[0])) {
+							    	            return 1;
+							    	        }
+							    	        if (Double.parseDouble(x[0]) < Double.parseDouble(y[0])) {
+							    	            return -1;
+							    	        }
+							    	       return 0; 
+							    	    }
+							    	});
+					    	
 								}
+							    
+							    %><table id='table_query_averages'>
+								  <tr><th>Date</th><%
+								  
+								for(String fields : avgReqOps)
+								{
+								    %><th><%=fields %></th><%
+								}
+								
+								%></tr><tr><%
+								//A date to start at, and compare to the current date
+								int compDate = Integer.parseInt(averages.get(0)[0]);
+								%><td><%=formatStamp(Integer.toString(compDate)) %></td><%
+								for(String[] avgData : averages)
+								{
+								    int currentDate = Integer.parseInt(avgData[0]);
+								    
+								    if(currentDate == compDate)
+								    {
+								        String formatResult = avgData[1];
+							    	    formatResult = formatResult.substring(0,(formatResult.indexOf('.') + 2));
+								        %><td><%=formatResult %></td><%
+								    }
+								    else
+								    {
+								        String formatResult = avgData[1];
+							    	    formatResult = formatResult.substring(0,(formatResult.indexOf('.') + 2));
+								        %></tr>
+								        <tr><td><%=formatStamp(Integer.toString(currentDate)) %></td><td><%=formatResult %></td><%
+								        compDate = currentDate;
+								    }
+								}
+								%></tr></table><%
 							}
 							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
-							
 							        
-							//Query for Highest and Lowest Records in the given date range
-							Query min_max_Query = new Query("hiveRecord");
-
-							//Make sure that the hiveID is the same as one specified by the user
-							min_max_Query.addFilter("hiveID",
-									Query.FilterOperator.EQUAL, hiveID);
-
-							//Make sure that the timeStamp of the record is between the start and end date specified
-							//by the user.
-							min_max_Query.addFilter("timeStamp",
-									Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
-							min_max_Query.addFilter("timeStamp",
-									Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
-							min_max_Query.addSort("timeStamp",
-									Query.SortDirection.ASCENDING);
-
-							//prepare query, run it, and return a list of records
-							List<Entity>minMaxRecords = datastore.prepare(min_max_Query).asList(
-									FetchOptions.Builder.withLimit(999999999));
-
-
-							if (records.isEmpty()) {
-				                %><p>No Matching Records</p><%
-					        }
-
-							if (minMaxRecords.isEmpty()) {
-				%><p>No Matching Records</p>
-				<%
-					}
-
-
-							else {
-
-								List<String> requestedOptions = new ArrayList<String>();
-
-								//Loop through all the possible fields to be queryed and add the ones
-								//that have been selecected to the requested list
-
-								for (int i = 0; i < availableOptions.size(); i++) {
-									if (request.getParameter("max" + availableOptions.get(i)) != null) {
-										requestedOptions.add("max" + availableOptions.get(i));
-									}
-									
-									if (request.getParameter("min" + availableOptions.get(i)) != null) {
-										requestedOptions.add("min" + availableOptions.get(i));
-									}
-								}
-
-								//Records that have a timestamp within the user specified parameters 
-								//and selected hiveId, are returned. Now we can retrieve the statistics
-								//that were requested by the user.
-				%><input type="button" onclick="$('#table_historicalData_maxAndMins').table2CSV()" value="Generate CSV" ><table id='table_historicalData_maxAndMins'>
+						
+				%><input type="button" onclick="$('#table_historicalData_maxAndMins').table2CSV()" value="Generate CSV" >
 					<%
-						for (String option : requestedOptions) {
-										//String containing the record attribute and the timestamp
-										List<String> recordAttributes = new ArrayList<String>();
-										//Record attribute as an integer
-										List<Double> numericAttributes = new ArrayList<Double>();
-
-										//Either max or min
-										String prefix = option.substring(0, 3);
-
-										//One of the available options from the availableOptions list
-										String root = option.substring(3, option.length());
-
-										//Sort through all the records add to both lists
-										for (Entity record : minMaxRecords) {
-											//Make sure the record value isn't empty
-											if (record.getProperty(root) != null) {
-												recordAttributes.add((record
-														.getProperty(root).toString())
-														+ "*"
-														+ (record.getProperty("timeStamp")
-																.toString()));
-												numericAttributes.add(Double
-														.parseDouble(record.getProperty(root)
-																.toString()));
-											}
-										}
-
-										//Sort the integer list in ascending order
-										Collections.sort(numericAttributes);
-					%><tr>
-						<td><b><%=prefix + " " + root + ": "%></b> <%
- 	//Format the timestamp and add the selected value and the timestamp to the table.
- 					if (prefix.equals("max")) {
- 						for (String temp : recordAttributes) {
- 							//Search through the list of strings to find the timestamp of the selected numeric value
- 							if ((numericAttributes
- 									.get(numericAttributes.size() - 1)
- 									.toString()).equals(temp.substring(
- 									0, temp.indexOf("*")))) {
- 								//Convert timestamp to a more readable form
- 								String rawTimestamp = temp.substring(
- 										(temp.indexOf("*") + 1),
- 										temp.length());
- 								rawTimestamp = (rawTimestamp.substring(
- 										4, 6)
- 										+ "/"
- 										+ rawTimestamp.substring(6, 8)
- 										+ "/" + rawTimestamp.substring(
- 										0, 4));
-
- 								//Add selected values to the table
- %> <%=numericAttributes.get(numericAttributes.size() - 1)%>
-						</td><td><b>Timestamp of occurence:</b> <%=rawTimestamp%></td>
-					</tr>
-					<%
-						break;
-
-												}
-											}
-										}
-										//Same as the if statement above, now for "min" prefixes	
-										else {
-											for (String temp : recordAttributes) {
-												//Search through the list of strings to find the timestamp of the selected numeric value
-												if ((numericAttributes.get(0).toString())
-														.equals(temp.substring(0,
-																temp.indexOf("*")))) {
-													//Convert timestamp to a more readable form
-													String rawTimestamp = temp.substring(
-															(temp.indexOf("*") + 1),
-															temp.length());
-													rawTimestamp = (rawTimestamp.substring(
-															4, 6)
-															+ "/"
-															+ rawTimestamp.substring(6, 8)
-															+ "/" + rawTimestamp.substring(
-															0, 4));
-
-													//Add selected values to the table
-					%>
-					<%=numericAttributes.get(0)%>
-					</td>
-					<td><b>Timestamp of occurence:</b> <%=rawTimestamp%></td>
-					</tr>
-					<%
-						break;
-												}//end if
-											}// end for each recordAttributes loop
-										}//end else
-									}//end for each requestedOptions loop
-					%>
-				</table>
-				<%
-					}//end else
 						}//end if
 						else if (dateCorrect == true) {
 				%><p>The Start Date Must Be Before The End Date.</p>
@@ -698,40 +560,16 @@
 					} else {
 				%><p>Neither of The Date Fields Can Be Blank</p>
 				<%
-					}
-						//end else
-					}//end if readyToGo
+					}//end else
+		}//end if readyToGo
 				%>
 			
 
 
-			</div>
-
-		</div>
-
-	</div>
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				</div>
+			</div>
+		</div>
+	</div>
 </div>
 <div id="charts" class="content_wrapper class_box_shadow">
 	
