@@ -588,3 +588,7 @@ display:inline-block;
 	height:200px;
 	background-color:blue;
 }
+
+#table_query_averages tr{
+		text-align: center;
+}

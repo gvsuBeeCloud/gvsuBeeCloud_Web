@@ -47,7 +47,17 @@
 	String ext_temp = "";
 	String message = "";
 	String battery = "";
-	String timeStamp = "";%>
+	String timeStamp = "";
+	
+	public String formatStamp(String theStamp)
+	{
+	    String temp = theStamp;
+		temp = (temp.substring(4, 6) + "/"
+					+ temp.substring(6, 8) + "/"
+					+ temp.substring(0, 4));
+		return temp;
+	}
+	%>
 	<%
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -91,9 +101,12 @@
 						Entity lastRecord = rec.get(0);
 
 						//Convert the timeStamp to a more readable date and time
-						String tmpDate = (String) lastRecord
-								.getProperty("timeStamp");
 						
+ 						String tmpDate = (String) lastRecord.getProperty("timeStamp");
+// 						tmpDate = (tmpDate.substring(4, 6) + "/"
+// 								+ tmpDate.substring(6, 8) + "/"
+// 								+ tmpDate.substring(0, 4) + " " + tmpDate
+// 								.substring(8, 12));
 
 						String tmpY=tmpDate.substring(0, 4) ;
 						String tmpM=tmpDate.substring(4, 6);
@@ -103,6 +116,7 @@
 								
 						//Return the requested statistics
 						timeStamp = tmpM + "/"+tmpD+"/"+tmpY+" "+tmpH+":"+tmpMi;
+						timeStamp = (formatStamp(tmpDate) + " " + tmpDate.substring(8,12) );
 						weight = "" + lastRecord.getProperty("weight");
 						int_temp = "" + lastRecord.getProperty("intTemp");
 						ext_temp = "" + lastRecord.getProperty("extTemp");
@@ -246,11 +260,9 @@
 					%>
 				
 				</select>
-					Start Date: <input type='text' class="datePick"
-						id="datePicker_start" name="dp_start" /> End Date: <input
-						type='text' class="datePick" id="datePicker_end" name="dp_end" />
-					<input id='badAssButton' type='submit'
-						value="Submit" /> <br />
+					Start Date: <input type='text' class="datePick" id="datePicker_start" name="dp_start" /> 
+					End Date: <input type='text' class="datePick" id="datePicker_end" name="dp_end" />
+					<input id='badAssButton' type='submit' value="Submit" /> <br />
 					<%
 					
 						//get all the previous records
@@ -273,11 +285,9 @@
 							//Grab entity from list
 							Entity fields = recFields.get(0);
 							if (fields != null) {
-								Map<String, Object> tmpHiveKeysAndValues = fields
-										.getProperties();
+								Map<String, Object> tmpHiveKeysAndValues = fields.getProperties();
 								List<String> similar = new ArrayList<String>();
-								for (Map.Entry<String, Object> entry : tmpHiveKeysAndValues
-										.entrySet()) {
+								for (Map.Entry<String, Object> entry : tmpHiveKeysAndValues.entrySet()) {
 									if (availableOptions.contains(entry.getKey())) {
 										similar.add(entry.getKey());
 									}
@@ -299,13 +309,13 @@
 					%>
 					Max
 					<%=availableOptions.get(count)%>
-					<input class="ch_query_options"
-						name="max<%=availableOptions.get(count)%>" type='checkbox'
-						 /> Min
+					<input class="ch_query_options" name="max<%=availableOptions.get(count)%>" type='checkbox'/>
+					Avg
 					<%=availableOptions.get(count)%>
-					<input class="ch_query_options"
-						name="min<%=availableOptions.get(count)%>" type='checkbox'
-						 />
+					<input class="ch_query_options" name="avg<%=availableOptions.get(count)%>" type='checkbox'/> 
+					Min
+					<%=availableOptions.get(count)%>
+					<input class="ch_query_options" name="min<%=availableOptions.get(count)%>" type='checkbox'/>
 					<%
 						}
 						}
@@ -386,9 +396,160 @@
 							dateCorrect = true;
 						}
 						if ((startDate <= endDate) && (dateCorrect == true)) {
-					
+							//prepare for next query query
 							dateCorrect = false;
+							        
+							//call datastore
 							datastore = DatastoreServiceFactory.getDatastoreService();
+							        
+							 
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							//Until we decide what we want....This will be duplicate code. This will
+							//later be merged or may take on a life of its own
+							List<String> avgReqOps = new ArrayList<String>(); 
+							List<String[]> averages = new ArrayList<String[]>();
+							
+							               
+							Query average_Query = new Query("hiveRecord");
+
+							//Make sure that the hiveID is the same as one specified by the user
+							average_Query.addFilter("hiveID",Query.FilterOperator.EQUAL, hiveID);
+
+							//Make sure that the timeStamp of the record is between the start and end date specified
+							//by the user.
+							average_Query.addFilter("timeStamp",Query.FilterOperator.LESS_THAN_OR_EQUAL, eDate);
+							average_Query.addFilter("timeStamp",Query.FilterOperator.GREATER_THAN_OR_EQUAL, sDate);
+							average_Query.addSort("timeStamp",Query.SortDirection.ASCENDING);
+
+							
+							//All the records returned by the average_Query
+							List<Entity> avgRecords = new ArrayList<Entity>();
+							//prepare query, run it, and return a list of records
+							avgRecords = datastore.prepare(average_Query).asList(FetchOptions.Builder.withLimit(999999999));
+							
+							if(avgRecords.isEmpty())
+							{
+							    %><p> No Records Available </p> <%
+							}
+							
+							else
+							{
+							    //Get the timestamp of the first record, so we have something to compare later
+							    String currentStamp = (avgRecords.get(0).getProperty("timeStamp").toString()).substring(0,8);
+							    //running total of whatever is being averaged and number of occurences
+							    double totalValue = 0;
+							    double occurence = 0;
+							    double average = 0;
+							    //This is used to make sure that the last date gets put on the list
+							    int numRecords = 0;
+							    //Check to see which options were selected
+							    for (int i = 0; i < availableOptions.size(); i++) {
+									if (request.getParameter("avg" + availableOptions.get(i)) != null) {
+									    avgReqOps.add(availableOptions.get(i));
+									}
+								}
+							    
+							    for(String selected : avgReqOps)
+							    {
+							    	for(Entity aRecord : avgRecords)
+							    	{
+							        
+							        	String dateOnly = (aRecord.getProperty("timeStamp").toString()).substring(0,8);
+							        	if(dateOnly.equals(currentStamp))
+							        	{
+							            	totalValue = (Double.parseDouble(aRecord.getProperty(selected).toString())) + totalValue;
+							            	occurence++;
+							            	numRecords++;
+							            
+							           		//If this is the last record, we need to push it's results to the array
+							            	if(numRecords == avgRecords.size())
+							            	{
+							                	//Calculate the average for the timestamp
+								            	average = totalValue / occurence;
+								            	//Package the timestamp and the average together in an array
+								            	String[] temp = {currentStamp,Double.toString(average)};
+								            	//Add the array to the list of averages that will later be displayed
+								            	averages.add(temp);
+							            	}
+							        	}
+							        	else
+							        	{
+							            	//Calculate the average for the previous timestamp
+							            	average = totalValue / occurence;
+							            	//Package the timestamp and the average together in an array
+							            	String[] temp = {currentStamp,Double.toString(average)};
+							            	//Add the array to the list of averages that will later be displayed
+							            	averages.add(temp);
+							            
+							           		//Set the values for the now current timestamp
+							            	currentStamp = dateOnly;
+							            	totalValue = Double.parseDouble(aRecord.getProperty(selected).toString());
+							            	average = 0;
+							            	occurence = 1;
+							            
+							            	numRecords++;
+							          		//If this is the last record, we need to push it's results to the array
+							            	if(numRecords == avgRecords.size())
+							            	{
+							                	//Calculate the average for the timestamp
+								            	average = totalValue / occurence;
+								            	//Package the timestamp and the average together in an array
+								            	String[] tempOther = {currentStamp,Double.toString(average)};
+								            	//Add the array to the list of averages that will later be displayed
+								            	averages.add(tempOther);
+							            	}
+							        	}
+							    	}
+							    	%>
+							    	<table id='table_query_averages'>
+							    	<tr><th>Date</th><th><%=selected %></th></tr>
+							    	<%
+							    	for(String[] avgData : averages)
+							    	{
+							    	    String formatResult = avgData[1];
+							    	    formatResult = formatResult.substring(0,(formatResult.indexOf('.') + 2));
+							       		%><tr><td><%=formatStamp(avgData[0])%></td><td><%=formatResult%></td></tr><% 
+							    	}
+							    	%></table><%
+							    	averages.clear();
+								}
+							}
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							        
 							//Query for Highest and Lowest Records in the given date range
 							Query min_max_Query = new Query("hiveRecord");
 
@@ -409,10 +570,16 @@
 							List<Entity>minMaxRecords = datastore.prepare(min_max_Query).asList(
 									FetchOptions.Builder.withLimit(999999999));
 
+
+							if (records.isEmpty()) {
+				                %><p>No Matching Records</p><%
+					        }
+
 							if (minMaxRecords.isEmpty()) {
 				%><p>No Matching Records</p>
 				<%
 					}
+
 
 							else {
 
@@ -422,15 +589,12 @@
 								//that have been selecected to the requested list
 
 								for (int i = 0; i < availableOptions.size(); i++) {
-									if (request.getParameter("max"
-											+ availableOptions.get(i)) != null) {
-										requestedOptions.add("max"
-												+ availableOptions.get(i));
+									if (request.getParameter("max" + availableOptions.get(i)) != null) {
+										requestedOptions.add("max" + availableOptions.get(i));
 									}
-									if (request.getParameter("min"
-											+ availableOptions.get(i)) != null) {
-										requestedOptions.add("min"
-												+ availableOptions.get(i));
+									
+									if (request.getParameter("min" + availableOptions.get(i)) != null) {
+										requestedOptions.add("min" + availableOptions.get(i));
 									}
 								}
 
@@ -544,7 +708,7 @@
 						//end else
 					}//end if readyToGo
 				%>
-
+			
 
 
 			</div>

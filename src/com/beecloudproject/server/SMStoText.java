@@ -16,7 +16,7 @@ import com.techventus.server.voice.datatypes.records.SMSThread;
 public class SMStoText{
 	
 	  Voice voice = new Voice("gvsuBeeCloud@gmail.com", "cis4672012");
-	  String unreadRecords;
+	  String unreadRecords = "";
 	  String debugLog = "";
 	  ArrayList<String> fullRecord = new ArrayList<String>();
 	  
@@ -25,8 +25,15 @@ public class SMStoText{
 		  	voice.login();
 		  		try
 		  		{
-		  			Collection<SMSThread> myUnreadRecords = voice.getSMSThreads();
-		  		  	unreadRecords = myUnreadRecords.toString();
+		  			//Collection<SMSThread> myUnreadRecords = voice.getSMSThreads();
+		  		  	//unreadRecords = myUnreadRecords.toString();
+		  			
+		  			unreadRecords = voice.getSMS();
+					ArrayList<String> deleteIDs = parseForIDs(unreadRecords);
+					for(int i=0; i<deleteIDs.size(); i++)
+					{
+						voice.deleteMessage(deleteIDs.get(i));
+					}
 		  		}
 		  		catch (NullPointerException npe) 
 		  		{
@@ -61,7 +68,7 @@ public class SMStoText{
 	  
 	  public void createHiveRecord(Voice myVoice, String unreadRecords) throws IOException
 	  {
-			ArrayList<String> records = parseForRecords(unreadRecords);
+			/*ArrayList<String> records = parseForRecords(unreadRecords);
 			
 			for(int i = 0; i< records.size(); i++)
 			{
@@ -76,12 +83,24 @@ public class SMStoText{
 				}
 				
 				myVoice.deleteMessage(transmissionID);
+			}*/
+		  
+			ArrayList<String> records = parseForRecords(unreadRecords);			
+			
+			for(int i = 0; i< records.size(); i++)
+			{
+				ArrayList<String> dataRecords = parseForMessage(records.get(i));
+				dataRecords = listOfRecordsFormatted(dataRecords, records.get(i));				
+				for(int j = 0; j< dataRecords.size(); j++)
+				{
+					fullRecord.add(dataRecords.get(j));
+				}							
 			}
 	  }
 	  
 	  public ArrayList<String> parseForRecords(String unreadRecords)
 	  {
-		  ArrayList<String> arrayOfRecords = new ArrayList<String>();
+/*		  ArrayList<String> arrayOfRecords = new ArrayList<String>();
 		  String lookForMessage = "SMSThread";
 		  int someLeft = 0;
 		  while((someLeft = unreadRecords.lastIndexOf(lookForMessage)) != -1)
@@ -90,12 +109,33 @@ public class SMStoText{
 			  arrayOfRecords.add(rightHalfOfMessage);
 			  unreadRecords = unreadRecords.substring(0, someLeft);		  
 		  }
+		  return arrayOfRecords;*/
+		  
+		  ArrayList<String> arrayOfRecords = new ArrayList<String>();
+		  String lookForMessage = "<div class=\"gc-message-sms-row\">";
+		  int someLeft = 0;
+		  while((someLeft = unreadRecords.lastIndexOf(lookForMessage)) != -1)
+		  {
+			  int end = -1;
+			  String rightHalfOfMessage = "";
+			  end = unreadRecords.lastIndexOf("<span class=\"gc-message-sms-time\">");
+			  if(end != -1)
+			  {
+				  rightHalfOfMessage = unreadRecords.substring(someLeft, end);
+			  }
+			  else
+			  {
+				  rightHalfOfMessage = unreadRecords.substring(someLeft, unreadRecords.length());
+			  }
+			  arrayOfRecords.add(rightHalfOfMessage);
+			  unreadRecords = unreadRecords.substring(0, someLeft);		  
+		  }
 		  return arrayOfRecords;
 	  }
 	  
-	  public String parseForID(String record)
+	  public ArrayList<String> parseForIDs(String record)
 	  {
-		String lookForMessage = "[id=";
+		/*String lookForMessage = "[id=";
 		int someLeft = 0;
 	    someLeft = record.lastIndexOf(lookForMessage);    
     	String rightHalfOfMessage = record.substring(someLeft, record.length());
@@ -103,12 +143,27 @@ public class SMStoText{
     	int tempInt2 = rightHalfOfMessage.indexOf(", ");
     	String id = rightHalfOfMessage.substring(lookForMessage.length(), tempInt2);
 	    
-	    return id;
+	    return id;*/
+		  ArrayList<String> ids = new ArrayList<String>();
+		  String lookForMessage = "\"id\":\"";
+		  int someLeft = 0;
+		  while ((someLeft = record.lastIndexOf(lookForMessage)) != -1)
+		  {
+		  String endMessage = "\",\"";
+		  String rightHalfOfMessage = record.substring(someLeft, record.length());
+		  record = record.substring(0, someLeft);
+		  
+		  int tempInt2 = rightHalfOfMessage.indexOf(endMessage);
+		  String id = rightHalfOfMessage.substring(lookForMessage.length(), tempInt2);
+		  ids.add(id);
+		  }
+		  return ids;
+		  
 	   }
 	  
 	  public ArrayList<String> parseForMessage(String record)
 	  {
-	    ArrayList<String> arrayOfMessages = new ArrayList<String>();
+	   /*ArrayList<String> arrayOfMessages = new ArrayList<String>();
 	    String lookForMessage = "text=";
 	    int someLeft = 0;
 	    int someLeftAgain = -1;
@@ -131,12 +186,40 @@ public class SMStoText{
 	    	}
 	    }
 	    
-	    return arrayOfMessages;
+	    return arrayOfMessages;*/
+		  
+		    ArrayList<String> arrayOfMessages = new ArrayList<String>();
+		    String lookForMessage = "&lt;";
+		    int someLeft = 0;
+		    int someLeftAgain = -1;
+		    int otherSomeLeftAgain = -1;
+		    while((someLeft = record.indexOf(lookForMessage)) != -1)
+		    {
+		    	String rightHalfOfMessage = "";
+		    	int end = -1;
+		    	end = record.lastIndexOf("&gt;");
+		    	if(end != -1)
+		    	{
+		    		rightHalfOfMessage = record.substring(someLeft, end);
+		    	}
+		    	else
+		    	{
+		    		rightHalfOfMessage = record.substring(someLeft, record.length());
+		
+		    	}
+		    	record = record.substring(0, someLeft);
+		    	rightHalfOfMessage = rightHalfOfMessage + "&gt;";
+		    	rightHalfOfMessage = rightHalfOfMessage.replaceAll("&lt;", "<");
+		    	rightHalfOfMessage = rightHalfOfMessage.replaceAll("&gt;", ">");
+		    	arrayOfMessages.add(rightHalfOfMessage);
+		    }
+		    
+		    return arrayOfMessages;
 	  }
 	  
 	  public String parseForHiveID(String record)
 	  {
-		  String messageString = "number=+";
+/*	  String messageString = "number=+";
 		  int someLeft = 0;
 		  someLeft = record.lastIndexOf(messageString);
 		  String rightHalfOfMessage = record.substring(someLeft, record.length());
@@ -144,10 +227,27 @@ public class SMStoText{
 		  int someLeftAgain = rightHalfOfMessage.indexOf(";");
 		  String hiveID = rightHalfOfMessage.substring(messageString.length(), someLeftAgain);
 	    
-	    return hiveID;
+	    return hiveID;*/
+		  
+		  String messageString = "+";
+		  int someLeft = 0;
+		  someLeft = record.lastIndexOf(messageString);
+		  int end = -1;
+		  end = record.indexOf(":");
+		  String rightHalfOfMessage = "";
+		  if(end != -1)
+		  {
+			  rightHalfOfMessage = record.substring(someLeft+1, end);			  
+		  }
+		  else
+		  {
+			  rightHalfOfMessage = record.substring(someLeft+1, record.length());			  
+		  }
+		  String hiveID = rightHalfOfMessage;
+	return hiveID;
 	  }
 	  
-	  public ArrayList<String> listOfRecordsFormatted(ArrayList<String> recordsToBeFormatted, ArrayList<String> toGetHiveID)
+	  public ArrayList<String> listOfRecordsFormatted(ArrayList<String> recordsToBeFormatted, String toGetHiveID)
 	  {
 		  String tempRecord = "";
 		  ArrayList<String> CDMValues = getValuesFromCDM();
@@ -160,11 +260,12 @@ public class SMStoText{
 		  {
 			  tempRecord = recordsToBeFormatted.get(i);
 			  tempRecord = " " + tempRecord;
+			  tempRecord = tempRecord.replaceAll("><", "# ");
 			  tempRecord = tempRecord.replaceAll("<", nothing);
 			  tempRecord = tempRecord.replaceAll(">", "#");
 			  String[] tempArrayOfRecords = tempRecord.split("#");
 			  
-			  String hiveID = "hiveID=" + parseForHiveID(toGetHiveID.get(i));
+			  String hiveID = "hiveID=" + parseForHiveID(toGetHiveID);
 			  String reset = hiveID;
 			  
 			  for(int k=0; k<tempArrayOfRecords.length; k++)
