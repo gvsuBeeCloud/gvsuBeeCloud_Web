@@ -386,21 +386,66 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', e
 #tbl_charts {
 	background-color:#83ABD2;
 }
-#tbl_charts input {
+#tbl_charts{
 	width:100%;
 }
 #tbl_charts select{
 	width:100%;	
 }
 .lbl_charts{
+display:inline-block;
 	color:black;
-	font-size:18px;
+	font-size:28px;
 	font-weight:bold;
+	width:200px;
+	margin-right:10px;
+	padding-top:10px;
+	font-variant:small-caps;
+	color:#185F9D;
+
+}
+.charts_input{
+	display:inline-block;
+	width:200px;
+	margin-right:10px;
+	//font-size:20px;
+	margin-bottom:10px;
+	height:30px;
+	
+	background: transparent url('../images/bg.jpg') no-repeat;
+	//color : #185F9D;
+	border:0;
+	padding:4px 8px;
+	margin-bottom:0px;
+}
+.charts_input_select{
+	display:inline-block;
+	width:100px;
+	height:30px;
+		font-size:20px;
+	
+	
+}
+.charts_input_submit{
+	margin-bottom:10px;
+	background-color: #185F9D;
+	border:none;
+	
+	border-radius:10px;
+	color:#cccccc;
+	font-size:20px;
+	width:150px;
+	padding:10px;
+	font-variant:small-caps;
 }
 #tbl_charts tr{
 	width:100%;
 }
 #tbl_charts td{
+	cellspacing:10px;
+}
+
+.tbl_charts_last{
 	width:20%;
 }
 
