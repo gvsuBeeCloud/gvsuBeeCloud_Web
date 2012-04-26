@@ -108,7 +108,14 @@
 // 								+ tmpDate.substring(0, 4) + " " + tmpDate
 // 								.substring(8, 12));
 
+						String tmpY=tmpDate.substring(0, 4) ;
+						String tmpM=tmpDate.substring(4, 6);
+						String tmpD=tmpDate.substring(6, 8);
+						String tmpH=tmpDate.substring(8, 10);
+						String tmpMi=tmpDate.substring(10, 12);
+								
 						//Return the requested statistics
+						timeStamp = tmpM + "/"+tmpD+"/"+tmpY+" "+tmpH+":"+tmpMi;
 						timeStamp = (formatStamp(tmpDate) + " " + tmpDate.substring(8,12) );
 						weight = "" + lastRecord.getProperty("weight");
 						int_temp = "" + lastRecord.getProperty("intTemp");
@@ -137,8 +144,7 @@
 		
 		<span class="hiveRecord_label">Longitude</span>
 		<span class='hiveRecord_field hiveRecord_loc_long'><%=record.getProperty("location_long")%></span>
-		<span class="hiveRecord_label">Battery</span>
-		<span class='hiveRecord_field hiveRecord_battery'><%=battery%></span>
+
 		
 		</span>
 		
@@ -578,8 +584,8 @@
 				<tr>
 					<form method="get" action="map2.jsp">
 					<td> 
-						<label class="lbl_charts">Hive:</label> 
-						<select name="hiveID">
+						<label class="lbl_charts">Hive</label> 
+						<select class='charts_input_select' name="hiveID">
 							<% for(Entity hive : records){
 					%>
 						<option value='<%= hive.getProperty("hiveID")%>'><%=hive.getProperty("alias") %></option>
@@ -596,28 +602,20 @@
 
 					
 					<td>
-						<label class="lbl_charts">Start Date:</label>
-						<input class="datePick"  name="dp_start" type="text"/>
-						<label class="lbl_charts">End Date:</label>
-						<input class="datePick" name="dp_end" type="text"/>
+						<label class="lbl_charts">Start Date</label>
+						<label class="lbl_charts">End Date</label><br />
+						<input class="charts_input datePick"  name="dp_start" type="text"/>
+						
+						<input class="charts_input datePick" name="dp_end" type="text"/>
 					
 					</td>
 
-					<td>
-											<label class="lbl_charts">Interval:</label>
-						<select name="interval">
-							<option value="Daily">
-							
-								Daily
-							</option>
-							<option value="Hourly">
-								Hourly
-							</option>
-							
-						</select>
+					<td class='tbl_charts_last'>
+
 						<br />
-						<label class="lbl_charts">Create:</label>
-						<input type="submit" value="Create" id="btn_createChart" />
+					<br/>
+						<input  class='charts_input_submit' type="submit" value="Create" id="btn_createChart" />
+						</td>
 				</tr>
 				<input type='hidden' name="view" value="charts" />
 				</form>
@@ -721,6 +719,7 @@
 									%>
 									
 										<div id="hiveRecord_<%=record.getProperty("timeStamp") %>" class="shouldBeHidden div_chart_hiveRecord">
+											<span class="chart_timeStamp"><%=record.getProperty("timeStamp") %></span>
 											<span class="chart_intTemp"><%= record.getProperty("intTemp") %></span>
 											<span class="chart_extTemp"><%= record.getProperty("extTemp") %></span>
 											<span class="chart_weight"><%= record.getProperty("weight") %></span>
@@ -746,10 +745,6 @@
 	
 </div>
 
-
-<div id='test'>
-HERE IS SOME TEXT
-</div>
 
 
 </body>

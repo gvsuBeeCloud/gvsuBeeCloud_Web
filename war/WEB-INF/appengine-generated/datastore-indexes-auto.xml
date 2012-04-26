@@ -1,8 +1,8 @@
-<!-- Indices written at Tue, 24 Apr 2012 10:10:18 EDT -->
+<!-- Indices written at Wed, 25 Apr 2012 22:57:00 EDT -->
 
 <datastore-indexes>
 
-    <!-- Used 29 times in query history -->
+    <!-- Used 40 times in query history -->
     <datastore-index kind="hiveRecord" ancestor="false" source="auto">
         <property name="hiveID" direction="asc"/>
         <property name="timeStamp" direction="asc"/>

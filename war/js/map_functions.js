@@ -111,6 +111,7 @@ function addListeners(){
 		//$("#div_map_container").hide();
 
 		$("#div_map_container").show();
+		loadMarkersFromHiddenDivs();
 	});
 }
 
@@ -344,13 +345,9 @@ function getAllValuesByName(series,name){
 }
 
 function setupCharts(){
-	alert("here");
 	//determine if all necessary information is present
 	if($(".div_chart_hiveRecord").length >0){
-		alert("found "+ $(".div_chart_hiveRecord").length +"records");
-		//alert("found "+ getAllValuesByName("chart_intTemp").length +"intTemp");
-		//alert("found "+ getAllValuesByName("chart_extTemp").length +"extTemp");
-		//alert("found "+ getAllValuesByName("chart_weight").length +"weight");
+
 	
 	
 		
@@ -361,7 +358,8 @@ function setupCharts(){
 		}
 	});
 	
-	     var chart1 = new Highcharts.Chart({
+
+	     var chart1Options = {
 	         chart: {
 	            renderTo: 'container_interiorTemperature',
 	            type: 'spline',
@@ -370,7 +368,7 @@ function setupCharts(){
 	            text: 'Hive Metrics'
 	         },
 	         xAxis: {
-	            categories: ['4/13','4/14','4/15','4/16', '4/17', '4/18']
+	            categories: []
 	         },
 	         yAxis: {
 	            title: {
@@ -379,7 +377,8 @@ function setupCharts(){
 	         },
 	         series: [{
 	            name: 'Weight',
-	            data: []
+	            data: [],
+	            
 	         }, {
 	            name: 'Int Temperature',
 	            data: []
@@ -387,38 +386,31 @@ function setupCharts(){
 		            name: 'Ext Temperature',
 		            data: []
 		         }]
-	      });
+	      };
 
-	
-			$(".intTemp").each(function(){
-				//alert("found : "+ name);
-				//alert("text"+ $(this).text());
-				//values.push($(this).text());
-				chart1.options.series[1].data.push($(this).text());
-				//alert("in");
-			});
-			$(".extTemp").each(function(){
-			//	alert("found : "+ name);
-			//	alert("text"+ $(this).text());
-			//	values.push($(this).text());
-				chart1.options.series[2].data.push($(this).text());
 
-				//alert("in");
-			});
+	     
+	     $(".div_chart_hiveRecord").each(function(){
+	    	 
+	    	 var holder=$(this).children('.chart_timeStamp')[0];
+	   
+	    	 tmpTimeStamp=$(holder).text();
+	    	 chart1Options.xAxis.categories.push(tmpTimeStamp);
+	    	 tmpWeight=parseFloat($($(this).children('.chart_weight')[0]).text());
+	         tmpIntTemp=parseFloat($($(this).children('.chart_intTemp')[0]).text());
+	         tmpExtTemp=parseFloat($($(this).children('.chart_extTemp')[0]).text());
+	         
+	         chart1Options.series[0].data.push(tmpWeight);
+	         chart1Options.series[1].data.push(tmpIntTemp);
+	         chart1Options.series[2].data.push(tmpExtTemp);
+	     });
+
+
 			
-			$(".weight").each(function(){
-				//alert("found : "+ name);
-				//alert("text"+ $(this).text());
-				//values.push($(this).text());
-				chart1.options.series[0].data.push($(this).text());
-
-				
-				
-				//alert("in");
-			});
-	
-	     chart1.setSize(960,800);
-	
+			
+			var chart1 = new Highcharts.Chart(chart1Options);
+			chart1.setSize(960,500);
+			
 	
 
 		
@@ -427,7 +419,7 @@ function setupCharts(){
 //	box.datepicker();
 	//alert("hello")
 	}else{
-		alert("no records found");
+		//alert("no records found");
 	}
 }
 
