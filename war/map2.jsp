@@ -116,16 +116,22 @@
 								
 						//Return the requested statistics
 						timeStamp = tmpM + "/"+tmpD+"/"+tmpY+" "+tmpH+":"+tmpMi;
+						weight=(String)lastRecord.getProperty("weight");
+						int_temp=(String)lastRecord.getProperty("intTemp");
+						ext_temp=(String)lastRecord.getProperty("extTemp");
+						
+						
 
 
 					}
 		%>
 	<div id="hive<%=record.getProperty("hiveID") %>" class='shouldBeHidden hiveRecord'>
 		
-		
+	<!--	
 		<span class="hiveRecord_label">ID</span>
 		<span class='hiveRecord_field hiveRecord_hiveID'><%=record.getProperty("hiveID")%></span>
-		<span class="hiveRecord_label">Weight</span>
+	-->	
+	<span class="hiveRecord_label">Weight</span>
 		<span class='hiveRecord_field hiveRecord_weight'><%=weight%></span><br />
 		
 		
@@ -164,7 +170,7 @@
 
 	<div id="div_map_container" class="class_box_shadow"></div>
 
-	<div id='div_hiveControls_wrapper' class=''> <span id="banner_title">BeeCloud</span>
+	<div id='div_hiveControls_wrapper' class=''> <span id="banner_title"></span>
 		<div id='div_hiveControls_grabber'>
 		<div id="logo">
 	<img src="images/bee.gif" />
@@ -321,7 +327,7 @@
 					
 							
 					<label class='lbl_checkbox'>Avg <%=chkField%>
-					<input class="ch_query_options" name="avg<%=chkField%>" type='checkbox'/></label>
+					<input class="ch_query_options" name="avg<%=availableOptions.get(count)	%>" type='checkbox'/></label>
 					<%
 						}
 						}

@@ -162,7 +162,7 @@ if(request.getParameter("editMode")!=null){
 				%>
 					<form method="get" action="/UpdateHive">
 						<label>Hive ID</label><input type='text' name="hiveID" />
-						<label>Name</label><input type='text' name="name" />
+						<label>Name</label><input type='text' name="alias" />
 						<input type="hidden" value="<%= user.getEmail() %>" name="userID"/>
 						<input type='submit' class='button'  value='Add' />
 					</form>

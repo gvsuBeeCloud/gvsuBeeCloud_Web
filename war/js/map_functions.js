@@ -368,11 +368,15 @@ function setupCharts(){
 	            text: 'Hive Metrics'
 	         },
 	         xAxis: {
-	            categories: []
+	            categories: [],
+	            labels: {
+	                rotation: 90
+	            },
+		    enabled: false
 	         },
 	         yAxis: {
 	            title: {
-	               text: 'Relevant unit of measure (degree or lbs)'
+	               text: 'Degree C or lbs'
 	            }
 	         },
 	         series: [{
